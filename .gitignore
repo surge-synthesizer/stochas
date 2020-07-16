@@ -1,0 +1,4 @@
+video_tutorials/
+.DS_Store
+build/
+.vscode/

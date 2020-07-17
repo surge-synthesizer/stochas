@@ -20,44 +20,44 @@ The reason for pointers here is that I used the UI-builder in Projucer for some 
 class SeqEditDialog : public SeqModalDialog
 {
    // all pat components are on here
-   ScopedPointer<TabPanelCpt> mTab1;
+   std::unique_ptr<TabPanelCpt> mTab1;
    // all layer components are on here
-   ScopedPointer<TabPanelCpt> mTab2;
+   std::unique_ptr<TabPanelCpt> mTab2;
    // selection actions are here
-   ScopedPointer<TabPanelCpt> mTab3;
+   std::unique_ptr<TabPanelCpt> mTab3;
 
    // above two are on here
-   ScopedPointer<SeqTabbedCpt> mTabs;
+   std::unique_ptr<SeqTabbedCpt> mTabs;
 
-   ScopedPointer<Label> mLblMain;
-   ScopedPointer<Label> mLblPatLayer;
-   ScopedPointer<Label> mLblPatPattern;
-   ScopedPointer<Label> mLblLyrLayer;
-   ScopedPointer<Label> mLblDescription;
+   std::unique_ptr<Label> mLblMain;
+   std::unique_ptr<Label> mLblPatLayer;
+   std::unique_ptr<Label> mLblPatPattern;
+   std::unique_ptr<Label> mLblLyrLayer;
+   std::unique_ptr<Label> mLblDescription;
 
-   ScopedPointer<Label> mLblSelText;
+   std::unique_ptr<Label> mLblSelText;
 
    
-   ScopedPointer<ToggleButton> mPatClear;
-   ScopedPointer<ToggleButton> mPatCopyFrom;
-   ScopedPointer<ToggleButton> mLyrClear;
-   ScopedPointer<ToggleButton> mLyrCopyFrom;
-   ScopedPointer<ToggleButton> mLyrCopyScale;
+   std::unique_ptr<ToggleButton> mPatClear;
+   std::unique_ptr<ToggleButton> mPatCopyFrom;
+   std::unique_ptr<ToggleButton> mLyrClear;
+   std::unique_ptr<ToggleButton> mLyrCopyFrom;
+   std::unique_ptr<ToggleButton> mLyrCopyScale;
 
-   ScopedPointer<ToggleButton> mSelClear;    // clear 
-   ScopedPointer<ToggleButton> mSelAdjVelo;  // adjust velocity
-   ScopedPointer<ToggleButton> mSelAdjProb;  // adjust probability
-   ScopedPointer<ToggleButton> mSelRepeat; // repeat till end of pattern
+   std::unique_ptr<ToggleButton> mSelClear;    // clear 
+   std::unique_ptr<ToggleButton> mSelAdjVelo;  // adjust velocity
+   std::unique_ptr<ToggleButton> mSelAdjProb;  // adjust probability
+   std::unique_ptr<ToggleButton> mSelRepeat; // repeat till end of pattern
 
-   ScopedPointer<ComboBox> mSelAbsList;     // velo/prob - abs/relative
-   ScopedPointer<ComboBox> mSelAmtList;     // amount. for abs will be some fixed values, rel will be up/down
+   std::unique_ptr<ComboBox> mSelAbsList;     // velo/prob - abs/relative
+   std::unique_ptr<ComboBox> mSelAmtList;     // amount. for abs will be some fixed values, rel will be up/down
 
-   ScopedPointer<ComboBox> mPatLayerList;
-   ScopedPointer<ComboBox> mPatPatternList;
-   ScopedPointer<ComboBox> mLyrLayerList;
+   std::unique_ptr<ComboBox> mPatLayerList;
+   std::unique_ptr<ComboBox> mPatPatternList;
+   std::unique_ptr<ComboBox> mLyrLayerList;
 
-   ScopedPointer<TextButton> mBtnOk;
-   ScopedPointer<TextButton> mBtnCancel;
+   std::unique_ptr<TextButton> mBtnOk;
+   std::unique_ptr<TextButton> mBtnCancel;
 
    void endDialog(bool hitOk) override;
    void notify(int cptId, int value) override;

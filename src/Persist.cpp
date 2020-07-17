@@ -402,7 +402,7 @@ bool SeqPersist::retrieve(SequenceData * targetData, const XmlElement * sourceDa
       return false;
 
    // start fresh (dont put sequencedata on stack! it's too big!)
-   ScopedPointer<SequenceData> dummy = new SequenceData();
+   std::unique_ptr<SequenceData> dummy(new SequenceData());
    *targetData = *dummy;
 
    forEachXmlChildElement(*sourceData, e) {

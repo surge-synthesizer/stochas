@@ -249,7 +249,7 @@ SeqAudioProcessor::handleMiniMidiMap(int type, char number, char chan, char)
 {
    MiniMidiMapItem *mi;
    // this is an array sized to number of midi notes
-   jassert(number >= 0 && number < 128);
+   jassert(number >= 0);
 
    mi = mMiniMidiMap[number];
    while (mi) {
@@ -287,11 +287,10 @@ void SeqAudioProcessor::handleIncomingMidi(bool currentlyPlaying,
       SequenceData *sd = mData.getAudSeqData();
       int respond = sd->getMidiRespond();
       int passthru = sd->getMidiPassthru();
-      MidiBuffer::Iterator it(midiMessages);
-      MidiMessage msg;
-      int position;
-      
-      while (it.getNextEvent(msg, position)) {
+
+      for (const MidiMessageMetadata it : midiMessages) {
+         MidiMessage msg = it.getMessage();
+         int position = it.samplePosition;
          bool remove = (passthru == SEQ_MIDI_PASSTHRU_NONE);
          char midiNumber = 0; // note number or cc number
          char midiChan = 0;
@@ -376,11 +375,10 @@ SeqAudioProcessor::checkIncomingMidiForStartStop(MidiBuffer &midiMessages)
       return;
 
    // scan thru the buffer and react to note on/off
-   MidiBuffer::Iterator it(midiMessages);
-   MidiMessage msg;
-   int position;
+   for (const MidiMessageMetadata it : midiMessages) {
+      MidiMessage msg = it.getMessage();
+      int position = it.samplePosition;
 
-   while (it.getNextEvent(msg, position)) {
       char midiNumber = 0; // note number or cc number
       char midiChan = 0;
       char midiType = 0; // noteon or cc
@@ -410,9 +408,6 @@ void SeqAudioProcessor::dispatchRecordedMidiNotes(MidiBuffer &midiNoteData)
 {
    
    int curLyr = mEditorState->getCurrentLayer(); // needed so we can access the right mStocha
-   MidiBuffer::Iterator it(midiNoteData);
-   MidiMessage msg;
-   int position;
    int frac;
    int noteNum;
    // number of steps in current layer
@@ -420,7 +415,9 @@ void SeqAudioProcessor::dispatchRecordedMidiNotes(MidiBuffer &midiNoteData)
    // current position in current layer
    int stepPos = mStocha[curLyr].getCurrentOverallPosition(&frac);
 
-   while (it.getNextEvent(msg, position)) {
+   for (const MidiMessageMetadata it : midiNoteData) {
+      MidiMessage msg = it.getMessage();
+
       // we will only have note on or note off data   
       noteNum = msg.getNoteNumber();
 

@@ -293,7 +293,7 @@ SequenceData::clearLayer(int layer)
 void 
 SequenceData::clearPattern(int layer, int pattern)
 {
-   ScopedPointer<SequenceLayer::Pattern> blank = new SequenceLayer::Pattern;
+   std::unique_ptr<SequenceLayer::Pattern> blank = std::unique_ptr<SequenceLayer::Pattern>(new SequenceLayer::Pattern());
    jassert(layer >= 0 && layer <= SEQ_MAX_LAYERS);
    jassert(pattern >= 0 && pattern <= SEQ_MAX_PATTERNS);
    mLayers[layer].mPats[pattern] = *blank;   
@@ -449,7 +449,7 @@ SequenceLayer
 *============================================*/
 void
 SequenceLayer::clear() {
-   ScopedPointer<Pattern> blankPat=new Pattern();
+   std::unique_ptr<Pattern> blankPat=std::unique_ptr<Pattern>(new Pattern());
    mMuted = false;
    mNumRows = SEQ_MAX_VISIBLE_ROWS;
    mNumSteps = SEQ_DEFAULT_NUM_STEPS;

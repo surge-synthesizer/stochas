@@ -1327,7 +1327,7 @@ void SeqAudioProcessorEditor::savePatch(const String & fn)
    SeqPersist persist;
    const XmlElement &xml = persist.store(mGlob.mSeqBuf->getAudSeqData());
 
-   if (!xml.writeToFile(File(fn).withFileExtension("stochas"), ""))
+   if (!xml.writeTo(File(fn).withFileExtension("stochas"), juce::XmlElement::TextFormat()))
       setAlertText("Failed to write to file");
 
 }

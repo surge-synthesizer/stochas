@@ -263,62 +263,65 @@ SeqEditDialog::SeqEditDialog(SeqGlob * glob, CptNotify *parent) :
    txtColor = bgColor.contrasting(0.5f);
 
    // big label at top
-   mLblMain = addStdLabel( "Actions for current layer/pattern"); // will be changed as appropriate
+   mLblMain = std::unique_ptr<Label>(addStdLabel( "Actions for current layer/pattern")); // will be changed as appropriate
    mLblMain->setFont(Font(20.0f, Font::plain));
    mLblMain->setJustificationType(Justification::centred);
    
    // tabs
-   mTabs = new SeqTabbedCpt(0, this, TabbedButtonBar::TabsAtTop);
+   mTabs = std::unique_ptr<SeqTabbedCpt>(new SeqTabbedCpt(0, this, TabbedButtonBar::TabsAtTop));
    addToInner(0, *mTabs);
    mTabs->setVisible(true);
    mTabs->setTabBarDepth(27);
-   mTabs->addTab("Pattern", bgColor, mTab1 = new TabPanelCpt(glob, false), false);
-   mTabs->addTab("Layer", bgColor, mTab2 = new TabPanelCpt(glob, false), false);
-   mTabs->addTab("Selection", bgColor, mTab3 = new TabPanelCpt(glob, false), false);
+   mTab1 = std::unique_ptr<TabPanelCpt>(new TabPanelCpt(glob, false));
+   mTabs->addTab("Pattern", bgColor, mTab1.get(), false);
+   mTab2 = std::unique_ptr<TabPanelCpt>(new TabPanelCpt(glob, false));
+   mTabs->addTab("Layer", bgColor, mTab2.get(), false);
+   mTab3 = std::unique_ptr<TabPanelCpt>(new TabPanelCpt(glob, false));
+   mTabs->addTab("Selection", bgColor, mTab3.get(), false);
    mTabs->setCurrentTabIndex(0);
    mTabs->setWantsKeyboardFocus(false);
    
 
    // all toggles
-   mPatClear =    addToggle( "Clear all cell data from the current pattern", 1, mTab1);
-   mPatCopyFrom = addToggle("Copy cell data from another pattern", 1, mTab1);
-   mLyrClear =    addToggle("Clear all data from the current layer", 2, mTab2);
-   mLyrCopyFrom = addToggle("Copy all data from another layer", 2, mTab2);
-   mLyrCopyScale =addToggle("Copy scale information from another layer", 2, mTab2);
+   mPatClear =    std::unique_ptr<ToggleButton>(addToggle( "Clear all cell data from the current pattern", 1, mTab1.get()));
+   mPatCopyFrom = std::unique_ptr<ToggleButton>(addToggle("Copy cell data from another pattern", 1, mTab1.get()));
+   mLyrClear =    std::unique_ptr<ToggleButton>(addToggle("Clear all data from the current layer", 2, mTab2.get()));
+   mLyrCopyFrom = std::unique_ptr<ToggleButton>(addToggle("Copy all data from another layer", 2, mTab2.get()));
+   mLyrCopyScale =std::unique_ptr<ToggleButton>(addToggle("Copy scale information from another layer", 2, mTab2.get()));
    
    // all lists
-   mPatLayerList =   addCombo("Select Layer", mTab1);
-   mPatPatternList = addCombo("Select Pattern",mTab1);
-   mLyrLayerList =   addCombo("Select Layer", mTab2);
+   mPatLayerList =   std::unique_ptr<ComboBox>(addCombo("Select Layer", mTab1.get()));
+   mPatPatternList = std::unique_ptr<ComboBox>(addCombo("Select Pattern",mTab1.get()));
+   mLyrLayerList =   std::unique_ptr<ComboBox>(addCombo("Select Layer", mTab2.get()));
 
    // all labels
-   mLblPatLayer =    addStdLabel("Layer", mTab1);
-   mLblPatPattern=   addStdLabel("Pattern", mTab1);
-   mLblLyrLayer=     addStdLabel("Layer", mTab2);
+   mLblPatLayer =    std::unique_ptr<Label>(addStdLabel("Layer", mTab1.get()));
+   mLblPatPattern=   std::unique_ptr<Label>(addStdLabel("Pattern", mTab1.get()));
+   mLblLyrLayer=     std::unique_ptr<Label>(addStdLabel("Layer", mTab2.get()));
 
    // selection
-   mSelClear = addToggle("Clear", 3, mTab3, CPTID_SELECTION_ACTION);
-   mSelAdjVelo = addToggle("Adjust Velocity",3, mTab3, CPTID_SELECTION_ACTION);
-   mSelAdjProb = addToggle("Adjust Probability", 3, mTab3, CPTID_SELECTION_ACTION);
-   mSelRepeat = addToggle("Repeat to end of pattern",3,mTab3, CPTID_SELECTION_ACTION);
+   mSelClear =    std::unique_ptr<ToggleButton>(addToggle("Clear", 3, mTab3.get(), CPTID_SELECTION_ACTION));
+   mSelAdjVelo =  std::unique_ptr<ToggleButton>(addToggle("Adjust Velocity",3, mTab3.get(), CPTID_SELECTION_ACTION));
+   mSelAdjProb =  std::unique_ptr<ToggleButton>(addToggle("Adjust Probability", 3, mTab3.get(), CPTID_SELECTION_ACTION));
+   mSelRepeat =   std::unique_ptr<ToggleButton>(addToggle("Repeat to end of pattern",3,mTab3.get(), CPTID_SELECTION_ACTION));
 
    // when selection here changes, the amount combo needs to change
-   mSelAbsList = addCombo("Select",mTab3, CPTID_ADJ_ABS_REL);
+   mSelAbsList = std::unique_ptr<ComboBox>(addCombo("Select",mTab3.get(), CPTID_ADJ_ABS_REL));
    mSelAbsList->addItem("Relative", (int)AdjustmentType::relative);
    mSelAbsList->addItem("Absolute", (int)AdjustmentType::absolute);
    
 
-   mSelAmtList = addCombo("Amount", mTab3);
-   mLblSelText = addStdLabel("No cells are selected. Use shift-drag to select cells.", mTab3);
+   mSelAmtList = std::unique_ptr<ComboBox>(addCombo("Amount", mTab3.get()));
+   mLblSelText = std::unique_ptr<Label>(addStdLabel("No cells are selected. Use shift-drag to select cells.", mTab3.get()));
 
    // big descr
-   mLblDescription = addStdLabel("");
+   mLblDescription = std::unique_ptr<Label>(addStdLabel(""));
    mLblDescription->setJustificationType(Justification::topLeft);
    mLblDescription->setMinimumHorizontalScale(1.0f);
 
    // buttons
-   mBtnOk = addStdButton("Ok",0,CPTID_OK);
-   mBtnCancel = addStdButton("Cancel", 0, CPTID_CANCEL);
+   mBtnOk = std::unique_ptr<TextButton>(addStdButton("Ok",0,CPTID_OK));
+   mBtnCancel = std::unique_ptr<TextButton>(addStdButton("Cancel", 0, CPTID_CANCEL));
 
    mRecalcReady = true;
 }

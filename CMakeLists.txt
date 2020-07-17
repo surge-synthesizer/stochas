@@ -25,11 +25,6 @@ if (DEFINED ENV{VST2_PATH})
   set(VST2 "VST")
 endif()
 
-if (DEFINED ENV{AAX_PATH})
-  juce_set_aax_sdk_path($ENV{AAX_PATH})  
-  set(AAX "AAX")
-endif()
-
 
 # `juce_add_plugin` adds a static library target with the name passed as the first argument
 # (AudioPluginExample here). This target is a normal CMake target, but has a lot of extra properties set
@@ -49,7 +44,7 @@ juce_add_plugin(stochas
     # COPY_PLUGIN_AFTER_BUILD TRUE/FALSE        # Should the plugin be installed to a default location after building?
     PLUGIN_MANUFACTURER_CODE AuVi
     PLUGIN_CODE Stoc
-    FORMATS VST3 ${VST2} ${AAX}                  # The formats to build. Other valid formats are: AAX Unity VST AU AUv3
+    FORMATS VST3 ${VST2} AU AUv3                 # The formats to build. Other valid formats are: AAX Unity VST AU AUv3
     VST3_CATEGORIES "Instrument"
     PRODUCT_NAME "Stochas")        # The name of the final executable, which can differ from the target name
 

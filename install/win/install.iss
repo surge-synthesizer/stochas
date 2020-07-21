@@ -3,13 +3,17 @@
 ;
 #define vst64 "Z:\dev\src\stochas_open\build\stochas_artefacts\Release"
 #define vst32 "Z:\dev\src\stochas_open\build32\stochas_artefacts\Release"
+#ifndef stochas_version
+#define stochas_version "99.99.99"
+#endif
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
 ; Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{18D03379-6956-4365-BDA3-33D3CBBA991E}
 AppName=Stochas
-AppVersion=1.3.1
+; needs to be passed in when running from command line
+AppVersion={#stochas_version}
 ;AppVerName=Stochas 1.0
 AppPublisher=Open Source Software
 AppPublisherURL=https://github.com/rudeog/stochas_open

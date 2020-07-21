@@ -13,4 +13,4 @@ cmake -B build32 -DCMAKE_INSTALL_PREFIX=/c/data/juce6_install
 cmake --build build32 --config Release
 cmake -B build -A x64 -DCMAKE_INSTALL_PREFIX=/c/data/juce6_install
 cmake --build build --config Release
-"$INNO" //Obuild.install\\win "install\\win\\install.iss"
+"$INNO" //Obuild.install\\win //Fstochas_setup.${STOCHAS_VERSION} //DSTOCHAS_VERSION=${STOCHAS_VERSION} "install\\win\\install.iss"

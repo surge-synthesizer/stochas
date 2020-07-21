@@ -83,6 +83,9 @@
 			"*.tcc": "cpp",
 			"*.in": "cpp"
 		},
-		"cmake.installPrefix": ""
+		"cmake.installPrefix": "",
+		"cmake.configureEnvironment": {
+			"STOCHAS_VERSION": "99.99.99"
+		}
 	}
 }

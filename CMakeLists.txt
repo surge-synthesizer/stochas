@@ -10,7 +10,7 @@
 #   cmake --build build
 #
 cmake_minimum_required(VERSION 3.15)
-project(Stochas VERSION 1.3.1)
+project(Stochas VERSION $ENV{STOCHAS_VERSION})
 find_package(JUCE CONFIG REQUIRED)
 
 # create version.h and allow it to be referenced

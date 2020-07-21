@@ -79,7 +79,7 @@
 															<key>GID</key>
 															<integer>0</integer>
 															<key>PATH</key>
-															<string>../../build/stochas_artefacts/Release/VST3/Stochas.vst3</string>
+															<string>../../build/stochas_artefacts/VST3/Stochas.vst3</string>
 															<key>PATH_TYPE</key>
 															<integer>1</integer>
 															<key>PERMISSIONS</key>
@@ -631,7 +631,7 @@
 															<key>GID</key>
 															<integer>0</integer>
 															<key>PATH</key>
-															<string>../../build/stochas_artefacts/Release/AU/Stochas.component</string>
+															<string>../../build/stochas_artefacts/AU/Stochas.component</string>
 															<key>PATH_TYPE</key>
 															<integer>1</integer>
 															<key>PERMISSIONS</key>

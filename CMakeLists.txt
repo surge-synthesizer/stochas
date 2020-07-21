@@ -13,8 +13,6 @@ cmake_minimum_required(VERSION 3.15)
 project(Stochas VERSION 1.3.1)
 find_package(JUCE CONFIG REQUIRED)
 
-add_definitions(-DJUCER_ENABLE_GPL_MODE=1)
-
 # create version.h and allow it to be referenced
 configure_file(src/version.h.in version.h)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})

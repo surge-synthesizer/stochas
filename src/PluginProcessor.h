@@ -3,10 +3,6 @@
 #ifndef PLUGINPROCESSOR_H_INCLUDED
 #define PLUGINPROCESSOR_H_INCLUDED
 
-
-#if JUCER_ENABLE_GPL_MODE==0
-#error "test"
-#endif
 #include <JuceHeader.h>
 #include "SequenceData.h"
 #include "StochaEngine.h"

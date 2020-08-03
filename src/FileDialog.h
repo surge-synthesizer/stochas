@@ -3,7 +3,6 @@
 #ifndef FILEDIALOG_H_
 #define FILEDIALOG_H_
 
-#include <JuceHeader.h>
 #include "EditorState.h"
 #include "Constants.h"
 #include "CommonComponents.h"

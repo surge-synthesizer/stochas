@@ -2,7 +2,7 @@
 */
 #ifndef STOCHAENGINE_H_
 #define STOCHAENGINE_H_
-#include <JuceHeader.h>
+
 #include "Constants.h"
 #include "SequenceData.h"
 #include "SeqRandom.h"

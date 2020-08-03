@@ -2,7 +2,7 @@
 */
 #ifndef STEPPANEL_H_
 #define STEPPANEL_H_
-#include <JuceHeader.h>
+
 #include "SequenceData.h"
 #include "EditorState.h"
 #include "Constants.h"

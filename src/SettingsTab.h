@@ -1,6 +1,6 @@
 #ifndef SETTINGS_TAB_
 #define SETTINGS_TAB_
-#include <JuceHeader.h>
+
 #include "EditorState.h"
 #include "Constants.h"
 #include "CommonComponents.h"

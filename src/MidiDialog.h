@@ -3,7 +3,6 @@
 #ifndef MIDIDIALOG_H_
 #define MIDIDIALOG_H_
 
-#include <JuceHeader.h>
 #include "EditorState.h"
 #include "Constants.h"
 #include "CommonComponents.h"

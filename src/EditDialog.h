@@ -3,7 +3,6 @@
 #ifndef EDITDIALOG_H_
 #define EDITDIALOG_H_
 
-#include <JuceHeader.h>
 #include "EditorState.h"
 #include "Constants.h"
 #include "CommonComponents.h"

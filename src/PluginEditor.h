@@ -3,7 +3,6 @@
 #ifndef PLUGINEDITOR_H_INCLUDED
 #define PLUGINEDITOR_H_INCLUDED
 
-#include <JuceHeader.h>
 #include "PluginProcessor.h"
 #include "OptionsPanel.h"
 #include "StepPanel.h"
@@ -14,6 +13,7 @@
 #include "EditorState.h"
 #include "Constants.h"
 #include "EditDialog.h"
+#include "InfoDialog.h"
 #include "SettingsTab.h"
 #include "MidiDialog.h"
 #include "FileDialog.h"
@@ -97,6 +97,7 @@ class SeqAudioProcessorEditor  : public AudioProcessorEditor,
    Label mLayerLabel;
    Label mSectionLabel;
    SeqEditDialog mEditDialog;
+   SeqInfoDialog mInfoDialog;
    SeqFileDialog mFileChooser;
    SeqChainDialog mChainDialog;
 

@@ -3,7 +3,6 @@
 #ifndef CHAINDIALOG_H_
 #define CHAINDIALOG_H_
 
-#include <JuceHeader.h>
 #include "EditorState.h"
 #include "Constants.h"
 #include "CommonComponents.h"

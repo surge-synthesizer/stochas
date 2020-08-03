@@ -86,6 +86,9 @@
 		"cmake.installPrefix": "",
 		"cmake.configureEnvironment": {
 			"STOCHAS_VERSION": "99.99.99"
+		},
+		"cmake.environment": {
+			"STOCHAS_VERSION": "99.99.99"
 		}
 	}
 }

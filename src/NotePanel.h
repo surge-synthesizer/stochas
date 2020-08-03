@@ -2,7 +2,7 @@
 */
 #ifndef NOTEPANEL_H_
 #define NOTEPANEL_H_
-#include <JuceHeader.h>
+
 #include "SequenceData.h"
 #include "EditorState.h"
 #include "Constants.h"

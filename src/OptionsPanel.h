@@ -3,7 +3,6 @@
 #ifndef OPTIONSPANEL_H_
 #define OPTIONSPANEL_H_
 
-#include <JuceHeader.h>
 #include "EditorState.h"
 #include "Constants.h"
 #include "CommonComponents.h"

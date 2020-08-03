@@ -59,6 +59,7 @@ SeqAudioProcessorEditor::SeqAudioProcessorEditor(SeqAudioProcessor& p)
    mHelpBanner(&mGlob),          // banner at bottom that indicates alert or context help
    mLayerToggle(&mGlob, SEQCTL_LAYER_TOGGLE, this), // for selecting which layer we are on
    mEditDialog(&mGlob, this),    // our edit dialog itself
+   mInfoDialog(&mGlob, this),
    mFileChooser(&mGlob, this),
    mChainDialog(&mGlob, this),
    mMidiLightCountDown(0),        // for keeping the midi light lit for a specified time
@@ -146,7 +147,7 @@ SeqAudioProcessorEditor::SeqAudioProcessorEditor(SeqAudioProcessor& p)
    mLblPatternName.setName("lblPatternName");
    
    //=============================Help Button
-   mHelpBtn.setText("Help");
+   mHelpBtn.setText("Info");
    addAndMakeVisible(mHelpBtn);
    
 
@@ -265,6 +266,8 @@ SeqAudioProcessorEditor::SeqAudioProcessorEditor(SeqAudioProcessor& p)
    // ============================== Edit dialog
    addChildComponent(mEditDialog);
 
+   // ============================== Info dialog
+   addChildComponent(mInfoDialog);
 
    // ================================= Scrollbar that moves rows up and down
    mStepScrollbar.setRangeLimits(Range<double>(0, 1), juce::dontSendNotification);
@@ -804,16 +807,13 @@ void SeqAudioProcessorEditor::cptValueChange(int cptId, int id)
       break;
    }
    case SEQCTL_HELP_BUTTON: {
-      URL url(SEQ_HELP_URL);
-      url.launchInDefaultBrowser();
+      mInfoDialog.openDialog();
       break;
    }
    case SEQCTL_EDIT_BUTTON:
       // edit was clicked
       mEditDialog.doSetup();
       mEditDialog.openDialog();
-      //mEditDialog.setVisible(true);
-      //mEditDialog.enterModalState(); // asynchronous
       break;
 
    case SEQCTL_UNDO_BUTTON:

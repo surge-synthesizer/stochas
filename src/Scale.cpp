@@ -2,7 +2,6 @@
 */
 #include "Scale.h"
 #include "Constants.h"
-#include <JuceHeader.h>
 
 // maximum intervals in scale
 #define MAX_NUM_INT 12

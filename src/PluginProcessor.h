@@ -3,7 +3,6 @@
 #ifndef PLUGINPROCESSOR_H_INCLUDED
 #define PLUGINPROCESSOR_H_INCLUDED
 
-#include <JuceHeader.h>
 #include "SequenceData.h"
 #include "StochaEngine.h"
 class EditorState;

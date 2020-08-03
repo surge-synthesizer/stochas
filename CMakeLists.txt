@@ -56,6 +56,7 @@ target_sources(stochas PRIVATE
     src/EditorState.cpp
     src/FileDialog.cpp
     src/HelpBanner.cpp
+    src/InfoDialog.cpp
     src/MidiDialog.cpp
     src/NotePanel.cpp
     src/OptionsPanel.cpp

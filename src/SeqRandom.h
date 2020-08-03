@@ -3,7 +3,6 @@
 #ifndef SEQRANDOM_H_
 #define SEQRANDOM_H_
 
-#include <JuceHeader.h>
 #include "Constants.h"
 #include "pcg_basic.h"
 

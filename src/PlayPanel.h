@@ -2,7 +2,7 @@
 */
 #ifndef PLAYPANEL_H_
 #define PLAYPANEL_H_
-#include <JuceHeader.h>
+
 #include "SequenceData.h"
 #include "EditorState.h"
 #include "Constants.h"

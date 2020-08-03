@@ -2,7 +2,7 @@
 */
 #ifndef EDITOR_STATE_H_
 #define EDITOR_STATE_H_
-#include <JuceHeader.h>
+
 #include "SequenceData.h"
 /**
 The Editor State keeps track of current editor settings (does not keep track of any data in the 

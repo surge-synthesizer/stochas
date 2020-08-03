@@ -2,7 +2,7 @@
 */
 #ifndef COMMONCOMPONENTS_H_
 #define COMMONCOMPONENTS_H_
-#include <JuceHeader.h>
+
 #include "EditorState.h"
 #include "Constants.h"
 

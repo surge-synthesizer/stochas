@@ -2,7 +2,6 @@
 */
 #include "Persist.h"
 #include "Constants.h"
-#include <JuceHeader.h>
 
 XmlElement * SeqPersist::addKeyVal(const char *name, const String & value)
 {

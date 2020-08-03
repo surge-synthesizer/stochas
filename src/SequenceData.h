@@ -12,7 +12,7 @@ and overrides the state here (so you will not see it here)
 Do not add pointers to any of these!
 */
 
-#include <JuceHeader.h>
+
 #include "Constants.h"
 #include "Scale.h"
 

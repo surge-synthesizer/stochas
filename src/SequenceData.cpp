@@ -1,3 +1,12 @@
+/***************************************************************
+ ** Copyright (C) 2016 by Andrew Shakinovsky
+ **
+ ** You may also use this code under the terms of the 
+ ** GPL v3 (see www.gnu.org/licenses).
+ ** STOCHAS IS PROVIDED "AS IS" WITHOUT ANY WARRANTY, AND ALL 
+ ** WARRANTIES, WHETHER EXPRESSED OR IMPLIED, INCLUDING 
+ ** MERCHANTABILITY AND FITNESS FOR PURPOSE, ARE DISCLAIMED.
+ ***************************************************************/
 #include "SequenceData.h"
 #include "EditorState.h" // just for random seed function
 SeqMidiMapItem gDefaultMidiMapItems[SEQMIDI_NUM_DEFAULT_ITEMS] =

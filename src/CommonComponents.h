@@ -1,5 +1,13 @@
-/* Copyright (C) 2016 Andrew Shakinovsky
-*/
+/***************************************************************
+ ** Copyright (C) 2016 by Andrew Shakinovsky
+ **
+ ** You may also use this code under the terms of the 
+ ** GPL v3 (see www.gnu.org/licenses).
+ ** STOCHAS IS PROVIDED "AS IS" WITHOUT ANY WARRANTY, AND ALL 
+ ** WARRANTIES, WHETHER EXPRESSED OR IMPLIED, INCLUDING 
+ ** MERCHANTABILITY AND FITNESS FOR PURPOSE, ARE DISCLAIMED.
+ ***************************************************************/
+
 #ifndef COMMONCOMPONENTS_H_
 #define COMMONCOMPONENTS_H_
 

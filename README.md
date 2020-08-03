@@ -22,7 +22,7 @@ commercial product, in 2020, it was decided to release the software as open-sour
 - Create up to eight patterns
 
 ## Download
-To download pre-built binaries go here ...
+To download pre-built binaries go [here](https://github.com/rudeog/stochas_open/releases/) which is on the main github project page.
 
 ## Platforms and DAWs
 The original product has been tested on Windows and Mac using Reaper, Logic, Cubase, Ableton, FLStudio, Studio One, Cakewalk, ProTools. 

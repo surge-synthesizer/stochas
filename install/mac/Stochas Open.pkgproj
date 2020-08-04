@@ -1243,9 +1243,9 @@
 						<key>VALUE</key>
 						<dict>
 							<key>PATH</key>
-							<string>/Users/anshak/juce_work/stochas_open/install/mac/install.txt</string>
+							<string>install.txt</string>
 							<key>PATH_TYPE</key>
-							<integer>1</integer>
+							<integer>3</integer>
 						</dict>
 					</dict>
 				</array>

@@ -1,16 +1,22 @@
 #
 # Run from git bash shell
-# CMAKE_INSTALL_PREFIX should reflect where JUCE was installed using JUCE's cmake
 # install target
 #
 # Inno setup path
 #
-#export INNO="/c/Program\ Files\ \(x86\)/Inno\ Setup\ 5/Compil32.exe"
-export INNO="/c/Program Files (x86)/Inno Setup 5/iscc.exe"
-export VST2_PATH=/Z/dev/VST_SDK/VST2_SDK
-export STOCHAS_VERSION=`cat VERSION`
-cmake -B build32 -DCMAKE_INSTALL_PREFIX=/c/data/juce6_install
+#INNO="/c/Program\ Files\ \(x86\)/Inno\ Setup\ 5/Compil32.exe"
+INNO="/c/Program Files (x86)/Inno Setup 5/iscc.exe"
+VST2_PATH=/Z/dev/VST_SDK/VST2_SDK
+STOCHAS_VERSION=`cat VERSION`
+cmake -B build32 -DSTOCHAS_VERSION=${STOCHAS_VERSION} -DVST2_PATH=${VST2_PATH}
 cmake --build build32 --config Release
-cmake -B build -A x64 -DCMAKE_INSTALL_PREFIX=/c/data/juce6_install
-cmake --build build --config Release
-"$INNO" //Obuild.install\\win //Fstochas_setup.${STOCHAS_VERSION} //DSTOCHAS_VERSION=${STOCHAS_VERSION} "install\\win\\install.iss"
+retVal=$?
+if [ $retVal -eq 0 ]; then
+  cmake -B build -A x64 -DSTOCHAS_VERSION=${STOCHAS_VERSION}
+  cmake --build build --config Release
+
+  retVal=$?
+  if [ $retVal -eq 0 ]; then
+    "$INNO" //Obuild.install\\win //Fstochas_setup.${STOCHAS_VERSION} //DSTOCHAS_VERSION=${STOCHAS_VERSION} "install\\win\\install.iss"
+  fi
+fi

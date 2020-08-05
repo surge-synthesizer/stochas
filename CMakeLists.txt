@@ -1,18 +1,14 @@
 # This script has been adapted from the example script that comes with JUCE in the cmake example dir.
 # Original close-source Stochas code used the projucer 
 #
-# To intall JUCE, from the downloaded JUCE directory: 
-#   cmake -B cmake-build-install -DCMAKE_INSTALL_PREFIX=/path/to/desired/install/dir
-#   cmake --build cmake-build-install --target install
-#
 # To build stochas:
+#   git submodule update --init --recursive
 #   cmake -B build
-#   cmake --build build
+#   cmake --build build  --config Release
 #
 cmake_minimum_required(VERSION 3.15)
-if (DEFINED ENV{STOCHAS_VERSION} )
-  set (STOCHAS_VERSION $ENV{STOCHAS_VERSION})
-else()
+
+if (NOT DEFINED STOCHAS_VERSION)
   set (STOCHAS_VERSION 0.9.0)
 endif()  
 
@@ -25,8 +21,9 @@ configure_file(src/version.h.in version.h)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 # if you want vst2, you need to specify VST2_PATH in your environment
-if (DEFINED ENV{VST2_PATH})
-  juce_set_vst2_sdk_path($ENV{VST2_PATH})
+if (DEFINED ${VST2_PATH})
+  message("Building VST2. SDK at ${VST2_PATH}")
+  juce_set_vst2_sdk_path(${VST2_PATH})
   set(VST2 "VST")
 endif()
 
@@ -44,7 +41,7 @@ juce_add_plugin(stochas
     IS_SYNTH TRUE
     NEEDS_MIDI_INPUT TRUE
     NEEDS_MIDI_OUTPUT TRUE
-    IS_MIDI_EFFECT TRUE
+    IS_MIDI_EFFECT TRUE  # this is needed for AU and AUv3 in order for proper functioning in Logic
     # EDITOR_WANTS_KEYBOARD_FOCUS TRUE/FALSE    # Does the editor need keyboard focus?
     # COPY_PLUGIN_AFTER_BUILD TRUE/FALSE        # Should the plugin be installed to a default location after building?
     PLUGIN_MANUFACTURER_CODE AuVi

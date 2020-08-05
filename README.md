@@ -41,13 +41,14 @@ By default AAX is not built, but if you have the AAX sdk you will be able to ena
 ### Building
 - Install developer tool chain on your system. Windows has been tested with MS C++, Mac has been tested with Clang.
 - Install CMake on your system. Go to cmake.org/download
-- VST2 - if you need it you need to define VST2_PATH in your environment before following steps.
+- If you want to set a particular version add -DSTOCHAS_VERSION=9.9.9 in options below otherwise the version will be 0.9.0 
+- VST2 - if you need it you need to add -DVST2_PATH=path-to-vst2-sdk-here to options below
 - AAX - if you need it you need to install the sdk and edit the CMakefile
 - Build Stochas:
   - git submodule update --init --recursive
-  - cmake -B build 
+  - cmake -B build [options]
   - cmake --build build --config Release
-- If you want to set a particular version set the STOCHAS_VERSION variable, otherwise the CMake version will be 0.9.0  
+
 
 ### VSCode
 Development is a lot easier with VSCode using the CMake extension. Simply point vscode at the root directory of the repo. It pretty much detects a cmake project and handles building without any issues.

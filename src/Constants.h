@@ -27,8 +27,8 @@
 #define SEQ_HELP_URL  "https://github.com/rudeog/stochas_open/raw/master/install/user_manual.pdf"
 #define SEQ_WEBSITE_URL  "https://github.com/rudeog/stochas_open"
 // obfuscate 
-#define SEQ_HELP_EMAIL "and" "rew" \
-                        "@" "bina" "rydog" ".com"
+#define SEQ_HELP_EMAIL "stochas" \
+                        "@" "binarydog.com"
 
 // add some code to get around cubase behavior where it actually starts play position prior to
 // where the cursor is when user hits play. if any issues arise, disable this to see if the workaround

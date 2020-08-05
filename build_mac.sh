@@ -1,12 +1,14 @@
 #
 # This will build the mac install and disk image.
-# You will need to have JUCE install at ../JUCE_install relative to projects root dir
 # you will need to have "Packages 1.2.9" installed on your system for this to work correctly
 # Be sure to run this from the project's root directory
-export STOCHAS_VERSION=`cat VERSION`
-export JUCEINST=`pwd`/../JUCE_install
-#cmake -B build
-cmake -B build -DCMAKE_INSTALL_PREFIX=${JUCEINST}
+STOCHAS_VERSION=`cat VERSION`
+cmake -B build -DSTOCHAS_VERSION=${STOCHAS_VERSION}
 cmake --build build --config Release
-packagesbuild "install/mac/Stochas Open.pkgproj"
-hdiutil create -volname "Stochas ${STOCHAS_VERSION}" -srcfolder build.install/mac/stochas_open -ov -format UDRO build.install/mac/stochas.${STOCHAS_VERSION}.dmg
+retVal=$?
+if [ $retVal -eq 0 ]; then
+  echo building package...
+  packagesbuild "install/mac/Stochas Open.pkgproj"
+  echo creating disk image...
+  hdiutil create -volname "Stochas ${STOCHAS_VERSION}" -srcfolder build.install/mac/stochas_open -ov -format UDRO build.install/mac/stochas.${STOCHAS_VERSION}.dmg
+fi

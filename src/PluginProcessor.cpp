@@ -706,7 +706,8 @@ void SeqAudioProcessor::processBlock(AudioSampleBuffer& buffer, MidiBuffer& midi
    buffer.clear();
 
    // retrieve some important info (ppqposition might be negative <ahem>cubase)
-   ph->getCurrentPosition(posinfo);
+   if( ph )
+       ph->getCurrentPosition(posinfo);
 
    // position adjustment (which is a problem with protools and nothing else)
    // getPPQOffset should be an atomic operation.
@@ -784,7 +785,6 @@ void SeqAudioProcessor::processBlock(AudioSampleBuffer& buffer, MidiBuffer& midi
 #endif
 
    } // if posinfo.isPlaying
-   
 
    // determine whether we need to generate a new random number.
    // if we are first starting to play or if we have looped back,

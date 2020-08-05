@@ -10,8 +10,15 @@
 #   cmake --build build
 #
 cmake_minimum_required(VERSION 3.15)
-project(Stochas VERSION $ENV{STOCHAS_VERSION})
-find_package(JUCE CONFIG REQUIRED)
+if (DEFINED ENV{STOCHAS_VERSION} )
+  set (STOCHAS_VERSION $ENV{STOCHAS_VERSION})
+else()
+  set (STOCHAS_VERSION 0.9.0)
+endif()  
+
+project(Stochas VERSION ${STOCHAS_VERSION})
+message( STATUS "Building Stochas with version ${STOCHAS_VERSION}" )
+add_subdirectory(lib/JUCE)
 
 # create version.h and allow it to be referenced
 configure_file(src/version.h.in version.h)
@@ -42,7 +49,7 @@ juce_add_plugin(stochas
     # COPY_PLUGIN_AFTER_BUILD TRUE/FALSE        # Should the plugin be installed to a default location after building?
     PLUGIN_MANUFACTURER_CODE AuVi
     PLUGIN_CODE Stoc
-    FORMATS VST3 ${VST2} AU AUv3                 # The formats to build. Other valid formats are: AAX Unity VST AU AUv3
+    FORMATS VST3 ${VST2} AU AUv3 Standalone                 # The formats to build. Other valid formats are: AAX Unity VST AU AUv3
     VST3_CATEGORIES "Instrument"
     PRODUCT_NAME "Stochas")        # The name of the final executable, which can differ from the target name
 
@@ -86,7 +93,12 @@ target_compile_definitions(stochas
     # JUCE_WEB_BROWSER and JUCE_USE_CURL would be on by default, but you might not need them.
     JUCE_WEB_BROWSER=0  # If you remove this, add `NEEDS_WEB_BROWSER TRUE` to the `juce_add_plugin` call
     JUCE_USE_CURL=0     # If you remove this, add `NEEDS_CURL TRUE` to the `juce_add_plugin` call
-    JUCE_VST3_CAN_REPLACE_VST2=0)
+    JUCE_VST3_CAN_REPLACE_VST2=0
+ 
+    # Some linux options
+    JUCE_JACK=1
+    JUCE_ALSA=1
+)
 
 # If your target needs extra binary assets, you can add them here. The first argument is the name of
 # a new static library target that will include all the binary resources. There is an optional
@@ -103,6 +115,10 @@ juce_add_binary_data(assets NAMESPACE SeqImageX SOURCES
     image/Stochas-logo.png
     image/x-mark-4-64.png
     )
+
+set_target_properties(assets PROPERTIES
+    POSITION_INDEPENDENT_CODE TRUE)
+
 
 # `target_link_libraries` links libraries and JUCE modules to other libraries or executables. Here,
 # we're linking our executable target to the `juce::juce_audio_utils` module. Inter-module

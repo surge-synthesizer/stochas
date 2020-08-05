@@ -44,7 +44,7 @@ juce_add_plugin(stochas
     IS_SYNTH TRUE
     NEEDS_MIDI_INPUT TRUE
     NEEDS_MIDI_OUTPUT TRUE
-    IS_MIDI_EFFECT FALSE
+    IS_MIDI_EFFECT TRUE
     # EDITOR_WANTS_KEYBOARD_FOCUS TRUE/FALSE    # Does the editor need keyboard focus?
     # COPY_PLUGIN_AFTER_BUILD TRUE/FALSE        # Should the plugin be installed to a default location after building?
     PLUGIN_MANUFACTURER_CODE AuVi
@@ -52,7 +52,6 @@ juce_add_plugin(stochas
     FORMATS VST3 ${VST2} AU AUv3 Standalone                 # The formats to build. Other valid formats are: AAX Unity VST AU AUv3
     VST3_CATEGORIES "Instrument"
     PRODUCT_NAME "Stochas")        # The name of the final executable, which can differ from the target name
-
 
 juce_generate_juce_header(stochas)  
 

@@ -34,7 +34,6 @@ By default AAX is not built, but if you have the AAX sdk you will be able to ena
 - Windows or Mac OSX based system
 - C++ based developer toolchain such as Clang, VC++, etc.
 - CMake
-- JUCE version 6
 - VSCode (optional but recommended, see below)
 - VST2 sdk (only if you need vst2 plugin)
 - AAX (ProTools) SDK (only if you need it. disabled by default)
@@ -42,14 +41,13 @@ By default AAX is not built, but if you have the AAX sdk you will be able to ena
 ### Building
 - Install developer tool chain on your system. Windows has been tested with MS C++, Mac has been tested with Clang.
 - Install CMake on your system. Go to cmake.org/download
-- Install JUCE using Cmake as follows
-  - cmake -B cmake-build-install -DCMAKE_INSTALL_PREFIX=/desired/juce/install/dir
-  - cmake --build cmake-build-install --target install
 - VST2 - if you need it you need to define VST2_PATH in your environment before following steps.
 - AAX - if you need it you need to install the sdk and edit the CMakefile
-- Build Stochas (note that the -DCMAKE_INSTALL_PREFIX may or may not be needed here):
-  - cmake -B build -DCMAKE_INSTALL_PREFIX=/desired/juce/install/dir
-  - cmake --build build
+- Build Stochas:
+  - git submodule update --init --recursive
+  - cmake -B build 
+  - cmake --build build --config Release
+- If you want to set a particular version set the STOCHAS_VERSION variable, otherwise the CMake version will be 0.9.0  
 
 ### VSCode
 Development is a lot easier with VSCode using the CMake extension. Simply point vscode at the root directory of the repo. It pretty much detects a cmake project and handles building without any issues.
@@ -57,6 +55,9 @@ Development is a lot easier with VSCode using the CMake extension. Simply point 
 - Install CMake Tools extensions for vscode
 - In the settings for CMake (settings/extensions/Cmake tools configuration) under Cmake: Install Prefix enter the path where you installed JUCE using Cmake (ie /desired/juce/install/dir if you followed above directions). Note that this seemed to be needed on Windows but not Mac.
 
+### XCode
+
+If you want to use XCode on macintosh, adjust the first cmake command to `cmake -B build -GXcode` and your build directory will contain xcode assets.
 
 ## Projucer
 Prior to JUCE v6, Stochas was managed via Projucer. With the port to v6 and also the release of Stochas as OSS, Projucer is no longer in use. There were some settings in Projucer which had to be adjusted depending on the target. These notes may not be applicable anymore. In particular channel config should be looked at... from juce cmake doc " It is recommended to avoid this option altogether, and to use the newer buses API to specify the desired plugin inputs and outputs." Following are the old notes from

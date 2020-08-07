@@ -14,23 +14,21 @@ jobs:
       mac:
         imageName: 'macos-10.14'
         isMac: True
-        doUpload: True
+        # doUpload: True
       win-2017:
-        imageName: 'windows-2017'
+        imageName: 'vs2017-win2016'
         isWindows: True
-        doUpload: False
       win-2019:
         imageName: 'windows-2019'
         isWindows: True
-        doUpload: False
+        # doUpload: True
       lin-18:
         imageName: 'ubuntu-18.04'
         isLinux: True
-        doUpload: True
+        # doUpload: True
       lin-20:
         imageName: 'ubuntu-20.04'
         isLinux: True
-        doUpload: False
 
   pool:
     vmImage: $(imageName)
@@ -82,7 +80,7 @@ jobs:
     displayName: Build Mac
     condition: variables.isMac
 
-   - bash: |
+  - bash: |
       cmake -Bbuild -A x64
       cmake --build build --config Release
     displayName: Build Windows

@@ -16,7 +16,7 @@ jobs:
         isMac: True
         doUpload: True
       win-2017:
-        imageName: 'windows-2017'
+        imageName: 'vs2017-win2016'
         isWindows: True
         doUpload: False
       win-2019:

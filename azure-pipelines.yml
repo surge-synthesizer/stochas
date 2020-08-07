@@ -1,0 +1,159 @@
+# Build tuning-workbench-synth with JUCE buidls
+
+trigger:
+- main
+
+pr:
+- main
+
+jobs:
+
+- job: Build
+  strategy:
+    matrix:
+      mac:
+        imageName: 'macos-10.14'
+        isMac: True
+        doUpload: True
+      win-2017:
+        imageName: 'windows-2017'
+        isWindows: True
+        doUpload: False
+      win-2019:
+        imageName: 'windows-2019'
+        isWindows: True
+        doUpload: False
+      lin-18:
+        imageName: 'ubuntu-18.04'
+        isLinux: True
+        doUpload: True
+      lin-20:
+        imageName: 'ubuntu-20.04'
+        isLinux: True
+        doUpload: False
+
+  pool:
+    vmImage: $(imageName)
+
+  steps:
+  - checkout: self
+    fetchDepth: 1
+    # submodules: recursive # can't do submodules here b'cuz depth=1 fails with Github
+
+
+  - bash: |
+      sudo apt-get update
+      sudo apt-get install -y libgtk-3-dev
+      sudo apt-get install -y libwebkit2gtk-4.0
+      sudo apt-get install -y libwebkit2gtk-4.0-dev
+      sudo apt-get install -y libcurl4-openssl-dev
+      sudo apt-get install -y alsa
+      sudp apt-get install -y alsa-tools
+      sudo apt-get install -y libasound2-dev
+      sudo apt-get install -y jack
+      sudo apt-get install -y libjack-dev
+      sudo apt-get install -y libfreetype6-dev
+      sudo apt-get install -y libxinerama-dev
+      sudo apt-get install -y libxcb-xinerama0
+      sudo apt-get install -y libxinerama1
+      sudo apt-get install -y x11proto-xinerama-dev
+      sudo apt-get install -y libxrandr-dev
+      sudo apt-get install -y libgl1-mesa-dev
+      sudo apt-get install -y libxcursor-dev 
+      sudo apt-get install -y libxcursor1 
+      sudo apt-get install -y libxcb-cursor-dev 
+      sudo apt-get install -y libxcb-cursor0
+      sudo apt-get install -y --fix-missing
+
+      apt list --installed
+
+      find /usr/include -name "asoundlib.h" -print
+    displayName: Prepare Linux Host
+    condition: variables.isLinux
+
+  - bash: |
+      git submodule update --init --recursive
+    displayName: Submodule Update
+
+
+  - bash: |
+      cmake -Bbuild -GXcode
+      cmake --build build --config Release
+    displayName: Build Mac
+    condition: variables.isMac
+
+   - bash: |
+      cmake -Bbuild -A x64
+      cmake --build build --config Release
+    displayName: Build Windows
+    condition: variables.isWindows
+    
+  - bash: |
+      cmake -Bbuild
+      cmake --build build --config Release
+    displayName: Build Linux
+    condition: variables.isLinux
+
+
+  - task: PublishPipelineArtifact@0
+    inputs:
+      artifactName: 'MACOS_BUILD'
+      targetPath: 'build/asset/'
+    displayName: Publish Mac DMG
+    condition: and(variables.isMac, variables.doUpload)
+
+  - task: PublishPipelineArtifact@0
+    inputs:
+      artifactName: 'WINDOWS_BUILD'
+      targetPath: 'build/asset/'
+    displayName: Publish Windows Zip
+    condition: and(variables.isWindows, variables.doUpload)
+
+  - task: PublishPipelineArtifact@0
+    inputs:
+      artifactName: 'LINUX_BUILD'
+      targetPath: 'build/asset'
+    displayName: Publish Linux Tar
+    condition: and(variables.isLinux, variables.doUpload)
+
+
+- job: UpdateGithubRelease
+  dependsOn: Build
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main-but-disable-for-now'))
+
+  steps:
+  - task: DownloadPipelineArtifact@0
+    inputs:
+      artifactName: 'MACOS_BUILD'
+      targetPath: $(Build.ArtifactStagingDirectory)
+
+  - task: DownloadPipelineArtifact@0
+    inputs:
+      artifactName: 'WINDOWS_BUILD'
+      targetPath: $(Build.ArtifactStagingDirectory)
+
+  - task: DownloadPipelineArtifact@0
+    inputs:
+      artifactName: 'LINUX_BUILD'
+      targetPath: $(Build.ArtifactStagingDirectory)
+
+  - bash: |
+     scripts/release-notes.sh > $(Build.ArtifactStagingDirectory)/ReleaseNotes.md
+     ls $(Build.ArtifactStagingDirectory)
+     md5sum $(Build.ArtifactStagingDirectory)/*
+
+    displayName: Fake up release notes and tag release
+
+  - task: GitHubRelease@0
+    displayName: "Create New Github Release"
+    inputs:
+      gitHubConnection: surge-rackupdater
+      repositoryName: surge-synthesizer/tuning-workbench-synth
+      action: 'edit'
+      tag: Nightly
+      target: '$(Build.SourceVersion)'
+      addChangeLog: false
+      assetUploadMode: 'delete'
+      releaseNotesFile: $(Build.ArtifactStagingDirectory)/ReleaseNotes.md
+      assets: $(Build.ArtifactStagingDirectory)/*.*
+

@@ -82,7 +82,7 @@ jobs:
     displayName: Build Mac
     condition: variables.isMac
 
-   - bash: |
+  - bash: |
       cmake -Bbuild -A x64
       cmake --build build --config Release
     displayName: Build Windows

@@ -14,6 +14,22 @@ endif()
 
 project(Stochas VERSION ${STOCHAS_VERSION})
 message( STATUS "Building Stochas with version ${STOCHAS_VERSION}" )
+
+# synth defaults to true
+if (NOT DEFINED STOCHAS_IS_SYNTH)  
+  set(STOCHAS_IS_SYNTH "TRUE")
+endif()
+
+# midi effect defaults to true
+# TRUE is needed for AU and AUv3 in order for proper functioning in Logic
+# but may have issues with other daw's
+if (NOT DEFINED STOCHAS_IS_MIDI_EFFECT)  
+  set(STOCHAS_IS_MIDI_EFFECT "TRUE")
+endif()
+message("Is Synth: ${STOCHAS_IS_SYNTH}, Is Midi Effect: ${STOCHAS_IS_MIDI_EFFECT}")
+# I'm not sure at this point whether this has any effect. I know etting it to "Instrument" causes it to show as
+# VSTi in reaper whereas setting it to "Effect" causes it to show as VST
+set(STOCHAS_CATEGORY "Effect") # original was "Instrument"
 add_subdirectory(lib/JUCE)
 
 # create version.h and allow it to be referenced
@@ -21,11 +37,12 @@ configure_file(src/version.h.in version.h)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 # if you want vst2, you need to specify VST2_PATH in your environment
-if (DEFINED ${VST2_PATH})
+if (DEFINED VST2_PATH)
   message("Building VST2. SDK at ${VST2_PATH}")
   juce_set_vst2_sdk_path(${VST2_PATH})
   set(VST2 "VST")
 endif()
+
 
 
 # `juce_add_plugin` adds a static library target with the name passed as the first argument
@@ -38,16 +55,16 @@ juce_add_plugin(stochas
     COMPANY_NAME "Audio Vitamins"
     BUNDLE_ID "com.audiovitamins.stochas"
     DESCRIPTION "Stochas Randomization Enabled Step Sequencer"
-    IS_SYNTH TRUE
+    IS_SYNTH ${STOCHAS_IS_SYNTH}
     NEEDS_MIDI_INPUT TRUE
     NEEDS_MIDI_OUTPUT TRUE
-    IS_MIDI_EFFECT TRUE  # this is needed for AU and AUv3 in order for proper functioning in Logic
+    IS_MIDI_EFFECT ${STOCHAS_IS_MIDI_EFFECT}  
     # EDITOR_WANTS_KEYBOARD_FOCUS TRUE/FALSE    # Does the editor need keyboard focus?
     # COPY_PLUGIN_AFTER_BUILD TRUE/FALSE        # Should the plugin be installed to a default location after building?
     PLUGIN_MANUFACTURER_CODE AuVi
     PLUGIN_CODE Stoc
-    FORMATS VST3 ${VST2} AU AUv3 Standalone                 # The formats to build. Other valid formats are: AAX Unity VST AU AUv3
-    VST3_CATEGORIES "Instrument"
+    FORMATS VST3 ${VST2} AU AUv3 Standalone     # The formats to build. Other valid formats are: AAX Unity VST AU AUv3
+    VST3_CATEGORIES ${STOCHAS_CATEGORY} 
     PRODUCT_NAME "Stochas")        # The name of the final executable, which can differ from the target name
 
 juce_generate_juce_header(stochas)  

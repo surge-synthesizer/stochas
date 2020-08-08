@@ -26,12 +26,12 @@ To download pre-built binaries go [here](https://github.com/rudeog/stochas_open/
 
 ## Platforms and DAWs
 The original product has been tested on Windows and Mac using Reaper, Logic, Cubase, Ableton, FLStudio, Studio One, Cakewalk, ProTools. 
-The open-source version has been so far tested on Windows and Mac using Reaper, but should have no problem with other targets.
+The open-source version has been so far tested on Windows, Mac and Linux using Reaper, Logic, Bitwig and others, but should have no problem with other targets.
 By default AAX is not built, but if you have the AAX sdk you will be able to enable this.
 
 ## Building
 ### Pre-requisites
-- Windows or Mac OSX based system
+- Windows, Linux, Mac OSX based system
 - C++ based developer toolchain such as Clang, VC++, etc.
 - CMake
 - VSCode (optional but recommended, see below)
@@ -39,7 +39,7 @@ By default AAX is not built, but if you have the AAX sdk you will be able to ena
 - AAX (ProTools) SDK (only if you need it. disabled by default)
 
 ### Building
-- Install developer tool chain on your system. Windows has been tested with MS C++, Mac has been tested with Clang.
+- Install developer tool chain on your system. Windows has been tested with MS C++, Mac has been tested with Clang, Linux with GCC on Ubuntu and Buster
 - Install CMake on your system. Go to cmake.org/download
 - If you want to set a particular version add -DSTOCHAS_VERSION=9.9.9 in options below otherwise the version will be 0.9.0 
 - VST2 - if you need it you need to add -DVST2_PATH=path-to-vst2-sdk-here to options below

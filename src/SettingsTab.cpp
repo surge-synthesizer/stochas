@@ -152,10 +152,7 @@ SettingsTab::SettingsTab(SeqGlob * glob, int id, CptNotify *notify) :
    setupLabel(mLblColorScheme,"Color Scheme");
    setupLabel(mLblShiftReversed, "Shift Key");
    setupLabel(mLblPosOffset, "Pos. Offset.");
-   setupLabel(mLblVersionBuild, String::formatted("Version %d.%d.%d", 
-      SEQ_CURRENT_VERSION, 
-      SEQ_CURRENT_VERSION_MINOR,
-      SEQ_CURRENT_BUILD));
+   setupLabel(mLblVersionBuild, String::formatted("%s", Stochas::Build::FullVersionStr));
 
    mNumMouseSense.setSpec(1,SEQ_MOUSE_SENSE_MAX, 1, SEQ_MOUSE_SENSE_DEFAULT,"");
    addAndMakeVisible(mNumMouseSense);

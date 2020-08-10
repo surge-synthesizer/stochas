@@ -1,0 +1,31 @@
+/*
+** This file is rebuilt and substitited every time you run a build.
+** Things which need to be per-build should be defined here, declared
+** in the version.h header, and then used wherever you want
+*/
+#include "version.h"
+
+namespace Stochas
+{
+   const char* Build::MajorVersionStr = "@STOCHAS_MAJOR_VERSION@";
+   const int   Build::MajorVersionInt = @STOCHAS_MAJOR_VERSION@;
+   
+   const char* Build::SubVersionStr = "@STOCHAS_SUB_VERSION@";
+   const int   Build::SubVersionInt = @STOCHAS_SUB_VERSION@;
+   
+   const char* Build::ReleaseNumberStr = "@STOCHAS_RELEASE_NUMBER@";
+   const char* Build::ReleaseStr = "@STOCHAS_RELEASE_VERSION@";
+   
+   const char* Build::BuildNumberStr = "@STOCHAS_BUILD_HASH@"; // Build number to be sure that each result could identified.
+   
+   const char* Build::FullVersionStr = "@STOCHAS_FULL_VERSION@";
+   const char* Build::BuildHost = "@STOCHAS_BUILD_FQDN@";
+   const char* Build::BuildArch = "@STOCHAS_BUILD_ARCH@";
+
+   const char* Build::BuildLocation = "@STOCHAS_BUILD_LOCATION@";
+
+   const char* Build::BuildDate = "@STOCHAS_BUILD_DATE@";
+   const char* Build::BuildTime = "@STOCHAS_BUILD_TIME@";
+
+}
+

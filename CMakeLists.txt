@@ -21,6 +21,9 @@ endif()
 
 project(Stochas VERSION ${STOCHAS_VERSION})
 message( STATUS "Building Stochas with version ${STOCHAS_VERSION}" )
+if( APPLE )
+  message( STATUS "Building using ${CMAKE_OSX_DEPLOYMENT_TARGET}" )
+endif()
 
 # synth defaults to true
 if (NOT DEFINED STOCHAS_IS_SYNTH)  
@@ -40,7 +43,7 @@ endif()
 if (NOT DEFINED STOCHAS_IS_MIDI_EFFECT)  
   set(STOCHAS_IS_MIDI_EFFECT "TRUE")
 endif()
-message("Is Synth: ${STOCHAS_IS_SYNTH}, Is Midi Effect: ${STOCHAS_IS_MIDI_EFFECT}")
+message( STATUS "Is Synth: ${STOCHAS_IS_SYNTH}, Is Midi Effect: ${STOCHAS_IS_MIDI_EFFECT}")
 # I'm not sure at this point whether this has any effect. I know etting it to "Instrument" causes it to show as
 # VSTi in reaper whereas setting it to "Effect" causes it to show as VST
 set(STOCHAS_CATEGORY "Effect") # original was "Instrument"
@@ -52,7 +55,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 # if you want vst2, you need to specify VST2_PATH in your environment
 if (DEFINED VST2_PATH)
-  message("Building VST2. SDK at ${VST2_PATH}")
+  message( STATUS "Building VST2. SDK at ${VST2_PATH}")
   juce_set_vst2_sdk_path(${VST2_PATH})
   set(VST2 "VST")
 endif()
@@ -154,7 +157,66 @@ set_target_properties(assets PROPERTIES
 # here too. This is a standard CMake command.
 
 target_link_libraries(stochas PRIVATE
-    assets                             # to include our images
-    juce::juce_audio_utils
-    juce::juce_audio_plugin_client
+  assets                             # to include our images
+  juce::juce_audio_utils
+  juce::juce_audio_plugin_client
+  )
+
+
+add_custom_target( installer-pkg )
+if( APPLE )
+  add_dependencies( installer-pkg stochas_AU )
+endif()
+if( VST2 )
+  add_dependencies( installer-pkg stochas_VST2 )
+endif()
+add_dependencies( installer-pkg stochas_VST3 )
+add_dependencies( installer-pkg stochas_Standalone )
+
+get_target_property( ZIP_FROM_DIR stochas RUNTIME_OUTPUT_DIRECTORY )
+set( INSTALLER_DIR ${CMAKE_BINARY_DIR}/product )
+execute_process(
+  COMMAND git log -1 --format=%h
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+  OUTPUT_VARIABLE GIT_COMMIT_HASH
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+set( INSTALLER_BASENAME "stochas-${GIT_COMMIT_HASH}" )
+
+if( APPLE )
+  add_custom_command(
+    TARGET installer-pkg
+    POST_BUILD
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMAND ${CMAKE_COMMAND} -E make_directory  ${INSTALLER_DIR}
+    COMMAND hdiutil create ${INSTALLER_DIR}/${INSTALLER_BASENAME}-macos.dmg -ov -volname "${INSTALLER_BASENAME}-${GIT_COMMIT_HASH}" -fs HFS+ -srcfolder ${ZIP_FROM_DIR}
+    COMMAND echo hdiutil create ${INSTALLER_DIR}/${INSTALLER_BASENAME}-macos.dmg -ov -volname "${INSTALLER_BASENAME}-${GIT_COMMIT_HASH}" -fs HFS+ -srcfolder ${ZIP_FROM_DIR}
     )
+elseif( UNIX )
+  execute_process(
+    COMMAND uname -m
+    OUTPUT_VARIABLE LINUX_BUILD_ARCH
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
+
+  add_custom_command(
+    TARGET installer-pkg
+    POST_BUILD
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMAND ${CMAKE_COMMAND} -E make_directory  ${INSTALLER_DIR}
+    COMMAND ls -l ${OUTPUT_DIR}
+    COMMAND cd ${ZIP_FROM_DIR} && tar czf "${INSTALLER_DIR}/${INSTALLER_BASENAME}-linux-${LINUX_BUILD_ARCH}.tgz" .
+    )
+else()
+  file( TO_NATIVE_PATH "${INSTALLER_DIR}/${INSTALLER_BASENAME}-win-x64.zip" OUTPUT_ZIP )
+  add_custom_command(
+    TARGET installer-pkg
+    POST_BUILD
+    WORKING_DIRECTORY ${WELL_NAMED_ASSET_DIR}
+    COMMAND ${CMAKE_COMMAND} -E make_directory  ${INSTALLER_DIR}
+    COMMAND powershell Compress-Archive 
+             -DestinationPath "${OUTPUT_ZIP}"
+             -Force
+             -Path "${ZIP_FROM_DIR}"
+    )
+endif()

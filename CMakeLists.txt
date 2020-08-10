@@ -1,12 +1,19 @@
 # This script has been adapted from the example script that comes with JUCE in the cmake example dir.
-# Original close-source Stochas code used the projucer 
+# Original closed-source Stochas code used the projucer 
 #
 # To build stochas:
 #   git submodule update --init --recursive
-#   cmake -B build
+#   cmake -B build -DSTOCHAS_VERSION=xxx, etc.
 #   cmake --build build  --config Release
 #
 cmake_minimum_required(VERSION 3.15)
+
+# default to 10.12 (might work with an earlier version, i dont know)
+if (NOT DEFINED STOCHAS_MAC_SDK_VER)
+  set(STOCHAS_MAC_SDK_VER 10.12)
+endif()
+
+set(CMAKE_OSX_DEPLOYMENT_TARGET ${STOCHAS_MAC_SDK_VER} CACHE STRING "Build for ${STOCHAS_MAC_SDK_VER}")
 
 if (NOT DEFINED STOCHAS_VERSION)
   set (STOCHAS_VERSION 0.9.0)
@@ -22,7 +29,14 @@ endif()
 
 # midi effect defaults to true
 # TRUE is needed for AU and AUv3 in order for proper functioning in Logic
-# but may have issues with other daw's
+# but may have issues with other daw's. Specifically:
+# I had some problems in cubase when this was turned on.
+# Intermittent. It seems that when there are no output buffers it
+# can sometimes get garbage in its buffer. Turning this off, while it
+# causes the plugin to have a stereo out bus, seems to alleviate the problem.
+# to rep the problem start cubase, hit F11 add stochas as an instrument. right away
+# it starts producing a buzz (although not always)
+
 if (NOT DEFINED STOCHAS_IS_MIDI_EFFECT)  
   set(STOCHAS_IS_MIDI_EFFECT "TRUE")
 endif()

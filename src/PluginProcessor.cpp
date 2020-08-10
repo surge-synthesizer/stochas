@@ -1034,14 +1034,6 @@ void SeqAudioProcessor::setStateInformation (const void* in , int size)
 
 AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
-   // note that I had some problems in cubase when this was turned on.
-   // Intermittent. It seems that when there are no output buffers it
-   // can sometimes get garbage in its buffer. Turning this off, while it
-   // causes the plugin to have a stereo out bus, seems to alleviate the problem.
-   // to rep the problem start cubase, hit F11 add stochas as an instrument. right away
-   // it starts producing a buzz (although sometimes it doesn't)
-   jassert(JucePlugin_IsMidiEffect == 0);
-
    AudioProcessor *ret= new SeqAudioProcessor();
    
    return ret;

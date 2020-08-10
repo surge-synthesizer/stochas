@@ -8,9 +8,9 @@
 #
 cmake_minimum_required(VERSION 3.15)
 
-# default to 10.12 (might work with an earlier version, i dont know)
+# default to 10.11 (earlier versions will fail)
 if (NOT DEFINED STOCHAS_MAC_SDK_VER)
-  set(STOCHAS_MAC_SDK_VER 10.12)
+  set(STOCHAS_MAC_SDK_VER 10.11)
 endif()
 
 set(CMAKE_OSX_DEPLOYMENT_TARGET ${STOCHAS_MAC_SDK_VER} CACHE STRING "Build for ${STOCHAS_MAC_SDK_VER}")
@@ -49,9 +49,13 @@ message( STATUS "Is Synth: ${STOCHAS_IS_SYNTH}, Is Midi Effect: ${STOCHAS_IS_MID
 set(STOCHAS_CATEGORY "Effect") # original was "Instrument"
 add_subdirectory(lib/JUCE)
 
-# create version.h and allow it to be referenced
-configure_file(src/version.h.in version.h)
-include_directories(${CMAKE_CURRENT_BINARY_DIR})
+add_custom_target( git-info BYPRODUCTS ${CMAKE_BINARY_DIR}/geninclude/version.cpp
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+  COMMAND ${CMAKE_COMMAND} -D PROJECT_VERSION_MAJOR=${PROJECT_VERSION_MAJOR}  -D PROJECT_VERSION_MINOR=${PROJECT_VERSION_MINOR}
+                           -D STOCHASSRC=${CMAKE_SOURCE_DIR} -D STOCHASBLD=${CMAKE_BINARY_DIR}
+                           -D AZURE_PIPELINE=${AZURE_PIPELINE}
+                           -P ${CMAKE_SOURCE_DIR}/cmake/versiontools.cmake
+                           )
 
 # if you want vst2, you need to specify VST2_PATH in your environment
 if (DEFINED VST2_PATH)
@@ -84,7 +88,11 @@ juce_add_plugin(stochas
     VST3_CATEGORIES ${STOCHAS_CATEGORY} 
     PRODUCT_NAME "Stochas")        # The name of the final executable, which can differ from the target name
 
+add_dependencies( stochas git-info )
+include_directories( src )
+
 juce_generate_juce_header(stochas)  
+
 
 target_sources(stochas PRIVATE
     src/ChainDialog.cpp
@@ -108,7 +116,8 @@ target_sources(stochas PRIVATE
     src/SettingsTab.cpp
     src/StepPanel.cpp
     src/StochaEngine.cpp
-    
+
+    ${CMAKE_BINARY_DIR}/geninclude/version.cpp
     )
 
 # `target_compile_definitions` adds some preprocessor definitions to our target. In a Projucer

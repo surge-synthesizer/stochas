@@ -3,3 +3,4 @@ build/
 build32/
 .vscode/
 build.install/
+*.code-workspace

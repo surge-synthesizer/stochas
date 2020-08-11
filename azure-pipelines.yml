@@ -118,6 +118,8 @@ jobs:
       # 32 bit      
       cmake -Bbuild32 -A Win32 -DSTOCHAS_VERSION=${STOCHAS_VERSION} -DWIN_ARCH=x86
       cmake --build build32 --config Release --target installer-pkg
+    displayName: Build Windows
+    condition: variables.isWindows
   #
   # WIN SETUP
   #
@@ -128,7 +130,7 @@ jobs:
       mkdir -p build/product/
       iscc //Obuild\\product //Fstochas_setup.${STOCHAS_VERSION}.${GH} //DSTOCHAS_VERSION=${STOCHAS_VERSION}.${GH} "install\\win\\install.iss"
 
-    displayName: Build Windows
+    displayName: Package Windows
     condition: and(variables.isWindows, variables.doUpload)
 
   #

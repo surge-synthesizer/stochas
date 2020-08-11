@@ -114,7 +114,7 @@ jobs:
       cmake -Bbuild -A x64 -DSTOCHAS_VERSION=${STOCHAS_VERSION} -DWIN_ARCH=x64
       cmake --build build --config Release --target installer-pkg 
       # 32 bit      
-      cmake -Bbuild32 -DSTOCHAS_VERSION=${STOCHAS_VERSION} -DWIN_ARCH=x86
+      cmake -Bbuild32 -A Win32 -DSTOCHAS_VERSION=${STOCHAS_VERSION} -DWIN_ARCH=x86
       cmake --build build32 --config Release --target installer-pkg
       # build the innosetup install
       set -e

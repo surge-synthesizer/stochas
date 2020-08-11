@@ -104,17 +104,17 @@ jobs:
     displayName: Build Mac
     condition: variables.isMac
 
-#
-# WIN
-#
+  #
+  # WIN
+  #
   - bash: |
-# 64 bit
+      # 64 bit
       cmake -Bbuild -A x64 -DSTOCHAS_VERSION=${STOCHAS_VERSION} -DWIN_ARCH=x64
       cmake --build build --config Release --target installer-pkg 
-# 32 bit      
+      # 32 bit      
       cmake -Bbuild32 -DSTOCHAS_VERSION=${STOCHAS_VERSION} -DWIN_ARCH=x86
       cmake --build build32 --config Release --target installer-pkg
-# build the innosetup install
+      # build the innosetup install
       set -e
       nuget install innosetup
       mkdir build/product/
@@ -123,9 +123,9 @@ jobs:
     displayName: Build Windows
     condition: variables.isWindows
 
- #
- # LINUX
- #   
+  #
+  # LINUX
+  #   
   - bash: |
       cmake -Bbuild -DSTOCHAS_VERSION=${STOCHAS_VERSION}
       cmake --build build --config Release --target installer-pkg 

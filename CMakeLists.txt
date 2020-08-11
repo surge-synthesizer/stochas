@@ -221,7 +221,10 @@ elseif( UNIX )
     COMMAND cd ${ZIP_FROM_DIR} && tar czf "${INSTALLER_DIR}/${INSTALLER_BASENAME}-linux-${LINUX_BUILD_ARCH}.tgz" .
     )
 else()
-  file( TO_NATIVE_PATH "${INSTALLER_DIR}/${INSTALLER_BASENAME}-win-x64.zip" OUTPUT_ZIP )
+    if(NOT DEFINED WIN_ARCH)
+      SET(WIN_ARCH "x64")
+    endif()
+  file( TO_NATIVE_PATH "${INSTALLER_DIR}/${INSTALLER_BASENAME}-win-${WIN_ARCH}.zip" OUTPUT_ZIP )
   add_custom_command(
     TARGET installer-pkg
     POST_BUILD

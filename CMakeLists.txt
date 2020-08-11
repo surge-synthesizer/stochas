@@ -133,7 +133,11 @@ target_compile_definitions(stochas
     JUCE_WEB_BROWSER=0  # If you remove this, add `NEEDS_WEB_BROWSER TRUE` to the `juce_add_plugin` call
     JUCE_USE_CURL=0     # If you remove this, add `NEEDS_CURL TRUE` to the `juce_add_plugin` call
     JUCE_VST3_CAN_REPLACE_VST2=0
- 
+
+    # GPL3 Plugs can disable splash screen
+    JUCE_DISPLAY_SPLASH_SCREEN=0
+    JUCE_REPORT_APP_USAGE=0
+
     # Some linux options
     JUCE_JACK=1
     JUCE_ALSA=1
@@ -228,4 +232,18 @@ else()
              -Force
              -Path "${ZIP_FROM_DIR}"
     )
+endif()
+
+if( APPLE )
+  add_custom_target( install-au-local )
+  add_dependencies( install-au-local stochas_AU )
+  add_custom_command(
+    TARGET install-au-local
+    POST_BUILD
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMAND echo "Installing audio unit locally"
+    COMMAND rsync -r --delete "${ZIP_FROM_DIR}/AU/Stochas.component/" "\${HOME}/Library/Audio/Plug-Ins/Components/Stochas.component/"
+    COMMAND auval -vt aumi AuVi
+    )
+
 endif()

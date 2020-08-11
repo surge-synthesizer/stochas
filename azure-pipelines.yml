@@ -75,8 +75,24 @@ jobs:
 
 
   - bash: |
+      # For now we expand this out so we can swap the STOCHAS_IS_SYNTH flag for the AU off
       cmake -Bbuild -GXcode
-      cmake --build build --config Release --target installer-pkg
+      cmake --build build --target stochas_VST3 --config Release | xcpretty
+      cmake --build build --target stochas_Standalone --config Release | xcpretty
+
+      mkdir build/tmpasset
+      mv build/stochas_artefacts/Release/VST3 build/tmpasset
+      mv build/stochas_artefacts/Release/Standalone build/tmpasset
+
+      cmake -Bbuild -DSTOCHAS_IS_SYNTH=FALSE
+      cmake --build build --target stochas_AU --config Release | xcpretty
+      mv build/stochas_artefacts/Release/AU build/tmpasset
+
+      GH=`git log -1 --format=%h`
+      NM=stochas-${GH}-mac.dmg
+
+      mkdir build/product/
+      hdiutil create build/product/${NM} -ov -volname "Stochas ${GH}" -fs HFS+ -srcfolder build/tmpasset
     displayName: Build Mac
     condition: variables.isMac
 

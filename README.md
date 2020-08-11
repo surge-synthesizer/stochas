@@ -44,6 +44,7 @@ By default AAX is not built, but if you have the AAX sdk you will be able to ena
 - If you want to set a particular version add -DSTOCHAS_VERSION=9.9.9 in options below otherwise the version will be 0.9.0 
 - VST2 - if you need it you need to add -DVST2_PATH=path-to-vst2-sdk-here to options below
 - AAX - if you need it you need to install the sdk and edit the CMakefile
+- AU - if you are building the AudioUnit add the option -DSTOCHAS_IS_SYNTH=FALSE
 - Build Stochas:
   - git submodule update --init --recursive
   - cmake -B build [options]

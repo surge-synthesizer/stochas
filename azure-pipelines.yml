@@ -86,6 +86,7 @@ jobs:
   #  MAC
   #
   - bash: |
+      set -ex
       # For now we expand this out so we can swap the STOCHAS_IS_SYNTH flag for the AU off
       cmake -Bbuild -GXcode -DSTOCHAS_VERSION=${STOCHAS_VERSION} 
       cmake --build build --target stochas_VST3 --config Release | xcpretty
@@ -110,25 +111,31 @@ jobs:
   # WIN
   #
   - bash: |
+      set -ex
       # 64 bit
       cmake -Bbuild -A x64 -DSTOCHAS_VERSION=${STOCHAS_VERSION} -DWIN_ARCH=x64
       cmake --build build --config Release --target installer-pkg 
       # 32 bit      
       cmake -Bbuild32 -A Win32 -DSTOCHAS_VERSION=${STOCHAS_VERSION} -DWIN_ARCH=x86
       cmake --build build32 --config Release --target installer-pkg
+  #
+  # WIN SETUP
+  #
+  - bash: |
+      set -ex
       # build the innosetup install
-      set -e
       nuget install innosetup
       mkdir -p build/product/
       iscc //Obuild\\product //Fstochas_setup.${STOCHAS_VERSION}.${GH} //DSTOCHAS_VERSION=${STOCHAS_VERSION}.${GH} "install\\win\\install.iss"
 
     displayName: Build Windows
-    condition: variables.isWindows
+    condition: and(variables.isWindows, variables.doUpload)
 
   #
   # LINUX
   #   
   - bash: |
+      set -ex
       cmake -Bbuild -DSTOCHAS_VERSION=${STOCHAS_VERSION}
       cmake --build build --config Release --target installer-pkg 
     displayName: Build Linux

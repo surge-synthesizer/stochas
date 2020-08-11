@@ -73,10 +73,22 @@ jobs:
       git submodule update --init --recursive
     displayName: Submodule Update
 
-
   - bash: |
+      export SVER=`cat VERSION`
+      export GH=`git log -1 --format=%h`
+      echo "Version ${SVER} hash ${GH}"
+      # make it available below
+      echo "##vso[task.setvariable variable=STOCHAS_VERSION]${SVER}"
+      echo "##vso[task.setvariable variable=GH]${GH}"
+    displayName: Determine Version
+
+  #
+  #  MAC
+  #
+  - bash: |
+      set -ex
       # For now we expand this out so we can swap the STOCHAS_IS_SYNTH flag for the AU off
-      cmake -Bbuild -GXcode
+      cmake -Bbuild -GXcode -DSTOCHAS_VERSION=${STOCHAS_VERSION} 
       cmake --build build --target stochas_VST3 --config Release | xcpretty
       cmake --build build --target stochas_Standalone --config Release | xcpretty
 
@@ -84,30 +96,52 @@ jobs:
       mv build/stochas_artefacts/Release/VST3 build/tmpasset
       mv build/stochas_artefacts/Release/Standalone build/tmpasset
 
-      cmake -Bbuild -DSTOCHAS_IS_SYNTH=FALSE
+      cmake -Bbuild -DSTOCHAS_IS_SYNTH=FALSE -DSTOCHAS_VERSION=${STOCHAS_VERSION} 
       cmake --build build --target stochas_AU --config Release | xcpretty
       mv build/stochas_artefacts/Release/AU build/tmpasset
 
-      GH=`git log -1 --format=%h`
-      NM=stochas-${GH}-mac.dmg
+      NM=stochas-${STOCHAS_VERSION}.${GH}-mac.dmg
 
-      mkdir build/product/
-      hdiutil create build/product/${NM} -ov -volname "Stochas ${GH}" -fs HFS+ -srcfolder build/tmpasset
+      mkdir -p build/product/
+      hdiutil create build/product/${NM} -ov -volname "Stochas ${STOCHAS_VERSION}" -fs HFS+ -srcfolder build/tmpasset
     displayName: Build Mac
     condition: variables.isMac
 
+  #
+  # WIN
+  #
   - bash: |
-      cmake -Bbuild -A x64
-      cmake --build build --config Release --target installer-pkg
+      set -ex
+      # 64 bit
+      cmake -Bbuild -A x64 -DSTOCHAS_VERSION=${STOCHAS_VERSION} -DWIN_ARCH=x64
+      cmake --build build --config Release --target installer-pkg 
+      # 32 bit      
+      cmake -Bbuild32 -A Win32 -DSTOCHAS_VERSION=${STOCHAS_VERSION} -DWIN_ARCH=x86
+      cmake --build build32 --config Release --target installer-pkg
     displayName: Build Windows
     condition: variables.isWindows
-    
+  #
+  # WIN SETUP
+  #
   - bash: |
-      cmake -Bbuild
-      cmake --build build --config Release --target installer-pkg
+      set -ex
+      # build the innosetup install
+      nuget install innosetup
+      mkdir -p build/product/
+      iscc //Obuild\\product //Fstochas_setup.${STOCHAS_VERSION}.${GH} //DSTOCHAS_VERSION=${STOCHAS_VERSION}.${GH} "install\\win\\install.iss"
+
+    displayName: Package Windows
+    condition: and(variables.isWindows, variables.doUpload)
+
+  #
+  # LINUX
+  #   
+  - bash: |
+      set -ex
+      cmake -Bbuild -DSTOCHAS_VERSION=${STOCHAS_VERSION}
+      cmake --build build --config Release --target installer-pkg 
     displayName: Build Linux
     condition: variables.isLinux
-
 
   - task: PublishPipelineArtifact@0
     inputs:

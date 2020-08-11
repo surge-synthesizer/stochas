@@ -78,6 +78,8 @@ jobs:
       export GH=`git log -1 --format=%h`
       export STOCHAS_VERSION=${MMVER}.${GH}
       echo "Version ${STOCHAS_VERSION}"
+      # make it available below
+      echo "##vso[task.setvariable variable=STOCHAS_VERSION]${STOCHAS_VERSION}"
     displayName: Determine Version
 
   #

@@ -101,7 +101,7 @@ jobs:
 
       NM=stochas-${STOCHAS_VERSION}.${GH}-mac.dmg
 
-      mkdir build/product/
+      mkdir -p build/product/
       hdiutil create build/product/${NM} -ov -volname "Stochas ${STOCHAS_VERSION}" -fs HFS+ -srcfolder build/tmpasset
     displayName: Build Mac
     condition: variables.isMac
@@ -119,7 +119,7 @@ jobs:
       # build the innosetup install
       set -e
       nuget install innosetup
-      mkdir build/product/
+      mkdir -p build/product/
       iscc //Obuild\\product //Fstochas_setup.${STOCHAS_VERSION}.${GH} //DSTOCHAS_VERSION=${STOCHAS_VERSION}.${GH} "install\\win\\install.iss"
 
     displayName: Build Windows

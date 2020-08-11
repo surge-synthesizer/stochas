@@ -74,12 +74,12 @@ jobs:
     displayName: Submodule Update
 
   - bash: |
-      export MMVER=`cat VERSION`
+      export SVER=`cat VERSION`
       export GH=`git log -1 --format=%h`
-      export STOCHAS_VERSION=${MMVER}.${GH}
-      echo "Version ${STOCHAS_VERSION}"
+      echo "Version ${SVER} hash ${GH}"
       # make it available below
-      echo "##vso[task.setvariable variable=STOCHAS_VERSION]${STOCHAS_VERSION}"
+      echo "##vso[task.setvariable variable=STOCHAS_VERSION]${SVER}"
+      echo "##vso[task.setvariable variable=GH]${GH}"
     displayName: Determine Version
 
   #
@@ -99,7 +99,7 @@ jobs:
       cmake --build build --target stochas_AU --config Release | xcpretty
       mv build/stochas_artefacts/Release/AU build/tmpasset
 
-      NM=stochas-${STOCHAS_VERSION}-mac.dmg
+      NM=stochas-${STOCHAS_VERSION}.${GH}-mac.dmg
 
       mkdir build/product/
       hdiutil create build/product/${NM} -ov -volname "Stochas ${STOCHAS_VERSION}" -fs HFS+ -srcfolder build/tmpasset
@@ -120,7 +120,7 @@ jobs:
       set -e
       nuget install innosetup
       mkdir build/product/
-      iscc //Obuild\\product //Fstochas_setup.${STOCHAS_VERSION} //DSTOCHAS_VERSION=${STOCHAS_VERSION} "install\\win\\install.iss"
+      iscc //Obuild\\product //Fstochas_setup.${STOCHAS_VERSION}.${GH} //DSTOCHAS_VERSION=${STOCHAS_VERSION}.${GH} "install\\win\\install.iss"
 
     displayName: Build Windows
     condition: variables.isWindows

@@ -112,15 +112,18 @@ jobs:
   # MAC INSTALLER
   #
   - bash: |
+      set -ex
       # pull the packages from build assets to save bandwidth since this is normally a bit slow from the 
       # original site
-      wget -O mac_packages https://github.com/surge-synthesizer/build-assets/raw/master/packages/Packages.dmg
+      wget -nv -O mac_packages https://github.com/surge-synthesizer/build-assets/raw/master/packages/Packages.dmg
       mv mac_packages $(brew --cache -s packages)
       brew cask install packages
-      mkdir -p build/stochaspkg
-      packagesbuild  --build-folder build/stochaspkg --package-version ${STOCHAS_VERSION} "install/mac/Stochas.pkgproj"
+      # path needed by packagesbuild
+      PACKAGES_TARGET=build.install/mac/stochas
+      mkdir -p ${PACKAGES_TARGET}
+      packagesbuild --package-version ${STOCHAS_VERSION} "install/mac/Stochas.pkgproj"
       NM=stochas-${STOCHAS_VERSION}.${GH}-mac-installer.dmg
-      hdiutil create -volname "Stochas ${STOCHAS_VERSION} Installer" -srcfolder build/stochaspkg -ov -format UDRO build/product/${NM}
+      hdiutil create -volname "Stochas ${STOCHAS_VERSION} Installer" -srcfolder ${PACKAGES_TARGET} -ov -format UDRO build/product/${NM}
     displayName: Build Mac Installer
     condition: and(variables.isMac, variables.doUpload)
 

@@ -124,7 +124,7 @@ jobs:
       # some debugging help
       find build/stochas_artefacts/Release -print
       packagesbuild --package-version ${STOCHAS_VERSION} "install/mac/Stochas.pkgproj"
-      NM=stochas-${STOCHAS_VERSION}.${GH}-mac-installer.dmg
+      NM=stochas-mac-installer.dmg
       hdiutil create -volname "Stochas ${STOCHAS_VERSION} Installer" -srcfolder ${PACKAGES_TARGET} -ov -format UDRO build/product/${NM}
     displayName: Build Mac Installer
     condition: and(variables.isMac, variables.doUpload)
@@ -150,7 +150,7 @@ jobs:
       # build the innosetup install
       nuget install innosetup
       mkdir -p build/product/
-      iscc //Obuild\\product //Fstochas_setup.${STOCHAS_VERSION}.${GH} //DSTOCHAS_VERSION=${STOCHAS_VERSION}.${GH} "install\\win\\install.iss"
+      iscc //Obuild\\product //Fstochas_windows_installer //DSTOCHAS_VERSION=${STOCHAS_VERSION}.${GH} "install\\win\\install.iss"
 
     displayName: Package Windows
     condition: and(variables.isWindows, variables.doUpload)

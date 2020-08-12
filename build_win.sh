@@ -16,7 +16,8 @@ if [ $retVal -eq 0 ]; then
    cmake --build build32 --config Release
 
   retVal=$?
-  if [ $retVal -eq 0 ]; then
-    "$INNO" //Obuild.install\\win //Fstochas_setup.${STOCHAS_VERSION} //DSTOCHAS_VERSION=${STOCHAS_VERSION} "install\\win\\install.iss"
+  if [ $retVal -eq 0 ] && [ "$1" == "install" ]; then
+    "$INNO" //Obuild.install\\win //Fstochas_windows_install //DSTOCHAS_VERSION=${STOCHAS_VERSION} "install\\win\\install.iss"
+  if [ "$1" == "install" ]; then
   fi
 fi

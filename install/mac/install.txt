@@ -1,1 +1,2 @@
-Please refer to https://github.com/rudeog/stochas_open for latest information.
+Welcome to the Mac installer for Stochas.
+Please refer to https://surge-synth-team.org/stochas/ for latest information and documentation.

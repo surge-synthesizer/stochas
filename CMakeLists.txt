@@ -84,7 +84,7 @@ juce_add_plugin(stochas
     # COPY_PLUGIN_AFTER_BUILD TRUE/FALSE        # Should the plugin be installed to a default location after building?
     PLUGIN_MANUFACTURER_CODE AuVi
     PLUGIN_CODE Stoc
-    FORMATS VST3 ${VST2} AU AUv3 Standalone     # The formats to build. Other valid formats are: AAX Unity VST AU AUv3
+    FORMATS VST3 ${VST2} AU Standalone     # The formats to build. Other valid formats are: AAX Unity VST AU AUv3
     VST3_CATEGORIES ${STOCHAS_CATEGORY} 
     PRODUCT_NAME "Stochas")        # The name of the final executable, which can differ from the target name
 

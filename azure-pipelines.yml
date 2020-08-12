@@ -93,19 +93,41 @@ jobs:
       cmake --build build --target stochas_Standalone --config Release | xcpretty
 
       mkdir build/tmpasset
-      mv build/stochas_artefacts/Release/VST3 build/tmpasset
-      mv build/stochas_artefacts/Release/Standalone build/tmpasset
+      cp -r build/stochas_artefacts/Release/VST3/* build/tmpasset
+      cp -r build/stochas_artefacts/Release/Standalone/* build/tmpasset
 
       cmake -Bbuild -DSTOCHAS_IS_SYNTH=FALSE -DSTOCHAS_VERSION=${STOCHAS_VERSION} 
       cmake --build build --target stochas_AU --config Release | xcpretty
-      mv build/stochas_artefacts/Release/AU build/tmpasset
-
+      cp -r build/stochas_artefacts/Release/AU/* build/tmpasset
+      
       NM=stochas-${STOCHAS_VERSION}.${GH}-mac.dmg
 
       mkdir -p build/product/
       hdiutil create build/product/${NM} -ov -volname "Stochas ${STOCHAS_VERSION}" -fs HFS+ -srcfolder build/tmpasset
+
     displayName: Build Mac
     condition: variables.isMac
+  
+  #
+  # MAC INSTALLER
+  #
+  - bash: |
+      set -ex
+      # pull the packages from build assets to save bandwidth since this is normally a bit slow from the 
+      # original site
+      wget -nv -O mac_packages https://github.com/surge-synthesizer/build-assets/raw/master/packages/Packages.dmg
+      mv mac_packages $(brew --cache -s packages)
+      brew cask install packages
+      # path needed by packagesbuild
+      PACKAGES_TARGET=build.install/mac/stochas
+      mkdir -p ${PACKAGES_TARGET}
+      # some debugging help
+      find build/stochas_artefacts/Release -print
+      packagesbuild --package-version ${STOCHAS_VERSION} "install/mac/Stochas.pkgproj"
+      NM=stochas-mac-installer.dmg
+      hdiutil create -volname "Stochas ${STOCHAS_VERSION} Installer" -srcfolder ${PACKAGES_TARGET} -ov -format UDRO build/product/${NM}
+    displayName: Build Mac Installer
+    condition: and(variables.isMac, variables.doUpload)
 
   #
   # WIN
@@ -128,7 +150,7 @@ jobs:
       # build the innosetup install
       nuget install innosetup
       mkdir -p build/product/
-      iscc //Obuild\\product //Fstochas_setup.${STOCHAS_VERSION}.${GH} //DSTOCHAS_VERSION=${STOCHAS_VERSION}.${GH} "install\\win\\install.iss"
+      iscc //Obuild\\product //Fstochas_windows_installer //DSTOCHAS_VERSION=${STOCHAS_VERSION}.${GH} "install\\win\\install.iss"
 
     displayName: Package Windows
     condition: and(variables.isWindows, variables.doUpload)

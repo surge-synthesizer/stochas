@@ -1260,7 +1260,7 @@
 						<key>VALUE</key>
 						<dict>
 							<key>PATH</key>
-							<string>/Users/anshak/juce_work/stochas/install/license.txt</string>
+							<string>license.txt</string>
 							<key>PATH_TYPE</key>
 							<integer>1</integer>
 						</dict>

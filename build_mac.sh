@@ -8,7 +8,7 @@ cmake --build build --config Release
 retVal=$?
 if [ $retVal -eq 0 ]; then
   echo building package...
-  packagesbuild "install/mac/Stochas Open.pkgproj"
+  packagesbuild "install/mac/Stochas.pkgproj"
   echo creating disk image...
-  hdiutil create -volname "Stochas ${STOCHAS_VERSION}" -srcfolder build.install/mac/stochas_open -ov -format UDRO build.install/mac/stochas.${STOCHAS_VERSION}.dmg
+  hdiutil create -volname "Stochas ${STOCHAS_VERSION}" -srcfolder build.install/mac/stochas -ov -format UDRO build.install/mac/stochas.${STOCHAS_VERSION}.dmg
 fi

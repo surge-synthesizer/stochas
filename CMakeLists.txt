@@ -16,7 +16,7 @@ endif()
 set(CMAKE_OSX_DEPLOYMENT_TARGET ${STOCHAS_MAC_SDK_VER} CACHE STRING "Build for ${STOCHAS_MAC_SDK_VER}")
 
 if (NOT DEFINED STOCHAS_VERSION)
-  set (STOCHAS_VERSION 0.9.0)
+  set (STOCHAS_VERSION 1.3.0)
 endif()  
 
 project(Stochas VERSION ${STOCHAS_VERSION})
@@ -217,8 +217,11 @@ elseif( UNIX )
     POST_BUILD
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     COMMAND ${CMAKE_COMMAND} -E make_directory  ${INSTALLER_DIR}
-    COMMAND ls -l ${OUTPUT_DIR}
-    COMMAND cd ${ZIP_FROM_DIR} && tar czf "${INSTALLER_DIR}/${INSTALLER_BASENAME}-linux-${LINUX_BUILD_ARCH}.tgz" .
+    COMMAND cd ${ZIP_FROM_DIR} && rm -rf Stochas
+    COMMAND mkdir -p ${ZIP_FROM_DIR}/Stochas
+    COMMAND mv ${ZIP_FROM_DIR}/VST3 ${ZIP_FROM_DIR}/Stochas
+    COMMAND mv ${ZIP_FROM_DIR}/Standalone ${ZIP_FROM_DIR}/Stochas
+    COMMAND cd ${ZIP_FROM_DIR} && tar czf "${INSTALLER_DIR}/${INSTALLER_BASENAME}-linux-${LINUX_BUILD_ARCH}.tgz" Stochas
     )
 else()
     if(NOT DEFINED WIN_ARCH)

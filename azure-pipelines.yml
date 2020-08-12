@@ -99,8 +99,7 @@ jobs:
       cmake -Bbuild -DSTOCHAS_IS_SYNTH=FALSE -DSTOCHAS_VERSION=${STOCHAS_VERSION} 
       cmake --build build --target stochas_AU --config Release | xcpretty
       cp -r build/stochas_artefacts/Release/AU/* build/tmpasset
-      cp -r build/stochas_artefacts/Release/AUv3/* build/tmpasset
-
+      
       NM=stochas-${STOCHAS_VERSION}.${GH}-mac.dmg
 
       mkdir -p build/product/
@@ -115,14 +114,14 @@ jobs:
   - bash: |
       # pull the packages from build assets to save bandwidth since this is normally a bit slow from the 
       # original site
-      wget -O mac_packages https://github.com/surge-synthesizer/build-assets/blob/master/packages/Packages.dmg
+      wget -O mac_packages https://github.com/surge-synthesizer/build-assets/raw/master/packages/Packages.dmg
       mv mac_packages $(brew --cache -s packages)
       brew cask install packages
       mkdir -p build/stochaspkg
       packagesbuild  --build-folder build/stochaspkg --package-version ${STOCHAS_VERSION} "install/mac/Stochas.pkgproj"
       NM=stochas-${STOCHAS_VERSION}.${GH}-mac-installer.dmg
       hdiutil create -volname "Stochas ${STOCHAS_VERSION} Installer" -srcfolder build/stochaspkg -ov -format UDRO build/product/${NM}
-    displayName: Build Mac
+    displayName: Build Mac Installer
     condition: and(variables.isMac, variables.doUpload)
 
   #

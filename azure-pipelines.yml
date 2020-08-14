@@ -136,10 +136,10 @@ jobs:
       set -ex
       # 64 bit
       cmake -Bbuild -A x64 -DSTOCHAS_VERSION=${STOCHAS_VERSION}
-      cmake --build build --config Release --target installer-pkg 
+      cmake --build build --config Release
       # 32 bit      
       cmake -Bbuild32 -A Win32 -DSTOCHAS_VERSION=${STOCHAS_VERSION}
-      cmake --build build32 --config Release --target installer-pkg
+      cmake --build build32 --config Release
       
       mkdir -p build/tmpasset/x86
       mkdir -p build/tmpasset/x64
@@ -170,7 +170,7 @@ jobs:
   - bash: |
       set -ex
       cmake -Bbuild -DSTOCHAS_VERSION=${STOCHAS_VERSION}
-      cmake --build build --config Release --target installer-pkg 
+      cmake --build build --config Release
       LINARCH=`uname -m`
       NM=stochas-${STOCHAS_VERSION}.${GH}-linux-${LINARCH}.tgz
       mkdir -p build/product/

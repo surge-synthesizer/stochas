@@ -140,7 +140,7 @@ jobs:
       # 32 bit      
       cmake -Bbuild32 -A Win32 -DSTOCHAS_VERSION=${STOCHAS_VERSION}
       cmake --build build32 --config Release
-      
+      mkdir -p build/product
       mkdir -p build/tmpasset/x86
       mkdir -p build/tmpasset/x64
       cp -r build/stochas_artefacts/Release/VST3/* build/tmpasset/x64
@@ -175,8 +175,9 @@ jobs:
       NM=stochas-${STOCHAS_VERSION}.${GH}-linux-${LINARCH}.tgz
       mkdir -p build/product/
       mkdir -p build/Stochas
-      cp -r build/stochas_artefacts/Release/VST3/* build/Stochas
-      cp -r build/stochas_artefacts/Release/Standalone/* build/Stochas      
+      find .
+      cp -r build/stochas_artefacts/VST3/* build/Stochas
+      cp -r build/stochas_artefacts/Standalone/* build/Stochas      
       tar czf "build/product/${NM}" build/Stochas
     displayName: Build Linux
     condition: variables.isLinux

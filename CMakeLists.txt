@@ -6,7 +6,10 @@
 #   cmake -B build -DSTOCHAS_VERSION=xxx, etc.
 #   cmake --build build  --config Release
 #
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.16)
+
+# always statically link c runtime on windows
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
 # default to 10.11 (earlier versions will fail)
 if (NOT DEFINED STOCHAS_MAC_SDK_VER)
@@ -86,24 +89,10 @@ juce_add_plugin(stochas
     VST3_CATEGORIES ${STOCHAS_CATEGORY} 
     PRODUCT_NAME "Stochas")        # The name of the final executable, which can differ from the target name
 
-# statically link on windows
-if(MSVC)
-  add_compile_options($<$<CONFIG:Release>:/MT> # Runtime library: Multi-threaded
-                      $<$<CONFIG:RelWithDebInfo>:/MT> # Runtime library: Multi-threaded                           
-                      $<$<CONFIG:Debug>:/MTd> # Runtime library: Multi-threaded Debug
-                      )
-  # this setting apparently doesnt work on my box (try to get rid of warning)
-  add_link_options($<$<CONFIG:Release>:/NODEFAULTLIB:libcmt.lib> # Runtime library: Multi-threaded
-                   $<$<CONFIG:RelWithDebInfo>:/NODEFAULTLIB:libcmt.lib> # Runtime library: Multi-threaded                           
-                   $<$<CONFIG:Debug>/NODEFAULTLIB:libcmtd.lib> # Runtime library: Multi-threaded Debug
-                   )
-endif()
-
 add_dependencies( stochas git-info )
 include_directories( src )
 
 juce_generate_juce_header(stochas)  
-
 
 target_sources(stochas PRIVATE
     src/ChainDialog.cpp
@@ -184,71 +173,6 @@ target_link_libraries(stochas PRIVATE
   juce::juce_audio_utils
   juce::juce_audio_plugin_client
   )
-
-
-add_custom_target( installer-pkg )
-if( APPLE )
-  add_dependencies( installer-pkg stochas_AU )
-endif()
-if( VST2 )
-  add_dependencies( installer-pkg stochas_VST )
-endif()
-add_dependencies( installer-pkg stochas_VST3 )
-add_dependencies( installer-pkg stochas_Standalone )
-
-get_target_property( ZIP_FROM_DIR stochas RUNTIME_OUTPUT_DIRECTORY )
-set( INSTALLER_DIR ${CMAKE_BINARY_DIR}/product )
-execute_process(
-  COMMAND git log -1 --format=%h
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-  OUTPUT_VARIABLE GIT_COMMIT_HASH
-  OUTPUT_STRIP_TRAILING_WHITESPACE
-)
-set( INSTALLER_BASENAME "stochas-${GIT_COMMIT_HASH}" )
-
-if( APPLE )
-  add_custom_command(
-    TARGET installer-pkg
-    POST_BUILD
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    COMMAND ${CMAKE_COMMAND} -E make_directory  ${INSTALLER_DIR}
-    COMMAND hdiutil create ${INSTALLER_DIR}/${INSTALLER_BASENAME}-macos.dmg -ov -volname "${INSTALLER_BASENAME}-${GIT_COMMIT_HASH}" -fs HFS+ -srcfolder ${ZIP_FROM_DIR}
-    COMMAND echo hdiutil create ${INSTALLER_DIR}/${INSTALLER_BASENAME}-macos.dmg -ov -volname "${INSTALLER_BASENAME}-${GIT_COMMIT_HASH}" -fs HFS+ -srcfolder ${ZIP_FROM_DIR}
-    )
-elseif( UNIX )
-  execute_process(
-    COMMAND uname -m
-    OUTPUT_VARIABLE LINUX_BUILD_ARCH
-    OUTPUT_STRIP_TRAILING_WHITESPACE
-  )
-
-  add_custom_command(
-    TARGET installer-pkg
-    POST_BUILD
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    COMMAND ${CMAKE_COMMAND} -E make_directory  ${INSTALLER_DIR}
-    COMMAND cd ${ZIP_FROM_DIR} && rm -rf Stochas
-    COMMAND mkdir -p ${ZIP_FROM_DIR}/Stochas
-    COMMAND mv ${ZIP_FROM_DIR}/VST3 ${ZIP_FROM_DIR}/Stochas
-    COMMAND mv ${ZIP_FROM_DIR}/Standalone ${ZIP_FROM_DIR}/Stochas
-    COMMAND cd ${ZIP_FROM_DIR} && tar czf "${INSTALLER_DIR}/${INSTALLER_BASENAME}-linux-${LINUX_BUILD_ARCH}.tgz" Stochas
-    )
-else()
-    if(NOT DEFINED WIN_ARCH)
-      SET(WIN_ARCH "x64")
-    endif()
-  file( TO_NATIVE_PATH "${INSTALLER_DIR}/${INSTALLER_BASENAME}-win-${WIN_ARCH}.zip" OUTPUT_ZIP )
-  add_custom_command(
-    TARGET installer-pkg
-    POST_BUILD
-    WORKING_DIRECTORY ${WELL_NAMED_ASSET_DIR}
-    COMMAND ${CMAKE_COMMAND} -E make_directory  ${INSTALLER_DIR}
-    COMMAND powershell Compress-Archive 
-             -DestinationPath "${OUTPUT_ZIP}"
-             -Force
-             -Path "${ZIP_FROM_DIR}"
-    )
-endif()
 
 if( APPLE )
   add_custom_target( install-au-local )

@@ -83,7 +83,7 @@ jobs:
     displayName: Determine Version
 
   #
-  #  MAC
+  #  MAC BUILD AND CREATE DMG OF FILES
   #
   - bash: |
       set -ex
@@ -109,7 +109,7 @@ jobs:
     condition: variables.isMac
   
   #
-  # MAC INSTALLER
+  # MAC EXECUTABLE INSTALLER
   #
   - bash: |
       set -ex
@@ -130,16 +130,25 @@ jobs:
     condition: and(variables.isMac, variables.doUpload)
 
   #
-  # WIN
+  # WIN BUILD AND CREATE ZIP OF FILES
   #
   - bash: |
       set -ex
       # 64 bit
-      cmake -Bbuild -A x64 -DSTOCHAS_VERSION=${STOCHAS_VERSION} -DWIN_ARCH=x64
+      cmake -Bbuild -A x64 -DSTOCHAS_VERSION=${STOCHAS_VERSION}
       cmake --build build --config Release --target installer-pkg 
       # 32 bit      
-      cmake -Bbuild32 -A Win32 -DSTOCHAS_VERSION=${STOCHAS_VERSION} -DWIN_ARCH=x86
+      cmake -Bbuild32 -A Win32 -DSTOCHAS_VERSION=${STOCHAS_VERSION}
       cmake --build build32 --config Release --target installer-pkg
+      
+      mkdir -p build/tmpasset/x86
+      mkdir -p build/tmpasset/x64
+      cp -r build/stochas_artefacts/Release/VST3/* build/tmpasset/x64
+      cp -r build/stochas_artefacts/Release/Standalone/* build/tmpasset/x64
+      cp -r build32/stochas_artefacts/Release/VST3/* build/tmpasset/x86
+      cp -r build32/stochas_artefacts/Release/Standalone/* build/tmpasset/x86
+      NM=stochas-${STOCHAS_VERSION}.${GH}-win.zip
+      powershell Compress-Archive -DestinationPath "build/product/${NM}" -Force -Path "build/tmpasset/*.*"
     displayName: Build Windows
     condition: variables.isWindows
   #
@@ -162,9 +171,19 @@ jobs:
       set -ex
       cmake -Bbuild -DSTOCHAS_VERSION=${STOCHAS_VERSION}
       cmake --build build --config Release --target installer-pkg 
+      LINARCH=`uname -m`
+      NM=stochas-${STOCHAS_VERSION}.${GH}-linux-${LINARCH}.tgz
+      mkdir -p build/product/
+      mkdir -p build/Stochas
+      cp -r build/stochas_artefacts/Release/VST3/* build/Stochas
+      cp -r build/stochas_artefacts/Release/Standalone/* build/Stochas      
+      tar czf "build/product/${NM}" build/Stochas
     displayName: Build Linux
     condition: variables.isLinux
-
+  
+  #
+  # PUBLISH ARTIFACTS
+  #
   - task: PublishPipelineArtifact@0
     inputs:
       artifactName: 'MACOS_BUILD'
@@ -187,6 +206,9 @@ jobs:
     condition: and(variables.isLinux, variables.doUpload)
 
 
+#
+# UPDATE GITHUB RELEASES
+#
 - job: UpdateGithubRelease
   dependsOn: Build
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))

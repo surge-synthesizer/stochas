@@ -87,19 +87,17 @@ juce_add_plugin(stochas
     PRODUCT_NAME "Stochas")        # The name of the final executable, which can differ from the target name
 
 # statically link on windows
-IF (WIN32)
-set_property(TARGET stochas PROPERTY
-  MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
-set_property(TARGET stochas_VST3 PROPERTY
-  MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
-if( VST2 )  
-  set_property(TARGET stochas_VST PROPERTY
-    MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
-ENDIF()
-set_property(TARGET stochas_Standalone PROPERTY
-  MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
-ENDIF()
-
+if(MSVC)
+  add_compile_options($<$<CONFIG:Release>:/MT> # Runtime library: Multi-threaded
+                      $<$<CONFIG:RelWithDebInfo>:/MT> # Runtime library: Multi-threaded                           
+                      $<$<CONFIG:Debug>:/MTd> # Runtime library: Multi-threaded Debug
+                      )
+  # this setting apparently doesnt work on my box (try to get rid of warning)
+  add_link_options($<$<CONFIG:Release>:/NODEFAULTLIB:libcmt.lib> # Runtime library: Multi-threaded
+                   $<$<CONFIG:RelWithDebInfo>:/NODEFAULTLIB:libcmt.lib> # Runtime library: Multi-threaded                           
+                   $<$<CONFIG:Debug>/NODEFAULTLIB:libcmtd.lib> # Runtime library: Multi-threaded Debug
+                   )
+endif()
 
 add_dependencies( stochas git-info )
 include_directories( src )

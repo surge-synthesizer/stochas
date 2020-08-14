@@ -12,12 +12,11 @@ cmake -B build -A x64 -DSTOCHAS_VERSION=${STOCHAS_VERSION} -DVST2_PATH=${VST2_PA
 cmake --build build --config Release
 retVal=$?
 if [ $retVal -eq 0 ]; then
-   cmake -B build32 -DSTOCHAS_VERSION=${STOCHAS_VERSION} -DVST2_PATH=${VST2_PATH} -DSTOCHAS_IS_SYNTH=FALSE -DSTOCHAS_IS_MIDI_EFFECT=TRUE
+   cmake -B build32 -A Win32 -DSTOCHAS_VERSION=${STOCHAS_VERSION} -DVST2_PATH=${VST2_PATH} -DSTOCHAS_IS_SYNTH=FALSE -DSTOCHAS_IS_MIDI_EFFECT=TRUE
    cmake --build build32 --config Release
 
   retVal=$?
   if [ $retVal -eq 0 ] && [ "$1" == "install" ]; then
     "$INNO" //Obuild.install\\win //Fstochas_windows_install //DSTOCHAS_VERSION=${STOCHAS_VERSION} "install\\win\\install.iss"
-  if [ "$1" == "install" ]; then
   fi
 fi

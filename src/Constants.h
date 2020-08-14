@@ -24,8 +24,8 @@
 #define SEQ_CO_NAME  "AudioVitamins"
 
 // for help button
-#define SEQ_HELP_URL  "https://github.com/rudeog/stochas_open/raw/master/install/user_manual.pdf"
-#define SEQ_WEBSITE_URL  "https://github.com/rudeog/stochas_open"
+#define SEQ_HELP_URL  "https://surge-synth-team.org/assets/manuals/stochas.pdf"
+#define SEQ_WEBSITE_URL  "https://surge-synth-team.org/stochas/"
 // obfuscate 
 #define SEQ_HELP_EMAIL "stochas" \
                         "@" "binarydog.com"

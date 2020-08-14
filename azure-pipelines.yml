@@ -1,8 +1,12 @@
 # Build tuning-workbench-synth with JUCE buidls
 
 trigger:
-- main
-
+  branches:
+    include:
+    - main
+  tags:
+    include:
+    - '*'
 pr:
 - main
 
@@ -148,7 +152,9 @@ jobs:
       cp -r build32/stochas_artefacts/Release/VST3/* build/tmpasset/x86
       cp -r build32/stochas_artefacts/Release/Standalone/* build/tmpasset/x86
       NM=stochas-${STOCHAS_VERSION}.${GH}-win.zip
-      powershell Compress-Archive -DestinationPath "build/product/${NM}" -Force -Path "build/tmpasset/*.*"
+      # see what we have
+      find build
+      powershell Compress-Archive -DestinationPath "build/product/${NM}" -Force -Path "build/tmpasset"      
     displayName: Build Windows
     condition: variables.isWindows
   #
@@ -174,11 +180,10 @@ jobs:
       LINARCH=`uname -m`
       NM=stochas-${STOCHAS_VERSION}.${GH}-linux-${LINARCH}.tgz
       mkdir -p build/product/
-      mkdir -p build/Stochas
-      find .
+      mkdir -p build/Stochas/Standalone
       cp -r build/stochas_artefacts/VST3/* build/Stochas
-      cp -r build/stochas_artefacts/Standalone/* build/Stochas      
-      tar czf "build/product/${NM}" build/Stochas
+      cp -r build/stochas_artefacts/Standalone/* build/Stochas/Standalone      
+      tar czf "build/product/${NM}" -C build Stochas
     displayName: Build Linux
     condition: variables.isLinux
   
@@ -212,8 +217,9 @@ jobs:
 #
 - job: UpdateGithubRelease
   dependsOn: Build
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
-
+  # only publish if it was merged to main (ie not on a pr) or if a tag was pushed
+  condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Build.SourceBranch'], 'refs/tags/')))
+  
   steps:
   - task: DownloadPipelineArtifact@0
     inputs:
@@ -237,15 +243,69 @@ jobs:
 
     displayName: Fake up release notes and tag release
 
+  
+  #
+  # Developer release
+  #   
   - task: GitHubRelease@0
-    displayName: "Create New Github Release"
+    displayName: "Create Dev Release"
+    condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
     inputs:
       gitHubConnection: surge-rackupdater
       repositoryName: surge-synthesizer/stochas
       action: 'edit'
-      tag: Nightly
+
+      # Required when action == Create# Options: auto, manual
+      tagSource: manual
+      # we create a new ta
+      #tag: v1.0.1.$(GH)
+      tag: developer
+      title: Developer Release $(GH)
+      isPreRelease: true
+      target: '$(Build.SourceVersion)'
+      addChangeLog: true
+      assetUploadMode: 'delete'
+      releaseNotesFile: $(Build.ArtifactStagingDirectory)/ReleaseNotes.md
+      assets: $(Build.ArtifactStagingDirectory)/*.*
+  
+  #
+  # STABLE RELEASE WHEN TAGGED with vX.X.X
+  #
+  - task: GitHubRelease@0
+    displayName: "Create or edit New 'Stable' Release"
+    # will only run when we tag something starting with v
+    condition: startsWith(variables['Build.SourceBranch'], 'refs/tags/v')
+    inputs:
+      gitHubConnection: surge-rackupdater
+      repositoryName: surge-synthesizer/stochas
+      action: 'edit'
+      title: Stable Release ${{ replace(variables['Build.SourceBranch'], 'refs/tags/','') }}
+      tagSource: manual
+      # extract just the tag
+      tag: ${{ replace(variables['Build.SourceBranch'], 'refs/tags/','') }}
       target: '$(Build.SourceVersion)'
       addChangeLog: false
       assetUploadMode: 'delete'
       releaseNotesFile: $(Build.ArtifactStagingDirectory)/ReleaseNotes.md
       assets: $(Build.ArtifactStagingDirectory)/*.*
+  #
+  # PUBLISH CANONICAL WHEN RELEASE
+  #  
+  - task: GitHubRelease@0
+    displayName: "Edit canonical latest"
+    # will only run when we tag something starting with v
+    condition: startsWith(variables['Build.SourceBranch'], 'refs/tags/v')
+    inputs:
+      gitHubConnection: surge-rackupdater
+      repositoryName: surge-synthesizer/stochas
+      action: 'edit'
+      title: Latest Stable Release
+      tagSource: manual
+      # extract just the tag
+      tag: release_dl
+      target: '$(Build.SourceVersion)'
+      addChangeLog: false
+      assetUploadMode: 'delete'
+      releaseNotesFile: $(Build.ArtifactStagingDirectory)/ReleaseNotes.md
+      assets: $(Build.ArtifactStagingDirectory)/*.*
+    

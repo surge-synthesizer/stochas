@@ -1,28 +1,8 @@
 # Stochas 
-
-## History
-Stochas was originally developed as closed-source software back in 2016 and was made available for sale by Audio Vitamins.
-The plugin was designed by Andrew Shakinovsky and Dave Clissold, and all coding was done by Andrew Shakinovsky. The original idea sprang from a JSFX plugin (Reaper plugin) created by Andrew called Stochasticizer which allowed semi-random sequencing of melodic and drum lines. Andrew was contacted by Dave who suggested creating a plugin that would work on any DAW. The two worked together to design the product which was released a few months later. Due to lack of time to devote to marketing a
-commercial product, in 2020, it was decided to release the software as open-source in the hope that it would be useful to music producers around the world.
-
-## Features
-- Cross platform MIDI sequencer surfaced as a VST/AU/etc. plugin
-- Allows random selection of designated notes in a sequence (random or semi-random melodic lines)
-- Allows random triggering of notes (more dynamic and varied drum patterns)
-- Adjust randomness of note start times for more humanized playback
-- Adjust randomness of note velocity and length
-- Fully MIDI-programmable interface for live performance. Mute/unmute layers, change patterns, time signature, etc. on the fly via MIDI.
-- Chain mode allows procedural programming (eg "if this note plays/doesn't play then always/never play this other note")
-- Adjust note start time to move sequence "off the grid", as well as note length.
-- Record incoming midi to grid
-- Use Chord mode to quickly add chords to the sequence
-- Select from preset scales, or customize notes in grid along with note names. Save/load note names from file
-- Add swing or groove. Import groove from MIDI files
-- Create up to four layers with differing time signature, playback speed and/or number of steps per layer
-- Create up to eight patterns
+[Main web site](https://surge-synth-team.org/stochas/)
 
 ## Download
-To download pre-built binaries go [here](https://github.com/rudeog/stochas_open/releases/) which is on the main github project page.
+To download pre-built binaries and installations go [here](https://github.com/surge-synthesizer/stochas/releases)
 
 ## Platforms and DAWs
 The original product has been tested on Windows and Mac using Reaper, Logic, Cubase, Ableton, FLStudio, Studio One, Cakewalk, ProTools. 
@@ -55,7 +35,6 @@ By default AAX is not built, but if you have the AAX sdk you will be able to ena
 Development is a lot easier with VSCode using the CMake extension. Simply point vscode at the root directory of the repo. It pretty much detects a cmake project and handles building without any issues.
 - Install C++ extensions for vscode
 - Install CMake Tools extensions for vscode
-- In the settings for CMake (settings/extensions/Cmake tools configuration) under Cmake: Install Prefix enter the path where you installed JUCE using Cmake (ie /desired/juce/install/dir if you followed above directions). Note that this seemed to be needed on Windows but not Mac.
 
 ### XCode
 

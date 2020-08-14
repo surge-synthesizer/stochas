@@ -64,8 +64,6 @@ if (DEFINED VST2_PATH)
   set(VST2 "VST")
 endif()
 
-
-
 # `juce_add_plugin` adds a static library target with the name passed as the first argument
 # (AudioPluginExample here). This target is a normal CMake target, but has a lot of extra properties set
 # up by default. As well as this shared code static library, this function adds targets for each of
@@ -87,6 +85,21 @@ juce_add_plugin(stochas
     FORMATS VST3 ${VST2} AU Standalone     # The formats to build. Other valid formats are: AAX Unity VST AU AUv3
     VST3_CATEGORIES ${STOCHAS_CATEGORY} 
     PRODUCT_NAME "Stochas")        # The name of the final executable, which can differ from the target name
+
+# statically link on windows
+IF (WIN32)
+set_property(TARGET stochas PROPERTY
+  MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+set_property(TARGET stochas_VST3 PROPERTY
+  MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+if( VST2 )  
+  set_property(TARGET stochas_VST PROPERTY
+    MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+ENDIF()
+set_property(TARGET stochas_Standalone PROPERTY
+  MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+ENDIF()
+
 
 add_dependencies( stochas git-info )
 include_directories( src )
@@ -162,7 +175,6 @@ juce_add_binary_data(assets NAMESPACE SeqImageX SOURCES
 set_target_properties(assets PROPERTIES
     POSITION_INDEPENDENT_CODE TRUE)
 
-
 # `target_link_libraries` links libraries and JUCE modules to other libraries or executables. Here,
 # we're linking our executable target to the `juce::juce_audio_utils` module. Inter-module
 # dependencies are resolved automatically, so `juce_core`, `juce_events` and so on will also be
@@ -181,7 +193,7 @@ if( APPLE )
   add_dependencies( installer-pkg stochas_AU )
 endif()
 if( VST2 )
-  add_dependencies( installer-pkg stochas_VST2 )
+  add_dependencies( installer-pkg stochas_VST )
 endif()
 add_dependencies( installer-pkg stochas_VST3 )
 add_dependencies( installer-pkg stochas_Standalone )

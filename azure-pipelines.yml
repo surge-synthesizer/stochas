@@ -216,8 +216,6 @@ jobs:
 #
 - job: UpdateGithubRelease
   dependsOn: Build
-  variables: 
-    gitHash: $[ dependencies.Build.outputs['GH'] ]
   # only publish if it was merged to main (ie not on a pr) or if a tag was pushed
   condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Build.SourceBranch'], 'refs/tags/')))
   
@@ -241,9 +239,13 @@ jobs:
      scripts/release-notes.sh > $(Build.ArtifactStagingDirectory)/ReleaseNotes.md
      ls $(Build.ArtifactStagingDirectory)
      md5sum $(Build.ArtifactStagingDirectory)/*
-
     displayName: Fake up release notes and tag release
 
+  - bash: |
+      GH=`git log -1 --format=%h`
+      # make it available below
+      echo "##vso[task.setvariable variable=GH;isOutput=true]${GH}"
+    displayName: Determine Hash
   
   #
   # Developer release
@@ -258,10 +260,10 @@ jobs:
 
       # Required when action == Create# Options: auto, manual
       tagSource: manual
-      # we create a new ta
+      # we create a new tag
       #tag: v1.0.1.$(GH)
       tag: developer
-      title: Developer Release ${{ variables['gitHash'] }}
+      title: Developer Release $(GH)
       isPreRelease: true
       target: '$(Build.SourceVersion)'
       addChangeLog: true

@@ -6,7 +6,7 @@ trigger:
     - main
   tags:
     include:
-    - '*'
+    - v*     # only build release tags
 pr:
 - main
 
@@ -83,7 +83,7 @@ jobs:
       echo "Version ${SVER} hash ${GH}"
       # make it available below
       echo "##vso[task.setvariable variable=STOCHAS_VERSION]${SVER}"
-      echo "##vso[task.setvariable variable=GH]${GH}"
+      echo "##vso[task.setvariable variable=GH;isOutput=true]${GH}"
     displayName: Determine Version
 
   #
@@ -107,7 +107,7 @@ jobs:
       NM=stochas-${STOCHAS_VERSION}.${GH}-mac.dmg
 
       mkdir -p build/product/
-      hdiutil create build/product/${NM} -ov -volname "Stochas ${STOCHAS_VERSION}" -fs HFS+ -srcfolder build/tmpasset
+      hdiutil create build/product/${NM} -ov -volname "Stochas ${STOCHAS_VERSION}" -format UDRO -srcfolder build/tmpasset
 
     displayName: Build Mac
     condition: variables.isMac
@@ -145,16 +145,16 @@ jobs:
       cmake -Bbuild32 -A Win32 -DSTOCHAS_VERSION=${STOCHAS_VERSION}
       cmake --build build32 --config Release
       mkdir -p build/product
-      mkdir -p build/tmpasset/x86
-      mkdir -p build/tmpasset/x64
-      cp -r build/stochas_artefacts/Release/VST3/* build/tmpasset/x64
-      cp -r build/stochas_artefacts/Release/Standalone/* build/tmpasset/x64
-      cp -r build32/stochas_artefacts/Release/VST3/* build/tmpasset/x86
-      cp -r build32/stochas_artefacts/Release/Standalone/* build/tmpasset/x86
+      mkdir -p zip/x86
+      mkdir -p zip/x64
+      cp -r build/stochas_artefacts/Release/VST3/* zip/x64
+      cp -r build/stochas_artefacts/Release/Standalone/* zip/x64
+      cp -r build32/stochas_artefacts/Release/VST3/* zip/x86
+      cp -r build32/stochas_artefacts/Release/Standalone/* zip/x86
       NM=stochas-${STOCHAS_VERSION}.${GH}-win.zip
       # see what we have
       find build
-      powershell Compress-Archive -DestinationPath "build/product/${NM}" -Force -Path "build/tmpasset"      
+      powershell Compress-Archive -DestinationPath "build/product/${NM}" -Force -Path "zip"      
     displayName: Build Windows
     condition: variables.isWindows
   #
@@ -217,6 +217,8 @@ jobs:
 #
 - job: UpdateGithubRelease
   dependsOn: Build
+  variables: 
+    gitHash: $[ dependencies.Build.outputs['GH'] ]
   # only publish if it was merged to main (ie not on a pr) or if a tag was pushed
   condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Build.SourceBranch'], 'refs/tags/')))
   
@@ -260,7 +262,7 @@ jobs:
       # we create a new ta
       #tag: v1.0.1.$(GH)
       tag: developer
-      title: Developer Release $(GH)
+      title: Developer Release ${{ variables['gitHash'] }}
       isPreRelease: true
       target: '$(Build.SourceVersion)'
       addChangeLog: true

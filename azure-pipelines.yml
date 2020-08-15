@@ -107,8 +107,7 @@ jobs:
       NM=stochas-${STOCHAS_VERSION}.${GH}-mac.dmg
 
       mkdir -p build/product/
-      hdiutil create build/product/${NM} -ov -volname "Stochas ${STOCHAS_VERSION}" -format UDRO -srcfolder build/tmpasset
-
+      hdiutil create build/product/${NM} -ov -volname "Stochas ${STOCHAS_VERSION}" -fs HFS+ -srcfolder build/tmpasset
     displayName: Build Mac
     condition: variables.isMac
   
@@ -129,7 +128,7 @@ jobs:
       find build/stochas_artefacts/Release -print
       packagesbuild --package-version ${STOCHAS_VERSION} "install/mac/Stochas.pkgproj"
       NM=stochas-mac-installer.dmg
-      hdiutil create -volname "Stochas ${STOCHAS_VERSION} Installer" -srcfolder ${PACKAGES_TARGET} -ov -format UDRO build/product/${NM}
+      hdiutil create -volname "Stochas ${STOCHAS_VERSION} Installer" -srcfolder ${PACKAGES_TARGET} -ov -fs HFS+ build/product/${NM}
     displayName: Build Mac Installer
     condition: and(variables.isMac, variables.doUpload)
 

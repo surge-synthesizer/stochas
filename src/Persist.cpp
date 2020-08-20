@@ -25,11 +25,28 @@ XmlElement * SeqPersist::addKeyVal(const char * name, int64 value)
    return addKeyVal(name,tmp);
 }
 
+XmlElement * SeqPersist::addKeyVal(const char * name, double value)
+{
+   String tmp;
+   tmp << value;
+   return addKeyVal(name,tmp);
+}
+
 bool SeqPersist::getKeyVal(XmlElement * e, int64 * val)
 {
    String s;
    if (getKeyVal(e, &s)) {
       *val = s.getLargeIntValue();
+      return true;
+   }
+   return false;
+}
+
+bool SeqPersist::getKeyVal(XmlElement * e, double * val)
+{
+   String s;
+   if (getKeyVal(e, &s)) {
+      *val = s.getDoubleValue();
       return true;
    }
    return false;
@@ -69,21 +86,21 @@ void SeqPersist::storeLayer(int idx, SequenceLayer * item, XmlElement * parent)
 
    lyr->setAttribute("idx", idx);
    lyr->setAttribute("name", item->getLayerName());
-   lyr->prependChildElement(addKeyVal("combine", item->isCombineMode() ? 1:0));
-   lyr->prependChildElement(addKeyVal("humlen", item->getHumanLength()));
-   lyr->prependChildElement(addKeyVal("humvel", item->getHumanVelocity()));
-   lyr->prependChildElement(addKeyVal("humpos", item->getHumanPosition()));
-   lyr->prependChildElement(addKeyVal("mute", item->getMuted() ? 1 : 0));
-   lyr->prependChildElement(addKeyVal("stppm", item->getStepsPerMeasure()));
-   lyr->prependChildElement(addKeyVal("dcycle", item->getDutyCycle()));
-   lyr->prependChildElement(addKeyVal("mchan", item->getMidiChannel()));
-   lyr->prependChildElement(addKeyVal("clkdiv", item->getClockDivider()));
-   lyr->prependChildElement(addKeyVal("notecust", item->noteSourceIsCustom() ? 1 : 0));
-   lyr->prependChildElement(addKeyVal("bias", item->getPolyBias()));
-   lyr->prependChildElement(addKeyVal("maxpoly", item->getMaxPoly()));
-   lyr->prependChildElement(addKeyVal("mono", item->isMonoMode() ? 1 : 0));
-   lyr->prependChildElement(addKeyVal("numsteps", item->getNumSteps()));
-   lyr->prependChildElement(addKeyVal("numrows", item->getMaxRows()));
+   lyr->prependChildElement(addKeyVal("combine", item->isCombineMode() ? 1ll:0ll));
+   lyr->prependChildElement(addKeyVal("humlen", (int64)item->getHumanLength()));
+   lyr->prependChildElement(addKeyVal("humvel", (int64)item->getHumanVelocity()));
+   lyr->prependChildElement(addKeyVal("humpos", (int64)item->getHumanPosition()));
+   lyr->prependChildElement(addKeyVal("mute", item->getMuted() ? 1ll : 0ll));
+   lyr->prependChildElement(addKeyVal("stppm", (int64)item->getStepsPerMeasure()));
+   lyr->prependChildElement(addKeyVal("dcycle", (int64)item->getDutyCycle()));
+   lyr->prependChildElement(addKeyVal("mchan", (int64)item->getMidiChannel()));
+   lyr->prependChildElement(addKeyVal("clkdiv", (int64)item->getClockDivider()));
+   lyr->prependChildElement(addKeyVal("notecust", item->noteSourceIsCustom() ? 1ll : 0ll));
+   lyr->prependChildElement(addKeyVal("bias", (int64)item->getPolyBias()));
+   lyr->prependChildElement(addKeyVal("maxpoly", (int64)item->getMaxPoly()));
+   lyr->prependChildElement(addKeyVal("mono", item->isMonoMode() ? 1ll : 0ll));
+   lyr->prependChildElement(addKeyVal("numsteps", (int64)item->getNumSteps()));
+   lyr->prependChildElement(addKeyVal("numrows", (int64)item->getMaxRows()));
 
    item->getKeyScaleOct(&scale, &key, &oct);
    k = new XmlElement("sko");
@@ -361,13 +378,14 @@ const XmlElement & SeqPersist::store(SequenceData * sourceData)
      groove
      midi map items
    */
-   mRoot.prependChildElement(addKeyVal("autoplay", sourceData->getAutoPlayMode())); 
-   mRoot.prependChildElement(addKeyVal("offtime", sourceData->getOffsetTime())); // global offset time
-   mRoot.prependChildElement(addKeyVal("curpat",sourceData->getCurrentPattern()));
-   mRoot.prependChildElement(addKeyVal("swing", sourceData->getSwing()));
+   mRoot.prependChildElement(addKeyVal("bpm", sourceData->getStandaloneBPM()));
+   mRoot.prependChildElement(addKeyVal("autoplay", (int64)sourceData->getAutoPlayMode())); 
+   mRoot.prependChildElement(addKeyVal("offtime", (int64)sourceData->getOffsetTime())); // global offset time
+   mRoot.prependChildElement(addKeyVal("curpat",(int64)sourceData->getCurrentPattern()));
+   mRoot.prependChildElement(addKeyVal("swing", (int64)sourceData->getSwing()));
    mRoot.prependChildElement(addKeyVal("seed", sourceData->getRandomSeed()));
-   mRoot.prependChildElement(addKeyVal("midipass", sourceData->getMidiPassthru()));
-   mRoot.prependChildElement(addKeyVal("midiresp", sourceData->getMidiRespond()));
+   mRoot.prependChildElement(addKeyVal("midipass", (int64)sourceData->getMidiPassthru()));
+   mRoot.prependChildElement(addKeyVal("midiresp", (int64)sourceData->getMidiRespond()));
    elem = new XmlElement("groove");
    mRoot.prependChildElement(elem);
    for (i = SEQ_DEFAULT_NUM_STEPS-1; i >=0 ; i--) {
@@ -401,6 +419,7 @@ bool SeqPersist::retrieve(SequenceData * targetData, const XmlElement * sourceDa
 {
    int idx;
    int64 val;
+   double dval;
    /// read source data into target data
    if (sourceData->getTagName().compare("stochas") != 0) 
       return false;
@@ -484,6 +503,10 @@ bool SeqPersist::retrieve(SequenceData * targetData, const XmlElement * sourceDa
       else if (e->hasTagName("autoplay")) {
          if (getKeyVal(e, &val))
             targetData->setAutoPlayMode((int)val);
+      }
+      else if (e->hasTagName("bpm")) {
+         if (getKeyVal(e, &dval))
+            targetData->setStandaloneBPM(dval);
       }
    } // for each root level element
 

@@ -248,10 +248,24 @@ SequenceData::SequenceData() :
    mMidiMapCount(0),
    mRandomSeed(0),
    mOffsetTime(0),
-   mAutoPlay(SEQ_PLAYMODE_AUTO)
+   mAutoPlay(SEQ_PLAYMODE_AUTO),
+   mStandaloneBPM(SEQ_DEFAULT_STANDALONE_BPM)
 {
    clearGroove();
    setDefaultMidiMapItems();
+}
+
+double 
+SequenceData::getStandaloneBPM()
+{
+   return mStandaloneBPM;
+}
+void 
+SequenceData::setStandaloneBPM(double bpm)
+{
+   // value here is arbitrary
+   jassert(bpm >= 1.0 && bpm <= 300.0);
+   mStandaloneBPM = bpm;
 }
 
 SequenceLayer * 

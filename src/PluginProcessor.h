@@ -230,6 +230,12 @@ class SeqAudioProcessor  : public AudioProcessor, public SeqProcessorNotifierHel
    juce::PluginHostType mHostType;
    double mCubaseAtRestPos;
 #endif
+   // fill in position info in standalone mode
+   void positionInfoStandalone(AudioPlayHead::CurrentPositionInfo *posinfo);
+   // change tempo in standalone mode
+   void changeStandaloneTempo();
+   // given current tempo determine the current beat position
+   double getStandaloneBeatPosition();
    
    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SeqAudioProcessor)
 public:
@@ -254,6 +260,10 @@ public:
 
    ///////// MANUAL PLAYBACK MODE //////////////////
    // These settings are related to manual playback
+   // 
+   // In standalone mode, we are always considered to be
+   // playing, and the play button is the same as if we
+   // were in daw mode
    /////////////////////////////////////////////////
 
    // set to true when daw is playing and playback is requested but not started yet.
@@ -265,6 +275,15 @@ public:
    enum {MPBstopped, MPBrequested, MPBstarted} mMPBstate;
    // offset position in beats for manual playback
    double mMPBStartPosition;
+
+   // For standalone mode only:
+   double mStandaloneTempo; // current tempo in bpm
+   // tick count when playback started or when tempo changed
+   // playback in standalone mode starts as soon as we launch.
+   // Current position is calculated based on the standalone tempo
+   // and this start time
+   double mStandaloneStartTime; 
+
 
    // Inherited via SeqProcessorNotifierHelper
    virtual bool getStepPlayedState(int layer, int position, int notenum) override;

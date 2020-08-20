@@ -35,7 +35,7 @@ class SeqAudioProcessorEditor  : public AudioProcessorEditor,
    public Label::Listener, public ActionListener
 {
    LookAndFeel_V3 mLookAndFeel; // maintain the v3 look and feel
-   SeqAudioProcessor& processor;
+   SeqAudioProcessor& mProcessor;
    // ================see the SeqAudioProcessorEditor ctor for more comments on each of these
    SeqGlob mGlob;
    Component mStepHolder;  
@@ -63,6 +63,8 @@ class SeqAudioProcessorEditor  : public AudioProcessorEditor,
    ImageComponent mLogo;
    Label mLblLayerName;
    Label mLblPatternName;
+   Label mLblBPM; // standalone mode only
+   NumberCpt mBPM;  // standalone mode only
    //----------------------------- groove tab
    TabPanelCpt mTabGroove;
    GrooveCpt mGroove;

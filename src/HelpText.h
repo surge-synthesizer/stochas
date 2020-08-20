@@ -91,5 +91,7 @@ HelpPair gHelpText[] = {
    { "recordButton" , "Toggle record mode. Recording takes place only when playback is started, and automatically ends when playback stops.  MIDI notes received by Stochas will be recorded to the current pattern and layer" },
    { "playButton",    "Toggle manual playback mode. If quantizing manual playback, this will indicate standby until quantization division is reached. Playback will only start when DAW transport is playing"},
    { "playbackMode",  "Specify whether to sync playback with DAW (Auto) or to manually start playback when DAW is playing. If set to step, beat, or measure, then playback will start when that division is reached after Play is pressed. If set to Instant, playback will start as soon as Play is pressed"},
+   { "lblBPM",        "Set the beats per minute for playback"},
+   { "standaloneBPM", "Set the beats per minute for playback"},
    {0,0} // end sentinel
 };

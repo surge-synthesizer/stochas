@@ -244,7 +244,7 @@ jobs:
   - bash: |
       GH=`git log -1 --format=%h`
       # make it available below
-      echo "##vso[task.setvariable variable=GH;isOutput=true]${GH}"
+      echo "##vso[task.setvariable variable=GH]$GH"
     displayName: Determine Hash
   
   #

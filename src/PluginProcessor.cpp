@@ -28,6 +28,17 @@ SeqAudioProcessor::SeqAudioProcessor()  :
 {
    //_CrtSetBreakAlloc(18151);
 
+   // are we in standalone mode?
+   // if so, determine our reference point, etc
+   if(wrapperType == wrapperType_Standalone) {
+      mStandaloneTempo=(double)SEQ_DEFAULT_STANDALONE_BPM;
+      mStandaloneStartTime=Time::getMillisecondCounterHiRes();
+      // default play mode is set to manual so that play button shows
+      SequenceData *d=mData.getUISeqData();
+      d->setAutoPlayMode(SEQ_PLAYMODE_INSTANT);
+      mData.swap();
+   }
+
    memset(mMiniMidiMap, 0, sizeof(MiniMidiMapItem*) * 128);
 
    // init all the layers
@@ -492,6 +503,8 @@ void SeqAudioProcessor::checkforUIIncomingData(MidiBuffer & processedMidi)
     *  new mapping has been created
     *      1 - SEQ_REFRESH_MAP_MSG
     *      2 and 3 are meaningless
+    *  in standalone mode, tempo has been changed by the user
+    *      1 - SEQ_STANDALONE_SET_TEMPO
     */
 
    while (mIncomingData.readFromFifo(&fifoData1, &fifoData2, &fifoData3)) {
@@ -558,6 +571,11 @@ void SeqAudioProcessor::checkforUIIncomingData(MidiBuffer & processedMidi)
             else // started or requested
                requestManualPlayback(false);            
          } // if playmode is not auto
+         break;
+      
+      case SEQ_STANDALONE_SET_TEMPO:
+         // tempo changed in standalone mode by user
+         changeStandaloneTempo();
          break;
       default:
          jassertfalse;
@@ -684,6 +702,59 @@ SeqAudioProcessor::determinePlaybackState(int apm, bool playingInDaw,
    return areWePlaying;
 }
 
+// For standalone mode, playback is considered to have started as soon as the app loads
+// (this refers to 'daw' playback. in standalone mode we default to playback type 'instant'
+// which means that stochas only starts playing when play button is hit),
+// so we just need to calculate our beat position based on that
+double SeqAudioProcessor::getStandaloneBeatPosition()
+{
+   double currentTime=Time::getMillisecondCounterHiRes();
+   
+   // elapsed m/s since start
+   double elapsed=currentTime-mStandaloneStartTime;
+
+   // tempo in beats per ms
+   double bpms=mStandaloneTempo / (60*1000);
+
+   // how many beats have elapsed since play start
+   return elapsed*bpms;
+}
+
+// fill in position info in standalone mode.
+// we will need all the same fields that we use in processBlock.
+void SeqAudioProcessor::positionInfoStandalone(AudioPlayHead::CurrentPositionInfo *posinfo)
+{
+   memset(posinfo, 0, sizeof(AudioPlayHead::CurrentPositionInfo));
+   posinfo->bpm=mStandaloneTempo;
+   posinfo->timeSigNumerator=4;
+   posinfo->timeSigDenominator=4;
+   posinfo->isPlaying=true;
+   posinfo->ppqPosition = getStandaloneBeatPosition();
+
+}
+
+// set new tempo for standalone.
+// we need to reset the start time so that there is not a big
+// jump in position if the tempo change is gradual.
+// To do this, just calculate when the start time would have been
+// if the new tempo were in effect, and set it to that
+void SeqAudioProcessor::changeStandaloneTempo() {
+
+   double currentTime=Time::getMillisecondCounterHiRes();
+   SequenceData *seq = mData.getAudSeqData();
+   double newTempo=seq->getStandaloneBPM();
+   double beatPos=getStandaloneBeatPosition();
+
+   // new tempo in ms per beat
+   double new_mspb = (60*1000)/newTempo;
+
+   // set the start time to reflect new tempo
+   mStandaloneStartTime = currentTime - (new_mspb * beatPos);
+
+   // set the new tempo from our sequence data
+   mStandaloneTempo = newTempo;
+}
+
 void SeqAudioProcessor::processBlock(AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 {
    
@@ -706,8 +777,12 @@ void SeqAudioProcessor::processBlock(AudioSampleBuffer& buffer, MidiBuffer& midi
    buffer.clear();
 
    // retrieve some important info (ppqposition might be negative <ahem>cubase)
-   if( ph )
-       ph->getCurrentPosition(posinfo);
+   if(wrapperType == wrapperType_Standalone) { 
+      // in standalone mode, fake it out
+      positionInfoStandalone(&posinfo);
+   } else {
+      ph->getCurrentPosition(posinfo);
+   }
 
    // position adjustment (which is a problem with protools and nothing else)
    // getPPQOffset should be an atomic operation.
@@ -992,6 +1067,9 @@ void SeqAudioProcessor::setStateInformation (const void* in , int size)
       if (persist.retrieve(mData.getUISeqData(), xml.get()))
          mData.swap();
    }
+
+   // tempo in saved state might differ, we need to recalculate some stuff here
+   changeStandaloneTempo();
 
    // if we happen to be playing back at the time, we need to have the stocha's
    // rebuild their midi mapping schemas

@@ -170,6 +170,8 @@ in mono mode are 0..high val where 0 is off, and the following applies
 #define SEQ_PLAYMODE_BEAT           3 // play starts on next beat
 #define SEQ_PLAYMODE_MEASURE        4 // play starts on next measure
 
+#define SEQ_DEFAULT_STANDALONE_BPM  120 // default bpm in standalone mode
+
 /*====UI RELATED CONSTANTS====================================================*/
 
 // sizing constants
@@ -250,7 +252,7 @@ in mono mode are 0..high val where 0 is off, and the following applies
 #define SEQCTL_PLAYBACK_MODE_Q_MEAS  5
 #define SEQCTL_PLAY_BUTTON          32 //* play button
 #define SEQCTL_INFODIALOG           33 // * info dialog itself (will notify when its done)
-
+#define SEQCTL_STANDALONE_BPM_BUTTON 34 // for standalone mode only
 
 
 ///////////////////////
@@ -393,6 +395,7 @@ in mono mode are 0..high val where 0 is off, and the following applies
 #define SEQ_NOTIFY_HOST    101  // notify host that a change has occurred so that it knows the state is dirty
 #define SEQ_SET_RECORD_MODE 102 // notify processor thread that recording is on/off (toggle)
 #define SEQ_SET_PLAY_START_STOP 103 // notify processor that manual playback is started (1) or stopped (0)
+#define SEQ_STANDALONE_SET_TEMPO 104 // standalone tempo is changed by the user
 
 // automation target constants
 

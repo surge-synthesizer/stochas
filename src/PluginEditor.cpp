@@ -26,7 +26,7 @@ numStepPages(int steps)
 
 
 SeqAudioProcessorEditor::SeqAudioProcessorEditor(SeqAudioProcessor& p)
-   : AudioProcessorEditor(&p), processor(p),
+   : AudioProcessorEditor(&p), mProcessor(p),
    mGlob(&p.mData, p.mEditorState, &p.mNotifier, &p.mIncomingData, &p),
    mStepHolder("stepholder"),    // holds the step pane and the play pane as a child
    mStepPanel(&mGlob, SEQCTL_STEP_PANEL,this,this),           // main step pane
@@ -46,6 +46,7 @@ SeqAudioProcessorEditor::SeqAudioProcessorEditor(SeqAudioProcessor& p)
    mPatternSelect(&mGlob, SEQCTL_PATSEL_TOGGLE, this,"patternSelect"),// select current pattern
    mSectionSelect(&mGlob, SEQCTL_SECTION_TOGGLE, this,"sectionSelect"),// select section when number of steps exceeds 16
    mMainTabs(SEQCTL_TABS, this, TabbedButtonBar::Orientation::TabsAtBottom), // main tabs at bottom
+   mBPM(&mGlob, SEQCTL_STANDALONE_BPM_BUTTON, this, "standaloneBPM"),
    mTabGroove(&mGlob,true),           // tab that holds groove stuff
    mGroove(SEQCTL_GROOVE, &mGlob, this),  // groove control
    mClearGrooveBtn(&mGlob, SEQCTL_GRV_CLR_BUTTON, this),   // clear groove/copy swing to groove
@@ -153,6 +154,16 @@ SeqAudioProcessorEditor::SeqAudioProcessorEditor(SeqAudioProcessor& p)
    mLblPatternName.setEditable(true);
    mLblPatternName.addListener(this);
    mLblPatternName.setName("lblPatternName");
+
+   //============================Standalone BPM
+   if (mProcessor.wrapperType == AudioProcessor::wrapperType_Standalone) {
+      mLblBPM.setText("BPM", juce::dontSendNotification);
+      addAndMakeVisible(mLblBPM);
+      mLblBPM.setName("lblBPM");
+      mBPM.setSpec(1, 300, 1,1, "");
+      addAndMakeVisible(mBPM);
+   }
+
    
    //=============================Help Button
    mHelpBtn.setText("Info");
@@ -404,6 +415,7 @@ void SeqAudioProcessorEditor::resized()
    mEditLabel.setBounds(tmp);
 
    // help,edit,undo, record buttons
+   // for standalone mode, the bpm as well
    tmp = upper.removeFromRight(60);
    mLogo.setBounds(tmp);
    tmp = upper.removeFromRight(50);
@@ -416,6 +428,12 @@ void SeqAudioProcessorEditor::resized()
    mRecordBtn.setBounds(tmp);
    tmp = upper.removeFromRight(64);
    mPlayBtn.setBounds(tmp);
+   if (mProcessor.wrapperType == AudioProcessor::wrapperType_Standalone) {
+      tmp = upper.removeFromRight(40);
+      mBPM.setBounds(tmp);
+      tmp = upper.removeFromRight(32);
+      mLblBPM.setBounds(tmp);
+   }
    
 
    // section selector (which steps are visible)
@@ -838,7 +856,15 @@ void SeqAudioProcessorEditor::cptValueChange(int cptId, int id)
       // toggle play state if we are in right mode
       mGlob.mProcessNotify->addToFifo(SEQ_SET_PLAY_START_STOP, 0, 0);
       break;
-
+   case SEQCTL_STANDALONE_BPM_BUTTON: {
+      // set a new bpm
+      int t = mBPM.getValue();
+      s->setStandaloneBPM((double)t);
+      sd->swap();
+      // tell the processor that bpm has changed so it can do a recalc
+      mGlob.mProcessNotify->addToFifo(SEQ_STANDALONE_SET_TEMPO, 0, 0);
+      break;
+   }
    case SEQCTL_GRV_CLR_BUTTON: // clear or copy to groove was clicked
       clearGrooveOrCopySwing();   
       updateUI();
@@ -1321,9 +1347,11 @@ void SeqAudioProcessorEditor::loadPatch(const String & fn)
       return;
    }
 
-   if (persist.retrieve(mGlob.mSeqBuf->getUISeqData(), xml.get()))
+   if (persist.retrieve(mGlob.mSeqBuf->getUISeqData(), xml.get())) {
       mGlob.mSeqBuf->swap();
-   else
+      // for standalone mode, tempo may be different in what we are loading. send notification
+      mGlob.mProcessNotify->addToFifo(SEQ_STANDALONE_SET_TEMPO, 0, 0);
+   } else
       setAlertText("Failed to read file. May be wrong format, or wrong version.");
    
 }
@@ -1499,9 +1527,11 @@ void SeqAudioProcessorEditor::mainTimer()
 void SeqAudioProcessorEditor::updateUI()
 {
    SequenceLayer *lay = mGlob.mSeqBuf->getUISeqData()->getLayer(mGlob.mEditorState->getCurrentLayer());
-
+   double bpm = mGlob.mSeqBuf->getUISeqData()->getStandaloneBPM();
    mLblLayerName.setText(lay->getLayerName(), juce::dontSendNotification);
    mLblPatternName.setText(lay->getPatternName(), juce::dontSendNotification);
+   // at some point we could make this higher res
+   mBPM.setValue((int)bpm,juce::dontSendNotification);
    
    switch (mGlob.mEditorState->getEditMode()) {
    case EditorState::editingSteps:

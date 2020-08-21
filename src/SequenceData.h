@@ -444,7 +444,7 @@ extern SeqMidiMapItem gDefaultMidiMapItems[];
 /** Store all current sequence data for all patterns with helpers
 
    **IMPORTANT** do not put any pointers in here, since we do the buffer swap
-   and copy this whole structure. Also, this whole object is serialized as-is
+   and copy this whole structure. 
 
 */
 class SequenceData {
@@ -475,6 +475,9 @@ class SequenceData {
 
    // whether to start playback with DAW (default)
    int mAutoPlay;
+
+   // standalone mode bpm
+   double mStandaloneBPM;
 
    // **DONT ADD POINTERS!**
 
@@ -564,6 +567,9 @@ public:
    // whether we automatically play when DAW transport starts/stops
    int getAutoPlayMode();
    void setAutoPlayMode(int autoplay);
+
+   double getStandaloneBPM();
+   void setStandaloneBPM(double bpm);
 
 };
 

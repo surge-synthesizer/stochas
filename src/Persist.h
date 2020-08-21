@@ -18,7 +18,9 @@ class SeqPersist {
    // add simple key value eg <name val="value"/>
    XmlElement *addKeyVal(const char *name, const String &value);   
    XmlElement *addKeyVal(const char *name, int64 value);
+   XmlElement *addKeyVal(const char *name, double value);
    bool getKeyVal(XmlElement *e, int64 *val);
+   bool getKeyVal(XmlElement *e, double *val);
    bool getKeyVal(XmlElement *e, String *val);
 
    // add an indexed item eg <i idx="1" val="value"/>

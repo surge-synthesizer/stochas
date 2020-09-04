@@ -155,8 +155,9 @@ juce_add_binary_data(assets NAMESPACE SeqImageX SOURCES
     image/not.png
     image/play.png
     image/play2.png
-    image/Stochas-logo.png
+    image/logo_no_bg.png
     image/x-mark-4-64.png
+    text/infobox.txt
     )
 
 set_target_properties(assets PROPERTIES

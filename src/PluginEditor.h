@@ -60,7 +60,6 @@ class SeqAudioProcessorEditor  : public AudioProcessorEditor,
    
    ToggleCpt mSectionSelect;
    SeqTabbedCpt mMainTabs;
-   ImageComponent mLogo;
    Label mLblLayerName;
    Label mLblPatternName;
    Label mLblBPM; // standalone mode only

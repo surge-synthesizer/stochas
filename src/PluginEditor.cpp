@@ -89,10 +89,6 @@ SeqAudioProcessorEditor::SeqAudioProcessorEditor(SeqAudioProcessor& p)
    mClearGrooveBtn.setName("grvClr");
    mBtnLoadGroove.setName("grvLoadMidi");
    mBtnSaveGroove.setName("grvSaveMidi");
-   Image img;
-   img = ImageCache::getFromMemory(SeqImageX::Stochaslogo_png, SeqImageX::Stochaslogo_pngSize);
-   mLogo.setImage(img);
-   addAndMakeVisible(mLogo);
 
    addChildComponent(mMidiDlg);
    
@@ -416,8 +412,6 @@ void SeqAudioProcessorEditor::resized()
 
    // help,edit,undo, record buttons
    // for standalone mode, the bpm as well
-   tmp = upper.removeFromRight(60);
-   mLogo.setBounds(tmp);
    tmp = upper.removeFromRight(50);
    mHelpBtn.setBounds(tmp);
    tmp = upper.removeFromRight(50);

@@ -26,9 +26,7 @@
 // for help button
 #define SEQ_HELP_URL  "https://surge-synth-team.org/assets/manuals/stochas.pdf"
 #define SEQ_WEBSITE_URL  "https://surge-synth-team.org/stochas/"
-// obfuscate 
-#define SEQ_HELP_EMAIL "stochas" \
-                        "@" "binarydog.com"
+
 
 // add some code to get around cubase behavior where it actually starts play position prior to
 // where the cursor is when user hits play. if any issues arise, disable this to see if the workaround

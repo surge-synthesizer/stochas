@@ -22,8 +22,9 @@ Panel that is displayed when Info is clicked
 */
 class SeqInfoDialog : public SeqModalDialog
 {
+   ImageComponent mLogo;
    std::unique_ptr<Label> mLblMain;
-   std::unique_ptr<Label> mLblDescription;
+   std::unique_ptr<TextEditor> mLblDescription;
    std::unique_ptr<TextButton> mBtnOk;
    std::unique_ptr<TextButton> mBtnHelp;
    std::unique_ptr<TextButton> mBtnWebsite;

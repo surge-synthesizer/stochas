@@ -19,71 +19,76 @@ void SeqInfoDialog::endDialog(bool hitOk)
 
 
 #define S_GAP     4 // gap between items
-#define S_HEIGHT  22
-#define S_BTNWIDTH  120
+#define S_HEIGHT  24
 #define S_BORDER  5  // size of border gap
 
 // this is called when the inner box is resized (ie we need to do our resize here)
 void SeqInfoDialog::resizedInner(Component * inner)
 {
    Rectangle<int> r;
-   Rectangle<int> bottom, top, btns, tmp, tmp2;
+   Rectangle<int> leftpanel, logo, tmp;
 
    // inner panel
    r = inner->getLocalBounds();   
    r.reduce(S_BORDER*2, S_BORDER*2); // have a bit of a space all around
 
-   // space for the label at the top
-   top = r.removeFromTop(S_HEIGHT);
-   mLblMain->setBounds(top);
-
-   btns=r.removeFromBottom(S_HEIGHT);
-   tmp=btns.removeFromRight(S_BTNWIDTH);
-   mBtnOk->setBounds(tmp);
-   tmp.removeFromRight(S_GAP);
-   tmp=btns.removeFromRight(S_BTNWIDTH);
-   mBtnWebsite->setBounds(tmp);
-   tmp.removeFromRight(S_GAP);
-   tmp=btns.removeFromRight(S_BTNWIDTH);
+   // left panel
+   leftpanel = r.removeFromLeft(262); // width of logo
+   logo = leftpanel.removeFromTop(290); // height of logo
+   mLogo.setBounds(logo);
+   leftpanel.removeFromTop(S_GAP);
+   tmp=leftpanel.removeFromTop(S_HEIGHT);
    mBtnHelp->setBounds(tmp);
+   leftpanel.removeFromTop(S_GAP);
+   tmp=leftpanel.removeFromTop(S_HEIGHT);
+   mBtnWebsite->setBounds(tmp);
+   leftpanel.removeFromTop(S_GAP);
+   tmp=leftpanel.removeFromTop(S_HEIGHT);
+   mBtnOk->setBounds(tmp);
+
+   r.removeFromTop(5);
+   tmp=r.removeFromTop(S_HEIGHT);
+   mLblMain->setBounds(tmp);
    
-   
-   // leave some space between tabs and other
-   r.removeFromTop(S_GAP);
-   r.removeFromBottom(S_GAP);
+   r.reduce(S_BORDER, S_BORDER);
    mLblDescription->setBounds(r);
-
-   
-
    
 
 }
 
 SeqInfoDialog::SeqInfoDialog(SeqGlob * glob, CptNotify *parent) :
-   SeqModalDialog(glob, SEQCTL_INFODIALOG,parent, 640,200)
+   SeqModalDialog(glob, SEQCTL_INFODIALOG,parent, 750,400)
 {
    Colour txtColor, bgColor, hlColor;
    
    bgColor = mGlob->mEditorState->getColorFor(EditorState::background);   
    txtColor = bgColor.contrasting(0.5f);
 
+   // logo
+   addToInner(0,mLogo);
+   juce::Image img = ImageCache::getFromMemory(SeqImageX::logo_no_bg_png, SeqImageX::logo_no_bg_pngSize);
+   mLogo.setImage(img);
+   mLogo.setVisible(true);
+   
+
    // big label at top
-   mLblMain = std::unique_ptr<Label>(addStdLabel( "Stochas Information")); 
-   mLblMain->setFont(Font(26.0f, Font::bold));
+   String vs = String("Stochas v. ");
+   vs += Stochas::Build::FullVersionStr;
+   mLblMain = std::unique_ptr<Label>(addStdLabel(vs)); 
+   mLblMain->setFont(Font(20.0f, Font::bold));
    mLblMain->setJustificationType(Justification::centred);
    
    // big descr
-   mLblDescription = std::unique_ptr<Label>(addStdLabel(
-      
-      "Stochas is an open-source plugin available on Windows and Mac, which was originally developed as commercial software in 2016 by Andrew Shakinovsky. "
-      "It was converted over to OSS in July of 2020. For support, "
-      "please email me at " SEQ_HELP_EMAIL " (no guarantee on my ability to respond in a timely manner.) "
-      "Please use the below links to access web resources."
    
-   ));
-   mLblDescription->setFont(Font(18.0f, Font::plain));
-   mLblDescription->setJustificationType(Justification::horizontallyJustified);
-   mLblDescription->setMinimumHorizontalScale(1.0f);
+
+   mLblDescription = std::unique_ptr<TextEditor>(addStdTextEditor());
+   mLblDescription->setText(SeqImageX::infobox_txt, false);
+    
+   mLblDescription->setFont(Font(14.0f, Font::plain));
+   mLblDescription->setMultiLine(true);
+   mLblDescription->setReadOnly(true);
+   //mLblDescription->setJustificationType(/*Justification::horizontallyJustified | */ Justification::top);
+   //mLblDescription->setMinimumHorizontalScale(1.0f);
 
    // buttons
    mBtnOk = std::unique_ptr<TextButton>(addStdButton("Close",0,CPTID_OK));

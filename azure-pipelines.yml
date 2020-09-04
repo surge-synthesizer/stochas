@@ -243,8 +243,10 @@ jobs:
 
   - bash: |
       GH=`git log -1 --format=%h`
+      DATE=$(date '+%Y-%m-%d')
       # make it available below
       echo "##vso[task.setvariable variable=GH]$GH"
+      echo "##vso[task.setvariable variable=BUILD_DATE;]$DATE"
     displayName: Determine Hash
   
   #
@@ -263,7 +265,7 @@ jobs:
       # we create a new tag
       #tag: v1.0.1.$(GH)
       tag: developer
-      title: Developer Release $(GH)
+      title: Dev Release $(BUILD_DATE) $(GH)
       isPreRelease: true
       target: '$(Build.SourceVersion)'
       addChangeLog: true

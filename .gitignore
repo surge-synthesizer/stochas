@@ -6,3 +6,4 @@ build32/
 .vscode/
 build.install/
 *.code-workspace
+*.code-search

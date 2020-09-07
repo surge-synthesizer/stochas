@@ -784,6 +784,24 @@ void SeqAudioProcessor::processBlock(AudioSampleBuffer& buffer, MidiBuffer& midi
       ph->getCurrentPosition(posinfo);
    }
 
+   // BITWIG FIX
+   // I'm not entirely happy with this fix as it seems there must be a better way...
+   // In Bitwig it's possible for the ppqPosition to be negative if
+   // the pre-roll is turned on. This will bail if ppqposition is negative
+   // and is not going to be positive in this block. If it is going to be
+   // positive in this block, then just set it to 0 so it's not negative
+   // (otherwise we possibly miss notes at the first position in the grid).
+   if(posinfo.ppqPosition < 0 ) {
+      // samples per beat
+      double s = (60.0 *  getSampleRate()) / (posinfo.bpm);
+      // ppq pos is in beats
+      if ((posinfo.ppqPosition*s)+ buffer.getNumSamples() >=0)      
+         posinfo.ppqPosition = 0;
+      else
+         return;
+   }
+   // END BITWIG FIX
+
    // position adjustment (which is a problem with protools and nothing else)
    // getPPQOffset should be an atomic operation.
    mPPQAdjust = (float)mEditorState->getPPQOffset() / 1000.0f;      

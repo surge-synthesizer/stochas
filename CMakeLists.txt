@@ -74,16 +74,17 @@ endif()
 # Check the readme at `docs/CMake API.md` in the JUCE repo for the full list.
 
 juce_add_plugin(stochas
-    COMPANY_NAME "Audio Vitamins"
-    BUNDLE_ID "com.audiovitamins.stochas"
+    COMPANY_NAME "Surge Synth Team"
+    BUNDLE_ID "org.surge-synth-team.stochas"
     DESCRIPTION "Stochas Randomization Enabled Step Sequencer"
+    ICON_BIG   "${CMAKE_CURRENT_SOURCE_DIR}/image/app_logo_512.png"
     IS_SYNTH ${STOCHAS_IS_SYNTH}
     NEEDS_MIDI_INPUT TRUE
     NEEDS_MIDI_OUTPUT TRUE
     IS_MIDI_EFFECT ${STOCHAS_IS_MIDI_EFFECT}  
     # EDITOR_WANTS_KEYBOARD_FOCUS TRUE/FALSE    # Does the editor need keyboard focus?
     # COPY_PLUGIN_AFTER_BUILD TRUE/FALSE        # Should the plugin be installed to a default location after building?
-    PLUGIN_MANUFACTURER_CODE AuVi
+    PLUGIN_MANUFACTURER_CODE AuVi               # allows compatibility with older patches from AV days
     PLUGIN_CODE Stoc
     FORMATS VST3 ${VST2} AU Standalone     # The formats to build. Other valid formats are: AAX Unity VST AU AUv3
     VST3_CATEGORIES ${STOCHAS_CATEGORY} 

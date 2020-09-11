@@ -4,6 +4,7 @@
 ; these paths are relative to the .iss file
 #define vst64 "..\..\build\stochas_artefacts\Release"
 #define vst32 "..\..\build32\stochas_artefacts\Release"
+
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
 ; Do not use the same AppId value in installers for other applications.
@@ -36,11 +37,14 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 [Files]
 Source: "{#vst32}\VST3\Stochas.vst3\Contents\x86-win\Stochas.vst3"; DestDir: "{code:install_dir}"; Flags: ignoreversion; Check: check_inst(0)
 Source: "{#vst64}\VST3\Stochas.vst3\Contents\x86_64-win\Stochas.vst3"; DestDir: "{code:install_dir}"; Flags: ignoreversion; Check: check_inst(1)
+Source: "{#vst32}\Standalone\Stochas.exe"; DestDir: "{code:install_dir}"; Flags: ignoreversion; Check: check_inst(2)
+Source: "{#vst64}\Standalone\Stochas.exe"; DestDir: "{code:install_dir}"; Flags: ignoreversion; Check: check_inst(3)
 
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 [Code]
 var
   PluginTypePage: TInputOptionWizardPage;
+  DataDirPage: TInputDirWizardPage;
   vstpath: String;
 procedure InitializeWizard;
 begin
@@ -52,6 +56,15 @@ begin
     True, False);
   PluginTypePage.Add('VST3 32 bit');
   PluginTypePage.Add('VST3 64 bit');
+  PluginTypePage.Add('Standalone 32 bit');
+  PluginTypePage.Add('Standalone 64 bit');
+
+  DataDirPage := CreateInputDirPage(wpSelectDir,
+    'Installation Directory', 'Select target directory',
+    'Please select the directory in which Stochas will be installed, then click Next.',
+    False, '');
+  DataDirPage.Add('');
+
 end;
 
 function NextButtonClick(CurPageID: Integer): Boolean;
@@ -62,7 +75,21 @@ begin
         vstpath:=ExpandConstant('{pf32}') + '\Common Files\VST3\'
       else if (PluginTypePage.SelectedValueIndex = 1) then  {vst3 64 }
         vstpath:=ExpandConstant('{pf64}') + '\Common Files\VST3\'
+      else if (PluginTypePage.SelectedValueIndex = 2) then  {sa 32 }
+        vstpath:=ExpandConstant('{pf32}') + '\Stochas\'
+      else if (PluginTypePage.SelectedValueIndex = 3) then  {sa 64 }
+        vstpath:=ExpandConstant('{pf64}') + '\Stochas\';
+
+      DataDirPage.Values[0] := vstpath;
+
     end;
+
+    if(CurPageID = DataDirPage.ID) then
+    begin
+       vstpath := DataDirPage.Values[0];
+    end;
+
+
     Result := True;
 end;
 

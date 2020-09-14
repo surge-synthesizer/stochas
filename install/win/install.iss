@@ -4,7 +4,9 @@
 ; these paths are relative to the .iss file
 #define vst64 "..\..\build\stochas_artefacts\Release"
 #define vst32 "..\..\build32\stochas_artefacts\Release"
-
+#ifndef stochas_version
+#define stochas_version "0.0.0"
+#endif
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
 ; Do not use the same AppId value in installers for other applications.
@@ -20,7 +22,7 @@ AppSupportURL=https://github.com/surge-synthesizer/stochas
 AppUpdatesURL=https://github.com/surge-synthesizer/stochas
 ; complains if we don't have this
 DefaultDirName=stochas
-;DefaultGroupName=Stochas
+DefaultGroupName=Surge Synth Team
 DisableDirPage=yes
 DisableProgramGroupPage=yes
 LicenseFile=license.txt
@@ -31,6 +33,7 @@ UninstallFilesDir={code:install_dir}\stochas_uninst
 UsePreviousAppDir=no
 ShowComponentSizes=no
 DirExistsWarning=no
+AllowNoIcons=yes
 ;EnableDirDoesntExistWarning=yes
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -39,7 +42,13 @@ Source: "{#vst32}\VST3\Stochas.vst3\Contents\x86-win\Stochas.vst3"; DestDir: "{c
 Source: "{#vst64}\VST3\Stochas.vst3\Contents\x86_64-win\Stochas.vst3"; DestDir: "{code:install_dir}"; Flags: ignoreversion; Check: check_inst(1)
 Source: "{#vst32}\Standalone\Stochas.exe"; DestDir: "{code:install_dir}"; Flags: ignoreversion; Check: check_inst(2)
 Source: "{#vst64}\Standalone\Stochas.exe"; DestDir: "{code:install_dir}"; Flags: ignoreversion; Check: check_inst(3)
-
+[Icons]
+Name: "{group}\Stochas (32 bit)"; Filename: "{code:install_dir}\Stochas.exe"; WorkingDir: "{code:install_dir}"; Check: check_inst(2) 
+Name: "{group}\Stochas (64 bit)"; Filename: "{code:install_dir}\Stochas.exe"; WorkingDir: "{code:install_dir}"; Check: check_inst(3)
+Name: "{group}\Uninstall Stochas (32 bit) Plugin"; Filename: "{uninstallexe}"; Check: check_inst(0) 
+Name: "{group}\Uninstall Stochas (64 bit) Plugin"; Filename: "{uninstallexe}"; Check: check_inst(1) 
+Name: "{group}\Uninstall Stochas (32 bit)"; Filename: "{uninstallexe}"; Check: check_inst(2) 
+Name: "{group}\Uninstall Stochas (64 bit)"; Filename: "{uninstallexe}"; Check: check_inst(3) 
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 [Code]
 var

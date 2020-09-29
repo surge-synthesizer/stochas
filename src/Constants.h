@@ -98,7 +98,7 @@ in mono mode are 0..high val where 0 is off, and the following applies
 #define SEQ_MAX_LAYERS        4
 
 // max number of source cells for a column of targets (each column shares the array)
-#define SEQ_MAX_CHAIN_SOURCES 24
+#define SEQ_MAX_CHAIN_SOURCES 48
 
 #define SEQ_CHAIN_FLAG_USED   1
 // a chain is effective when the source cell triggered in the last cycle.

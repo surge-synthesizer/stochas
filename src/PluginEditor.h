@@ -121,8 +121,6 @@ class SeqAudioProcessorEditor  : public AudioProcessorEditor,
    // will be false if this is not the first time they have shown the UI for
    // this instance of the plugin
    bool mFirstTimeEditor;
-   // set alert text which stays up for a few seconds
-   void setAlertText(const String &txt);
    // set active chord for painting, -1 is off
    void chordSelect(int id);
    void fixButtonColors();
@@ -141,6 +139,8 @@ class SeqAudioProcessorEditor  : public AudioProcessorEditor,
    void savePatch(const String &fn);
    void checkForRecordedNotes();
 public:
+   // set alert text which stays up for a few seconds
+   void setAlertText(const String &txt);
    
     SeqAudioProcessorEditor (SeqAudioProcessor&);
     ~SeqAudioProcessorEditor();

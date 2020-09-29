@@ -720,6 +720,10 @@ void StepPanel::mouseUp(const MouseEvent & event)
                         mChainStartItem->mCol, mChainEndItem->mRow, mChainEndItem->mCol);
                      mBroadcaster.sendActionMessage(f);
                   }
+               } else {
+                  // failed to add due to reaching limit
+                  String txt=String::formatted("Maximum number of chains (%d) for this column has been reached", SEQ_MAX_CHAIN_SOURCES);
+                  ((SeqAudioProcessorEditor*)mMainEditor)->setAlertText(txt);
                }
             }
          }

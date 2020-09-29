@@ -111,7 +111,10 @@ public:
 This is the panel that hosts the grid cells (only)
 */
 class StepPanel : public Component, public KeyListener {
-   Component *mMainEditor; // this is ONLY used for checking whether window has focus
+   // this is ONLY used for:
+   // - checking whether window has focus
+   // - set alert text when chain add fails
+   Component *mMainEditor; 
    SeqGlob *mGlob;
    int mId;
    CptNotify *mNotify;

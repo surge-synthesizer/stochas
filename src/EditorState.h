@@ -198,7 +198,6 @@ class SeqAudioProcessor;
 // TODO not sure if it really belongs here
 class SeqGlob {
 public:
-   void *mAlertListener;
    EditorState *mEditorState;
    SeqDataBuffer *mSeqBuf;
    SeqProcessorNotifier *mAudNotify;
@@ -223,6 +222,10 @@ public:
    {
       // tell it to call changeNotify when some data changes
       mSeqBuf->setChangeNotify(changeNotify, this);
+   }
+
+   ~SeqGlob() {
+      mSeqBuf->setChangeNotify(0,0);
    }
 
 };

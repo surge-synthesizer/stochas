@@ -24,8 +24,8 @@
 #define SEQ_CO_NAME  "AudioVitamins"
 
 // for help button
-#define SEQ_HELP_URL  "https://surge-synth-team.org/assets/manuals/stochas.pdf"
-#define SEQ_WEBSITE_URL  "https://surge-synth-team.org/stochas/"
+#define SEQ_HELP_URL  "https://stochas.org/documentation/"
+#define SEQ_WEBSITE_URL  "https://stochas.org"
 
 
 // add some code to get around cubase behavior where it actually starts play position prior to

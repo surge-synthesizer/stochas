@@ -151,6 +151,9 @@ public:
    void setPPQOffset(int offset);
    int getPPQOffset();
 
+   void setScaleFactor(int factor);
+   int getScaleFactor();
+
 private:
    // read or write settings to the config file
    void configSerialization(bool read);
@@ -188,6 +191,7 @@ private:
    int mSelectedHighCol;
    int mKeyboardDisabled;
    int mPPQOffset;
+   int mScaleFactor;
 public:
 };
 

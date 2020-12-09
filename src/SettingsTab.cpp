@@ -109,6 +109,13 @@ void SettingsTab::resized()
    top.removeFromLeft(space);
    mNumPosOffset.setBounds(top);
 
+   // ui scaling
+   top = b3.removeFromTop(vspace);
+   left = top.removeFromLeft(tab);
+   mLblUIScale.setBounds(left);
+   top.removeFromLeft(space);
+   mNumUIScale.setBounds(top);
+
    // version
    top = b3.removeFromBottom(vspace);
    mLblVersionBuild.setBounds(top);
@@ -139,7 +146,8 @@ SettingsTab::SettingsTab(SeqGlob * glob, int id, CptNotify *notify) :
    mNumDefaultVelo(glob,SEQCTL_SET_DEFVELO,this,"setDefVelo"),
    mTglColorScheme(glob,SEQCTL_SET_COLOR,this,"setColor"),
    mTglShiftReversed(glob, SEQCTL_SET_SHIFTREV,this,"shiftRev"),
-   mNumPosOffset(glob, SEQCTL_SET_POSOFFSET, this, "setPosOffset")
+   mNumPosOffset(glob, SEQCTL_SET_POSOFFSET, this, "setPosOffset"),
+   mNumUIScale(glob, SEQCTL_SET_UISCALE, this, "setUIScale")
 {
    setupLabel(mLblMouseSense,"Mouse Sensitivity");
    setupLabel(mLblRightMouseAction,"Right Click");
@@ -150,6 +158,7 @@ SettingsTab::SettingsTab(SeqGlob * glob, int id, CptNotify *notify) :
    setupLabel(mLblColorScheme,"Color Scheme");
    setupLabel(mLblShiftReversed, "Shift Key");
    setupLabel(mLblPosOffset, "Pos. Offset.");
+   setupLabel(mLblUIScale, "UI Scale");
    String vs = String("Version: ");
    vs += Stochas::Build::FullVersionStr;
    setupLabel(mLblVersionBuild, vs);
@@ -196,6 +205,9 @@ SettingsTab::SettingsTab(SeqGlob * glob, int id, CptNotify *notify) :
    mNumPosOffset.setSpec(SEQ_POS_OFFSET_MIN, SEQ_POS_OFFSET_MAX, 1, 0, "");
    addAndMakeVisible(mNumPosOffset);
 
+   mNumUIScale.setSpec(SEQ_UI_SCALE_MIN, SEQ_UI_SCALE_MAX, 1, 0, "");
+   addAndMakeVisible(mNumUIScale);
+   
 }
 
 // called when the tab becomes visible (user clicked on the tab)
@@ -206,6 +218,8 @@ void SettingsTab::refreshAll()
    int x;
 
    mNumPosOffset.setValue(em.getPPQOffset(), false);
+
+   mNumUIScale.setValue(em.getScaleFactor(),false);
 
    x = em.getMouseSense(); // from 1 to 10 where 1 is highest sensitivity - so reverse
    mNumMouseSense.setValue(SEQ_MOUSE_SENSE_MAX-(x-1), false);
@@ -279,6 +293,9 @@ void SettingsTab::cptValueChange(int cptId, int value)
       break;
    case SEQCTL_SET_POSOFFSET:
       em.setPPQOffset(value);
+      break;
+   case SEQCTL_SET_UISCALE:
+      em.setScaleFactor(value);
       break;
    default:
       jassertfalse;

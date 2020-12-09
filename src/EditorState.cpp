@@ -286,6 +286,16 @@ int EditorState::getPPQOffset()
    return mPPQOffset;
 }
 
+void EditorState::setScaleFactor(int factor)
+{
+   mScaleFactor = factor;
+}
+
+int EditorState::getScaleFactor()
+{
+   return mScaleFactor;
+}
+
 void EditorState::configSerialization(bool read)
 {
    int tmp;
@@ -319,6 +329,8 @@ void EditorState::configSerialization(bool read)
    else
       tmp = 0;
    configGetSetInt(pf, read, mPPQOffset, "positionOffset", SEQ_POS_OFFSET_MIN, SEQ_POS_OFFSET_MAX, tmp);
+
+   configGetSetInt(pf, read, mScaleFactor, "uiScaleFactor", SEQ_UI_SCALE_MIN, SEQ_UI_SCALE_MAX, SEQ_UI_SCALE_DEFAULT);
 
    configGetSetString(pf, read, mDefaultFileDir, "fileDirectory", "");
 

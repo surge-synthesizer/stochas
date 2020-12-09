@@ -77,6 +77,11 @@ in mono mode are 0..high val where 0 is off, and the following applies
 #define SEQ_POS_OFFSET_MIN    -500
 #define SEQ_POS_OFFSET_MAX    500
 
+// ui scaling
+#define SEQ_UI_SCALE_DEFAULT  100
+#define SEQ_UI_SCALE_MIN      100
+#define SEQ_UI_SCALE_MAX      200
+
 // duty cycle in % (101 is legato)
 #define SEQ_DUTY_MIN          5
 #define SEQ_DUTY_MAX          200   // anything above 100% is legato
@@ -251,7 +256,7 @@ in mono mode are 0..high val where 0 is off, and the following applies
 #define SEQCTL_PLAY_BUTTON          32 //* play button
 #define SEQCTL_INFODIALOG           33 // * info dialog itself (will notify when its done)
 #define SEQCTL_STANDALONE_BPM_BUTTON 34 // for standalone mode only
-
+#define SEQCTL_SIZE_PANIC           35 // * press to restore UI size to default
 
 ///////////////////////
 // OPTION TAB PANEL IDS
@@ -302,6 +307,8 @@ in mono mode are 0..high val where 0 is off, and the following applies
 #define SEQCTL_SET_COLOR            7
 #define SEQCTL_SET_SHIFTREV         9
 #define SEQCTL_SET_POSOFFSET        10
+#define SEQCTL_SET_UISCALE          11
+
 
 
 ///////////////////////////

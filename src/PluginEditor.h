@@ -101,9 +101,12 @@ class SeqAudioProcessorEditor  : public AudioProcessorEditor,
    Label mLblRandomization;
    ToggleCpt mRandomToggle;
 
+   
+
    SeqHelpBanner mHelpBanner;
    ToggleCptWithLabel mLayerToggle;
    Label mLayerLabel;
+   ButtonCpt mUISizePanic;          // zorder should be higher than layer label (does this do it?)
    Label mSectionLabel;
    SeqEditDialog mEditDialog;
    SeqInfoDialog mInfoDialog;

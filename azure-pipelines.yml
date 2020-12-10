@@ -76,12 +76,6 @@ jobs:
   - bash: |
       set -ex
       git submodule update --init --recursive
-      # we need to apply a patch to get the mac standalone (and possibly windows) icons to work.
-      # this patch was derived from cd234565d711c2b5d0948998336a453d1131649f in the JUCE 'develop' branch
-      # once JUCE pushes this fix to master, we should take this out!
-      cd lib/JUCE
-      git apply ../../juce-mac-icon.patch
-      cd ../..
     displayName: Submodule Update
 
   - bash: |

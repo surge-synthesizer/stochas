@@ -308,18 +308,19 @@ void OptionsPanel::resized()
    mLblHumanPos.setBounds(rTxt);
    mHumanizePos.setBounds(cur);
    rightpanel.removeFromTop(gap);
-   // humanize velo
-   cur = rightpanel.removeFromTop(spacing);
-   rTxt = cur.removeFromLeft(tab);
-   mLblHumanVelo.setBounds(rTxt);
-   mHumanizeVelo.setBounds(cur);
-   rightpanel.removeFromTop(gap);
    // humanize length
    cur = rightpanel.removeFromTop(spacing);
    rTxt = cur.removeFromLeft(tab);
    mLblHumanLength.setBounds(rTxt);
    mHumanizeLength.setBounds(cur);
    rightpanel.removeFromTop(gap);
+   // humanize velo
+   cur = rightpanel.removeFromTop(spacing);
+   rTxt = cur.removeFromLeft(tab);
+   mLblHumanVelo.setBounds(rTxt);
+   mHumanizeVelo.setBounds(cur);
+   rightpanel.removeFromTop(gap);
+   
 
    // overlap behavior
    cur = rightpanel.removeFromTop(spacing);

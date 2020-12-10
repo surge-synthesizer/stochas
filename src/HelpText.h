@@ -93,5 +93,6 @@ HelpPair gHelpText[] = {
    { "playbackMode",  "Specify whether to sync playback with DAW (Auto) or to manually start playback when DAW is playing. If set to step, beat, or measure, then playback will start when that division is reached after Play is pressed. If set to Instant, playback will start as soon as Play is pressed"},
    { "lblBPM",        "Set the beats per minute for playback"},
    { "standaloneBPM", "Set the beats per minute for playback"},
+   { "setUIScale",    "Sets the overall size of the UI, allowing you to enlarge the controls for better visibility on large screens."},
    {0,0} // end sentinel
 };

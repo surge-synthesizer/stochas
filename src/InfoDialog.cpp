@@ -81,12 +81,11 @@ SeqInfoDialog::SeqInfoDialog(SeqGlob * glob, CptNotify *parent) :
    // big descr
    
 
-   mLblDescription = std::unique_ptr<TextEditor>(addStdTextEditor());
-   mLblDescription->setText(SeqImageX::infobox_txt, false);
-    
+   mLblDescription = std::unique_ptr<TextEditor>(addStdTextEditor());    
    mLblDescription->setFont(Font(14.0f, Font::plain));
    mLblDescription->setMultiLine(true);
    mLblDescription->setReadOnly(true);
+   mLblDescription->setText(SeqImageX::infobox_txt, false);
    //mLblDescription->setJustificationType(/*Justification::horizontallyJustified | */ Justification::top);
    //mLblDescription->setMinimumHorizontalScale(1.0f);
 

@@ -906,7 +906,7 @@ void SeqAudioProcessorEditor::cptValueChange(int cptId, int id)
       case SEQCTL_SET_UISCALE:
          resized();
          // this is cheezy I know, but I am not sure what hosts will not resize themselves properly
-         setAlertText("UI was resized and may require restart to properly render, depending on host");
+         setAlertText(SEQ_RESIZE_MSG);
          break;
       case SEQCTL_SET_COLOR:
          // fix tab colors
@@ -1006,7 +1006,7 @@ void SeqAudioProcessorEditor::cptValueChange(int cptId, int id)
       resized();
       updateUI(); // force setting tab to update the setting for scale factor
       // this is cheezy I know, but I am not sure what hosts will not resize themselves properly
-      setAlertText("UI was resized and may require restart to properly render, depending on host");
+      setAlertText(SEQ_RESIZE_MSG);
       break;
    default:
       jassertfalse;

@@ -343,6 +343,7 @@ in mono mode are 0..high val where 0 is off, and the following applies
 #define SEQMIDI_ACTION_RESET  6     // reset one of the above to default (use id above to signify which)
 #define SEQMIDI_ACTION_PBIAS  7     // poly bias (variable. value passed will be the cc value) 
 #define SEQMIDI_ACTION_PLAYBACK 8   // start/stop playback (not layer specific)
+#define SEQMIDI_ACTION_RECORD 9   // start/stop record (not layer specific)
 
 // midi mapping
 // targets (1-4 are layers 1-4)
@@ -365,6 +366,10 @@ in mono mode are 0..high val where 0 is off, and the following applies
 #define SEQMIDI_VALUE_PLAYBACK_START  1
 #define SEQMIDI_VALUE_PLAYBACK_STOP   2
 #define SEQMIDI_VALUE_PLAYBACK_TOGGLE 3
+// values for RECORD 
+#define SEQMIDI_VALUE_RECORD_START  4
+#define SEQMIDI_VALUE_RECORD_STOP   5
+#define SEQMIDI_VALUE_RECORD_TOGGLE 6
 
 // midi mapping
 // values for speed (use options panel clock divider code)

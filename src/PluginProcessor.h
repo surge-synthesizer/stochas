@@ -236,6 +236,8 @@ class SeqAudioProcessor  : public AudioProcessor, public SeqProcessorNotifierHel
    void changeStandaloneTempo();
    // given current tempo determine the current beat position
    double getStandaloneBeatPosition();
+   // called when the recording mode has changed
+   void recordingModeChanged();
    
    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SeqAudioProcessor)
 public:

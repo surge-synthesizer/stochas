@@ -394,6 +394,7 @@ void SeqMidiRow::addActionsToCombo(ComboBox & cb, bool addall)
    cb.addItem("Set Num Steps", SEQMIDI_ACTION_STEPS);
    cb.addItem("Set Poly Bias", SEQMIDI_ACTION_PBIAS);
    cb.addItem("Playback", SEQMIDI_ACTION_PLAYBACK);
+   cb.addItem("Record", SEQMIDI_ACTION_RECORD);
    if(addall) // this would not be added when the list is being used as a target
       cb.addItem("Reset Action", SEQMIDI_ACTION_RESET);
    
@@ -486,6 +487,13 @@ SeqMidiRow::fillValueListBasedOnAction()
       mCBValue.addItem("Start", SEQMIDI_VALUE_PLAYBACK_START);
       mCBValue.addItem("Stop", SEQMIDI_VALUE_PLAYBACK_STOP);
       mCBValue.addItem("Toggle", SEQMIDI_VALUE_PLAYBACK_TOGGLE);
+      mCBTarget.setSelectedId(SEQMIDI_TARGET_ALL, juce::dontSendNotification);
+      mCBTarget.setEnabled(false);
+      break;
+   case SEQMIDI_ACTION_RECORD:
+      mCBValue.addItem("Start", SEQMIDI_VALUE_RECORD_START);
+      mCBValue.addItem("Stop", SEQMIDI_VALUE_RECORD_STOP);
+      mCBValue.addItem("Toggle", SEQMIDI_VALUE_RECORD_TOGGLE);
       mCBTarget.setSelectedId(SEQMIDI_TARGET_ALL, juce::dontSendNotification);
       mCBTarget.setEnabled(false);
       break;

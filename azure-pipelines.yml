@@ -121,7 +121,7 @@ jobs:
       # original site
       wget -nv -O mac_packages https://github.com/surge-synthesizer/build-assets/raw/master/packages/Packages.dmg
       mv mac_packages $(brew --cache -s packages)
-      brew cask install packages
+      brew install --cask packages
       # path needed by packagesbuild
       PACKAGES_TARGET=build.install/mac/stochas
       mkdir -p ${PACKAGES_TARGET}

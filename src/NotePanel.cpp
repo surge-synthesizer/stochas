@@ -348,7 +348,7 @@ void NotePanel::mouseDrag(const MouseEvent & event)
          // clamp to 127
          newval = mMouseStartVal + mouseDist;
          newval = newval > 127 ? 127 : newval < 0 ? 0 : newval;
-         c->mTempValue = (char)newval;
+         c->mTempValue = (int8_t)newval;
          repaint();
       }
    }

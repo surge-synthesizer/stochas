@@ -516,7 +516,7 @@ StepPanel::mouseDrag(const MouseEvent &event)
 
                // write to a temporary value on the step itself. This will be written to seq on mouseUp
                // also used during paint
-               c->mTempValue = (char)newval;
+               c->mTempValue = (int8_t)newval;
             } 
             repaint();
          }

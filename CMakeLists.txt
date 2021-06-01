@@ -54,7 +54,9 @@ add_subdirectory(lib/JUCE)
 
 add_custom_target( git-info BYPRODUCTS ${CMAKE_BINARY_DIR}/geninclude/version.cpp
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-  COMMAND ${CMAKE_COMMAND} -D PROJECT_VERSION_MAJOR=${PROJECT_VERSION_MAJOR}  -D PROJECT_VERSION_MINOR=${PROJECT_VERSION_MINOR}
+  COMMAND ${CMAKE_COMMAND} -D PROJECT_VERSION_MAJOR=${PROJECT_VERSION_MAJOR}
+                           -D PROJECT_VERSION_MINOR=${PROJECT_VERSION_MINOR}
+                           -D PROJECT_VERSION_PATCH=${PROJECT_VERSION_PATCH}
                            -D STOCHASSRC=${CMAKE_SOURCE_DIR} -D STOCHASBLD=${CMAKE_BINARY_DIR}
                            -D AZURE_PIPELINE=${AZURE_PIPELINE}
                            -P ${CMAKE_SOURCE_DIR}/cmake/versiontools.cmake
@@ -87,7 +89,9 @@ juce_add_plugin(stochas
     PLUGIN_MANUFACTURER_CODE AuVi               # allows compatibility with older patches from AV days
     PLUGIN_CODE Stoc
     FORMATS VST3 ${VST2} AU Standalone     # The formats to build. Other valid formats are: AAX Unity VST AU AUv3
-    VST3_CATEGORIES ${STOCHAS_CATEGORY} 
+    VST3_CATEGORIES ${STOCHAS_CATEGORY}
+    USE_LEGACY_COMPATIBILITY_PLUGIN_CODE TRUE #needed to maintain plugin code compatibility with what we've released
+    VST3_CAN_REPLACE_VST2 TRUE  #hopefully this will allow old projects to load
     PRODUCT_NAME "Stochas")        # The name of the final executable, which can differ from the target name
 
 add_dependencies( stochas git-info )

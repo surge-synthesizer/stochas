@@ -26,7 +26,7 @@ public:
    int mCol;
    SeqGlob *mGlob;
    // if we are in the act of dragging, this will hold the temporary value (otherwise -1)
-   char mTempValue;
+   int8_t mTempValue;
    StepCpt();
    void paint(Graphics &g) override;
    // determine the color of the cell and the text content
@@ -131,7 +131,7 @@ class StepPanel : public Component, public KeyListener {
 
    // this keeps track of original value when mouse down event first happens
    // will be -99 if nothings going on
-   char mMouseStartVal;
+   int8_t mMouseStartVal;
 
    // keep track of starting item for chain drag
    StepCpt *mChainStartItem;

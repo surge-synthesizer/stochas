@@ -4,6 +4,9 @@ buildwin/
 buildlin/
 build32/
 .vscode/
+.idea/
+cmake-build-debug/
+cmake-build-release/
 build.install/
 *.code-workspace
 *.code-search

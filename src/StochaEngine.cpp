@@ -982,7 +982,22 @@ bool StochaEngine::processBlock(double beatPosition,    // which quarter measure
    //   note that the doc for this ppqPosition seems wrong, it seems to indicate "pulses per quarter note"      
    // 4.0 - each beat is 1/4 of a measure, so convert to whole measure
    // mPlayStartPosition - normally 0, but might represent a position where PLAY was manually started
-   double steppos_in_track = ((beatPosition - mPlayStartPosition) / bpb) * steps_per_measure * clock_div;
+    double steppos_in_track;
+    double tpos;
+   if(beatPosition < mPlayStartPosition) {
+       // this would occur if we had a manual start and then looped back around so now we are
+       // positioned before the manual start. we want our position to be relative to that position.
+       // eg 16 step sequence, manual playback started at 12, we've looped back around to 10 so we
+       // are -2 relative to start position. 16-2=14 so we should be at 14 because we want to be at
+       // 0 when we reach that manual start position.
+       auto t = mPlayStartPosition - beatPosition;
+       tpos = steps_per_measure - t;
+   } else
+   {
+       // in normal cases we are relative to start position (ie start position is beat 0)
+       tpos = beatPosition - mPlayStartPosition;
+   }
+    steppos_in_track = (tpos / bpb) * steps_per_measure * clock_div;
    
 #ifdef CUBASE_HACKS
    // this might be less than the above on cubase due to lead-in.

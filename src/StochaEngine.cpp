@@ -974,30 +974,40 @@ bool StochaEngine::processBlock(double beatPosition,    // which quarter measure
    // we will effectively divide the clock speed by this amount (ie smaller is slower clock)
    double clock_div = (double)mOverrideSpeed.get(sd->getClockDivider()) / SEQ_CLOCK_DENOM;
 
-   // step position in the track where one step equals some fraction of a measure
-   // as determined by steps per measure in the sequence data
-   // *note that this may be less than the last one we saw if play position jumped back
    // beatPosition - (could be fractional, indicates where in the track we are in quarters of a measure )
    //   each whole number is a beat (1/4 of a measure)
-   //   note that the doc for this ppqPosition seems wrong, it seems to indicate "pulses per quarter note"      
-   // 4.0 - each beat is 1/4 of a measure, so convert to whole measure
-   // mPlayStartPosition - normally 0, but might represent a position where PLAY was manually started
-    double steppos_in_track;
-    double tpos;
+   //   note that the doc for this ppqPosition seems wrong, it seems to indicate "pulses per quarter note"
+
+   // mPlayStartPosition - normally 0, but might represent a position where PLAY was manually started.
+   // We might be positioned before this (eg if the DAW looped back around after play was nmanually started)
+   // in which case we need to offset it so we don't get a negative value
+   // and also so that we continue to line up when the daw reaches the manual play start position again
+   double adjBeatPos;
+
    if(beatPosition < mPlayStartPosition) {
-       // this would occur if we had a manual start and then looped back around so now we are
-       // positioned before the manual start. we want our position to be relative to that position.
-       // eg 16 step sequence, manual playback started at 12, we've looped back around to 10 so we
-       // are -2 relative to start position. 16-2=14 so we should be at 14 because we want to be at
-       // 0 when we reach that manual start position.
-       auto t = mPlayStartPosition - beatPosition;
-       tpos = steps_per_measure - t;
+      // convert play start pos to steps
+      double q = (mPlayStartPosition*steps_per_measure)/bpb;
+      // next pattern start after that in steps
+      double r=((int)(q/steps_per_measure)+1)*steps_per_measure;
+      // number of steps before the next pattern start that mPlayStartPosition is
+      double bs = r-q;
+      // convert back to beats
+      double s=(bs * bpb)/steps_per_measure;
+      // add that to our beat pos. this is where we are in the pattern's cycle
+      // this should always be a positive value
+      adjBeatPos = beatPosition+s;
    } else
    {
        // in normal cases we are relative to start position (ie start position is beat 0)
-       tpos = beatPosition - mPlayStartPosition;
+      adjBeatPos = beatPosition - mPlayStartPosition;
+
    }
-    steppos_in_track = (tpos / bpb) * steps_per_measure * clock_div;
+   // step position in the track where one step equals some fraction of a measure
+   // as determined by steps per measure in the sequence data
+   // *note that this may be less than the last one we saw if play position jumped back
+   double steppos_in_track = (adjBeatPos / bpb) * steps_per_measure * clock_div;
+
+
    
 #ifdef CUBASE_HACKS
    // this might be less than the above on cubase due to lead-in.

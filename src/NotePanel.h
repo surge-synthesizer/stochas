@@ -42,7 +42,7 @@ class NoteCpt : public Component, public Label::Listener /*, public Button::List
    };   
    MyImageButton mBtnPlay;
    int mId; // which one it is
-   char mTempValue;
+   int8_t mTempValue;
    SeqGlob *mGlob; // note that this is not available from the ctor
    void labelTextChanged(Label *labelThatHasChanged) override;
    void resized() override;
@@ -106,7 +106,7 @@ class NotePanel : public Component, public StepRowNotify {
    void resized() override;
 
    // this keeps track of original value when mouse down event first happens
-   char mMouseStartVal;
+   int8_t mMouseStartVal;
    int mMouseOverRow;
 public:
    NotePanel(SeqGlob *glob);

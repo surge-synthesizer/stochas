@@ -100,11 +100,11 @@ StepCpt::getEffectiveColorAndText(juce::Colour &c, juce::String &txt, int layer)
    EditorState *e = mGlob->mEditorState;
    SeqDataBuffer *s = mGlob->mSeqBuf;
    SequenceLayer *d = s->getUISeqData()->getLayer(layer == -1 ? e->getCurrentLayer() : layer);
-   char probVal = d->getProb(mRow, mCol);
+   int8_t probVal = d->getProb(mRow, mCol);
    
    if (isStepInRange(layer)) {      
       EditorState::EditMode mode = e->getEditMode();
-      char val;
+      int8_t val;
       if (mTempValue != MOUSE_STARTVAL_INVALID)   // currently being edited
          val = mTempValue;
       else if (mode == EditorState::editingVelocity)
@@ -308,8 +308,8 @@ void StepPanel::check()
    }
 }
 
-static inline char
-getNewMonoVal(char curVal, int delta)
+static inline int8_t
+getNewMonoVal(int8_t curVal, int delta)
 {
    static int vals[] = {
       SEQ_PROB_OFF,
@@ -318,7 +318,7 @@ getNewMonoVal(char curVal, int delta)
       SEQ_PROB_MED_VAL,
       SEQ_PROB_HIGH_VAL
    };
-   static const char num = sizeof(vals) / sizeof(int);
+   static const int8_t num = sizeof(vals) / sizeof(int);
    int now = 0, i;
 
    delta = delta > (num - 1) ? (num - 1) : delta < -(num - 1) ? -(num - 1) : delta;
@@ -336,7 +336,7 @@ getNewMonoVal(char curVal, int delta)
    now += delta;
    // clamp to possible vals
    now = now<0 ? 0 : now>(num - 1) ? (num - 1) : now;
-   return (char)vals[now];
+   return (int8_t)vals[now];
 }
 
 bool StepPanel::keyPressed(const KeyPress & key, Component * /*originatingComponent*/)
@@ -646,7 +646,7 @@ void StepPanel::mouseUp(const MouseEvent & event)
             }
          }
 
-         data->setLength(c->mRow, c->mCol, (char)len);
+         data->setLength(c->mRow, c->mCol, (int8_t)len);
 
          // also set lengths to match if chord mode is active and any of the notes
          // in the chord with this root are turned on
@@ -654,7 +654,7 @@ void StepPanel::mouseUp(const MouseEvent & event)
             for (int i = 0; i < mChordHandler.numUsedIntervals(); i++) {
                int r = mChordHandler.getRowForInterval(i);
                if (r != -1 && data->getProb(r, c->mCol) != SEQ_PROB_OFF) {
-                  data->setLength(r, c->mCol, (char)len);
+                  data->setLength(r, c->mCol, (int8_t)len);
                }
             }
          }
@@ -731,8 +731,8 @@ void StepPanel::mouseUp(const MouseEvent & event)
          repaint();
       } // if mChainStartItem
 
-      char newProb, newVel, newOffs;
-      char oldProb, oldVel, oldOffs;
+      int8_t newProb, newVel, newOffs;
+      int8_t oldProb, oldVel, oldOffs;
       oldVel = newVel = data->getVel(c->mRow, c->mCol);
       oldProb = newProb = data->getProb(c->mRow, c->mCol);
       oldOffs = newOffs = data->getOffset(c->mRow, c->mCol);

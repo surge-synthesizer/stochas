@@ -85,9 +85,9 @@ class StochaEngine {
    struct StochaEvent {
       int mNumSamples;     // number of samples into the future that it needs to occur
                            // this will be negative if the slot is available
-      char mNote;          // the note value.
-      char mVelo;          // note velocity. If 0, it's a note off
-      char mChan;          // value from 1 to 16
+      int8_t mNote;          // the note value.
+      int8_t mVelo;          // note velocity. If 0, it's a note off
+      int8_t mChan;          // value from 1 to 16
       StochaEvent *mCorrespondingNoteOff; // if this is a note on event, this will point at it's note off
       StochaEvent() { clear(); }
       void clear() {
@@ -132,7 +132,7 @@ class StochaEngine {
    // add a midi note to the queue (note on and off). Len is in number of samples
    // returns false if it could not be added (not enough space)
    // if velo is 0 then only a note-off will be added (numSamples is ignored in this case)
-   bool addMidiEvent(int startSamples, char note,char velo, char chan, int numSamples);
+   bool addMidiEvent(int startSamples, int8_t note,int8_t velo, int8_t chan, int numSamples);
 
    /*
    This, when called will cause all future note-on messages to be deleted, and will move
@@ -244,7 +244,7 @@ public:
    keep calling it until it returns false, which will mean that no more events should occur
    in this block
    */
-   bool getMidiEvent(int numSamplesInBlock, int *pos, char *note, char *velo, char *chan);
+   bool getMidiEvent(int numSamplesInBlock, int *pos, int8_t *note, int8_t *velo, int8_t *chan);
    
    /*
    call after getting midi events for the block.
@@ -264,7 +264,7 @@ public:
    val = if cc, the cc value
    returns true if the data was handled (meaning it was found in the mapping)
    */
-   bool incomingMidiData(int type, char number, char chan, char val);
+   bool incomingMidiData(int type, int8_t number, int8_t chan, int8_t val);
 
    /*
    call this to reset the internal schema of the mapping state. This will cause a new one

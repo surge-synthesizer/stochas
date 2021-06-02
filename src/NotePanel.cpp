@@ -42,7 +42,7 @@ String NoteCpt::getTextualValue()
 {
    String ret;
    EditorState *e = mGlob->mEditorState;
-   char n;
+   int8_t n;
    char noteBuf[SEQ_NOTE_NAME_MAXLEN];
    SequenceLayer *data = mGlob->mSeqBuf->getUISeqData()->getLayer(e->getCurrentLayer());
    n = data->getCurNote(mId);   
@@ -58,10 +58,10 @@ void NoteCpt::trySetValue(const String & txt)
    String cleaned = txt.removeCharacters(" ").toUpperCase();
    String comp;
    for (int i = 0; i < 128; i++) {
-      comp = SeqScale::getMidiNoteName((char)i, e->getLowestOctave(), noteBuf);
+      comp = SeqScale::getMidiNoteName((int8_t)i, e->getLowestOctave(), noteBuf);
       comp = comp.removeCharacters(" ").toUpperCase();
       if (comp.compare(cleaned) == 0) {
-         data->setNote(mId,(char) i, true);
+         data->setNote(mId,(int8_t) i, true);
          mGlob->mSeqBuf->swap();
          break;
       }
@@ -96,7 +96,7 @@ NoteCpt::paint(Graphics & g)
    EditorState *e = mGlob->mEditorState;
    juce::Colour c;
    juce::Colour selClr;
-   char n;
+   int8_t n;
    bool locked = true;
    char noteBuf[SEQ_NOTE_NAME_MAXLEN];
    SequenceLayer *data = mGlob->mSeqBuf->getUISeqData()->getLayer(e->getCurrentLayer());
@@ -278,7 +278,7 @@ void NotePanel::refreshAll(bool fixColorsToo)
    for (int i = 0; i < SEQ_MAX_ROWS; i++) {
       if (fixColorsToo)
          mNotes[i].setupImage();
-      char n = data->getCurNote(mNotes[i].mId);
+      int8_t n = data->getCurNote(mNotes[i].mId);
       if (cust && n != -1) {
          const char *cs;
          cs = data->getNoteName(i);
@@ -360,7 +360,7 @@ void NotePanel::mouseDown(const MouseEvent & event)
       NoteCpt *c = static_cast<NoteCpt *>(event.eventComponent);
       SeqDataBuffer *buf = mGlob->mSeqBuf;
       SequenceLayer *data = buf->getUISeqData()->getLayer(mGlob->mEditorState->getCurrentLayer());
-      char n = data->getNote(c->mId, true);
+      int8_t n = data->getNote(c->mId, true);
 
 
 

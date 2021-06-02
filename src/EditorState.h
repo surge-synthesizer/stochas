@@ -78,11 +78,11 @@ public:
    juce::Colour getColorFor(coloredElements e);
    // given current velocity, returns next velocity value that would be needed when mouse is clicked
    // if next is false it cycles backwards
-   char velocityCycleNext(char curVel, bool next=true);
+   int8_t velocityCycleNext(int8_t curVel, bool next=true);
    // given current probability, returns next prob value when mouse is clicked
    // either in mono or poly mode
    // if next is false it cycles backwards
-   char probCycleNext(char curprob, bool mono, bool next=true);
+   int8_t probCycleNext(int8_t curprob, bool mono, bool next=true);
 
    int getCurrentLayer() { return mCurrentLayer; }
    void setCurrentLayer(int lay) {
@@ -106,16 +106,16 @@ public:
    void setMouseSense(int val);
 
    // default velocity for newly placed steps
-   char getDefaultVelocity();
-   void setDefaultVelocity(char val);
+   int8_t getDefaultVelocity();
+   void setDefaultVelocity(int8_t val);
 
    // lowest octave number (could be -2, -1, 0)
    int getLowestOctave();
    void setLowestOctave(int val);
 
    // default probability for newly placed steps
-   char getDefaultProbability(bool mono);
-   void setDefaultProbability(char val, bool mono);
+   int8_t getDefaultProbability(bool mono);
+   void setDefaultProbability(int8_t val, bool mono);
 
    // color theme where 0=dark and 1=light
    int getColorTheme();

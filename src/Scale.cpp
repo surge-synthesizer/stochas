@@ -150,7 +150,7 @@ SeqScale::getScaleName(int idx)
    return gScaleNames[idx].name;
 }
 
-const char * SeqScale::getMidiNoteName(char num, int lowOct, char * buf)
+const char * SeqScale::getMidiNoteName(int8_t num, int lowOct, char * buf)
 {
    int oct;
    if (num == SEQ_NOTE_OFF)
@@ -279,16 +279,16 @@ void SeqScale::startIterateNotesInScale(const char * scale, const char * key, in
    mScaleOffset = 0; // next position to read
 
    // current note
-   mCurNote = (char)((start_octave * 12) + mKeyIdx);
+   mCurNote = (int8_t)((start_octave * 12) + mKeyIdx);
 
 
 
 }
 
-char
+int8_t
 SeqScale::getNextNote()
 {
-   char ret = 0;
+   int8_t ret = 0;
    int sanity = 0;
    jassert(mScaleOffset != -1); // forgot to call startIterateNotesInScale
 
@@ -298,7 +298,7 @@ SeqScale::getNextNote()
       if (mCurNote < 127)
          mCurNote++;
       else {
-         mCurNote = (char)(mKeyIdx); // wrap to desired key in lowest octave
+         mCurNote = (int8_t)(mKeyIdx); // wrap to desired key in lowest octave
          mScaleOffset = 0;
       }
 
@@ -320,7 +320,7 @@ SeqScale::getNextNote()
    if (mCurNote < 127)
       mCurNote++;
    else {
-      mCurNote = (char)(mKeyIdx); // wrap to desired key in lowest octave;
+      mCurNote = (int8_t)(mKeyIdx); // wrap to desired key in lowest octave;
       mScaleOffset = 0;
    }
 

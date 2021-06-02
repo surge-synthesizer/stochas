@@ -263,7 +263,7 @@ void SeqAudioProcessor::requestManualPlayback(bool start)
 // and recording which can't be handled by stocha engines as they assume they are already 
 // playing, and don't know anything about recording
 void
-SeqAudioProcessor::handleMiniMidiMap(int type, char number, char chan, char)
+SeqAudioProcessor::handleMiniMidiMap(int type, int8_t number, int8_t chan, int8_t)
 {
    MiniMidiMapItem *mi;
    // this is an array sized to number of midi notes
@@ -338,28 +338,28 @@ void SeqAudioProcessor::handleIncomingMidi(bool currentlyPlaying,
          MidiMessage msg = it.getMessage();
          int position = it.samplePosition;
          bool remove = (passthru == SEQ_MIDI_PASSTHRU_NONE);
-         char midiNumber = 0; // note number or cc number
-         char midiChan = 0;
-         char midiType = 0; // noteon or cc
-         char midiVal = 0; // value for cc
+         int8_t midiNumber = 0; // note number or cc number
+         int8_t midiChan = 0;
+         int8_t midiType = 0; // noteon or cc
+         int8_t midiVal = 0; // value for cc
 
          if (msg.isNoteOn()) {
             midiType = SEQ_MIDI_NOTEON;
-            midiNumber = (char)msg.getNoteNumber();
+            midiNumber = (int8_t)msg.getNoteNumber();
          }
          else if (msg.isNoteOff()) {
             midiType = SEQ_MIDI_NOTEOFF;
-            midiNumber = (char)msg.getNoteNumber();
+            midiNumber = (int8_t)msg.getNoteNumber();
          }
          else if (msg.isController()) {
             midiType = SEQ_MIDI_CC;
-            midiNumber = (char)msg.getControllerNumber();
-            midiVal = (char)msg.getControllerValue();
+            midiNumber = (int8_t)msg.getControllerNumber();
+            midiVal = (int8_t)msg.getControllerValue();
          }
          else
             midiType = SEQ_MIDI_OTHER;
          
-         midiChan = (char)msg.getChannel();
+         midiChan = (int8_t)msg.getChannel();
 
          // let the UI know about the event
          mNotifier.setMidiEventOccurred(midiType, midiChan, midiNumber, midiVal);
@@ -424,23 +424,23 @@ SeqAudioProcessor::checkIncomingMidiForStartStop(MidiBuffer &midiMessages)
    for (const MidiMessageMetadata it : midiMessages) {
       MidiMessage msg = it.getMessage();
      
-      char midiNumber = 0; // note number or cc number
-      char midiChan = 0;
-      char midiType = 0; // noteon or cc
-      char midiVal = 0; // value for cc
+      int8_t midiNumber = 0; // note number or cc number
+      int8_t midiChan = 0;
+      int8_t midiType = 0; // noteon or cc
+      int8_t midiVal = 0; // value for cc
 
       if (msg.isNoteOn()) {
          midiType = SEQ_MIDI_NOTEON;
-         midiNumber = (char)msg.getNoteNumber();
+         midiNumber = (int8_t)msg.getNoteNumber();
       }
       else if (msg.isNoteOff()) {
          midiType = SEQ_MIDI_NOTEOFF;
-         midiNumber = (char)msg.getNoteNumber();
+         midiNumber = (int8_t)msg.getNoteNumber();
       }
       else
          continue; // don't care about it
 
-      midiChan = (char)msg.getChannel();
+      midiChan = (int8_t)msg.getChannel();
       handleMiniMidiMap(midiType, midiNumber, midiChan, midiVal);
    } // while get event
 
@@ -471,7 +471,7 @@ void SeqAudioProcessor::dispatchRecordedMidiNotes(MidiBuffer &midiNoteData)
          // indicate that we have a start note at the correct time
          mMidiRecord[noteNum].vel = msg.getVelocity();
          mMidiRecord[noteNum].stepPos = stepPos; 
-         mMidiRecord[noteNum].stepPosFrac = (char)frac;
+         mMidiRecord[noteNum].stepPosFrac = (int8_t)frac;
          if (frac > 49) // range is 0-99
             mMidiRecord[noteNum].stepPos++; // quantize to next position
 
@@ -538,8 +538,8 @@ void SeqAudioProcessor::checkforUIIncomingData(MidiBuffer & processedMidi)
       case SEQ_MIDI_NOTEON:
       case SEQ_MIDI_NOTEOFF: {
          SequenceLayer *dl = sd->getLayer(fifoData2);
-         char chan = dl->getMidiChannel();
-         char note = dl->getCurNote(fifoData3);
+         int8_t chan = dl->getMidiChannel();
+         int8_t note = dl->getCurNote(fifoData3);
          MidiMessage m;
          // note that this currently ignores automation override of midi channel (which I think is fine)
          if (fifoData1 == SEQ_MIDI_NOTEOFF) { // note off
@@ -1010,7 +1010,7 @@ void SeqAudioProcessor::processBlock(AudioSampleBuffer& buffer, MidiBuffer& midi
    // now see whether the engine has any midi notes that need playing
    // right now. only while playing or quiescing
    if (mPlaying || stoppingPlayback) { 
-      char midi_note = 0, midi_velo = 0, midi_chan = 0;
+      int8_t midi_note = 0, midi_velo = 0, midi_chan = 0;
       int midi_pos = 0;
       for (i = 0; i < SEQ_MAX_LAYERS; i++) {
          while (mStocha[i].getMidiEvent(samplesperblock, &midi_pos, &midi_note, &midi_velo, &midi_chan)) {

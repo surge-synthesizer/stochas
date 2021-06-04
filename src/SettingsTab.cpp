@@ -263,7 +263,7 @@ void SettingsTab::cptValueChange(int cptId, int value)
       break;
    case SEQCTL_SET_DEFMONO:
    {
-      char x=0;
+      int8_t x=0;
       switch (value) {
       case 0: x = SEQ_PROB_NEVER; break;
       case 1: x = SEQ_PROB_LOW_VAL; break;
@@ -274,10 +274,10 @@ void SettingsTab::cptValueChange(int cptId, int value)
       break;
    }
    case SEQCTL_SET_DEFPOLY:
-      em.setDefaultProbability((char)value, false);
+      em.setDefaultProbability((int8_t)value, false);
       break;
    case SEQCTL_SET_DEFVELO:
-      em.setDefaultVelocity((char)value);
+      em.setDefaultVelocity((int8_t)value);
       break;
    case SEQCTL_SET_OCTAVE:
       em.setLowestOctave(value);

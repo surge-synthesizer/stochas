@@ -10,6 +10,8 @@
 
 #ifndef SCALE_H_
 #define SCALE_H_
+
+#include <stdint.h>
 /**
 Scales, Keys, octaves, etc
 */
@@ -18,7 +20,7 @@ class SeqScale {
    const char *mScaleInt;  // points to current scale interval
    int mKeyIdx;            // points to a member of gNoteNames for the current key we are iterating
    int mScaleOffset;
-   char mCurNote;
+   int8_t mCurNote;
 
 public:
    /* Return the number of note names that exist in the chromatic progression (12) */
@@ -37,7 +39,7 @@ public:
       lowOct - specify the display offset for the octave (eg: -2, -1 or 0)  
       buf cannot exceed SEQ_NOTE_NAME_MAXLEN
    */
-   static const char *getMidiNoteName(char num, int lowOct, char *buf);
+   static const char *getMidiNoteName(int8_t num, int lowOct, char *buf);
 
    /* For transpose. Get text to display for a given id*/
    static const char *getTransposeText(int id);
@@ -61,7 +63,7 @@ public:
       start_octave is always 0 based
    */
    void startIterateNotesInScale(const char *scale, const char *key, int start_octave);
-   char getNextNote();
+   int8_t getNextNote();
 };
 
 #endif

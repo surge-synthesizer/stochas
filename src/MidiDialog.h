@@ -111,7 +111,7 @@ class SeqMidiDialog : public SeqModalDialog, public ListBoxModel {
    // copy current sequence data to local (the reverse happens in endDialog)
    void seqDataToLocal();
    // a midi msg is received (are we learning?)
-   void midiMsgReceived(char type, char chan, char num, char val);
+   void midiMsgReceived(int8_t type, int8_t chan, int8_t num, int8_t val);
    
 
    SeqMidiDialog(SeqGlob *glob, CptNotify *parent);

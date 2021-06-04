@@ -163,7 +163,7 @@ void SeqPersist::retrieveLayer(XmlElement * e, SequenceLayer * lay)
       }
       else if (ch->hasTagName("mchan")) {
          if (getKeyVal(ch, &ival))
-            lay->setMidiChannel((char)ival);
+            lay->setMidiChannel((int8_t)ival);
       }
       else if (ch->hasTagName("clkdiv")) {
          if (getKeyVal(ch, &ival))
@@ -198,9 +198,9 @@ void SeqPersist::retrieveLayer(XmlElement * e, SequenceLayer * lay)
             idx = note->getIntAttribute("idx");
             if (idx >= 0 && idx < SEQ_MAX_ROWS) {
                val = note->getIntAttribute("std");
-               lay->setNote(idx, (char)val, false);
+               lay->setNote(idx, (int8_t)val, false);
                val = note->getIntAttribute("cust");
-               lay->setNote(idx, (char)val, true);
+               lay->setNote(idx, (int8_t)val, true);
                sval = note->getStringAttribute("name");
                lay->setNoteName(idx, sval.getCharPointer());
             }
@@ -257,10 +257,10 @@ void SeqPersist::retrievePattern(XmlElement * e, SequenceLayer * lay)
                forEachXmlChildElementWithTagName(*cells, cell, "c") {
                   int cellidx = cell->getIntAttribute("idx");
                   if (cellidx >= 0 && cellidx < SEQ_MAX_STEPS) {
-                     lay->setProb(rowidx, cellidx, (char)cell->getIntAttribute("prob", SEQ_PROB_OFF), pat);
-                     lay->setVel(rowidx, cellidx, (char)cell->getIntAttribute("velo"), pat);
-                     lay->setLength(rowidx, cellidx, (char)cell->getIntAttribute("len"), pat);
-                     lay->setOffset(rowidx, cellidx, (char)cell->getIntAttribute("offs"), pat);
+                     lay->setProb(rowidx, cellidx, (int8_t)cell->getIntAttribute("prob", SEQ_PROB_OFF), pat);
+                     lay->setVel(rowidx, cellidx, (int8_t)cell->getIntAttribute("velo"), pat);
+                     lay->setLength(rowidx, cellidx, (int8_t)cell->getIntAttribute("len"), pat);
+                     lay->setOffset(rowidx, cellidx, (int8_t)cell->getIntAttribute("offs"), pat);
 
                      forEachXmlChildElementWithTagName(*cell, cs, "cs") {
                         int srcRow=cs->getIntAttribute("row");
@@ -450,12 +450,12 @@ bool SeqPersist::retrieve(SequenceData * targetData, const XmlElement * sourceDa
                idx = m->getIntAttribute("idx");
                if (idx >= 0 && idx < SEQMIDI_MAX_ITEMS) {
                   SeqMidiMapItem *mm = targetData->getMappingItem(idx);
-                  mm->mAction = (char)m->getIntAttribute("act");
-                  mm->mChannel = (char)m->getIntAttribute("chn");
-                  mm->mNote = (char)m->getIntAttribute("not");
-                  mm->mTarget = (char)m->getIntAttribute("tgt");
-                  mm->mType = (char)m->getIntAttribute("typ");
-                  mm->mValue = (char)m->getIntAttribute("val");
+                  mm->mAction = (int8_t)m->getIntAttribute("act");
+                  mm->mChannel = (int8_t)m->getIntAttribute("chn");
+                  mm->mNote = (int8_t)m->getIntAttribute("not");
+                  mm->mTarget = (int8_t)m->getIntAttribute("tgt");
+                  mm->mType = (int8_t)m->getIntAttribute("typ");
+                  mm->mValue = (int8_t)m->getIntAttribute("val");
                   mapcount++;
                }
             }

@@ -146,8 +146,8 @@ public:
 // for recording midi
 struct MidiRecordEvent {
    int stepPos; // overall position in daw project (needed because we need to subtract for length)
-   char vel;   
-   char stepPosFrac;
+   int8_t vel;   
+   int8_t stepPosFrac;
    MidiRecordEvent() : vel(0) {}
 };
 
@@ -207,7 +207,7 @@ class SeqAudioProcessor  : public AudioProcessor, public SeqProcessorNotifierHel
     MiniMidiMapItem *mMiniMidiMap[128]; // can't have more than start/stop/toggle
     void resetMiniMidiMap();
     void rebuildMiniMidiMap();
-    void handleMiniMidiMap(int type, char number, char chan, char val);
+    void handleMiniMidiMap(int type, int8_t number, int8_t chan, int8_t val);
 
    // this will handle it and possibly pass it on to processedMidi
    // if recording is active, note on/off data will be passed to recordedNotes

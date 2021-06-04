@@ -406,16 +406,16 @@ void SeqEditDialog::doSelectionAction()
    mGlob->mEditorState->getSelectedCells(&startx, &endx, &starty, &endy);
    int width = 1 + (endx - startx); // for repeat functionality
    int totsteps = sl->getNumSteps(); // for repeat
-   //char defVel = mGlob->mEditorState->getDefaultVelocity();
+   //int8_t defVel = mGlob->mEditorState->getDefaultVelocity();
    double mult=0.0;
-   char set=-1;     // if non-neg we are setting an absolute value to this
+   int8_t set=-1;     // if non-neg we are setting an absolute value to this
    int amt = mAdjAmount;
    if (amt == -999) // doesn't like using 0 as an item id
       amt = 0; 
    if (mAdjType == relative)
       mult = amt / 100.0;
    else
-      set = (char)amt;
+      set = (int8_t)amt;
 
    
    for (x = startx; x <= endx; x++) {
@@ -435,7 +435,7 @@ void SeqEditDialog::doSelectionAction()
          }
          case Actions::probSelection:
          { // set probability
-            char old = sl->getProb(y, x);
+            int8_t old = sl->getProb(y, x);
             if (set >-1) { // if absolute
                // note that this only changes the value of cells that are already on
                // if this is not desired, you will need to have the commented logic below
@@ -450,7 +450,7 @@ void SeqEditDialog::doSelectionAction()
                   int v=(int)((double)old * mult);
                   if (v > SEQ_PROB_ON)
                      v = SEQ_PROB_ON;
-                  sl->setProb(y, x, (char)v);
+                  sl->setProb(y, x, (int8_t)v);
                }
             }
                break;
@@ -465,7 +465,7 @@ void SeqEditDialog::doSelectionAction()
                   c += v; // adjust that value
                   if (c > 127)
                      c = 127;
-                  sl->setVel(y, x, (char)c);
+                  sl->setVel(y, x, (int8_t)c);
                }
             }
             break;

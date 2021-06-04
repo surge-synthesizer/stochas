@@ -70,11 +70,11 @@ juce::Colour EditorState::getColorFor(coloredElements e)
    return juce::Colour(r);
 }
 
-char EditorState::velocityCycleNext(char curVel, bool next)
+int8_t EditorState::velocityCycleNext(int8_t curVel, bool next)
 {
    
    if (curVel == 0) // use default
-      curVel = (char)mDefaultVelocity;
+      curVel = (int8_t)mDefaultVelocity;
    else if (next) { // cycle up
       if (curVel < SEQ_VELOCITY_STEP_1)
          curVel = SEQ_VELOCITY_STEP_1;
@@ -99,14 +99,14 @@ char EditorState::velocityCycleNext(char curVel, bool next)
    return curVel;
 }
 
-char EditorState::probCycleNext(char curprob, bool mono, bool next)
+int8_t EditorState::probCycleNext(int8_t curprob, bool mono, bool next)
 {
    if (curprob == SEQ_PROB_OFF) {
       // if we are off, we want to explicitly set to our default
       if (mono)
-         curprob = (char)mDefaultMono;
+         curprob = (int8_t)mDefaultMono;
       else
-         curprob = (char)mDefaultPoly;
+         curprob = (int8_t)mDefaultPoly;
    }
    else if (next) {// cycle to next
       if (curprob < SEQ_PROB_NEVER)
@@ -390,14 +390,14 @@ void EditorState::setMouseSense(int val)
 }
 
 
-char
+int8_t
 EditorState::getDefaultVelocity()
 {
-   return (char)mDefaultVelocity;   
+   return (int8_t)mDefaultVelocity;   
 }
 
 void
-EditorState::setDefaultVelocity(char val)
+EditorState::setDefaultVelocity(int8_t val)
 {
    jassert(val >= 0 && val <= 127);
    mDefaultVelocity = val;
@@ -415,16 +415,16 @@ void EditorState::setLowestOctave(int val)
    mLowestOctave = val;
 }
 
-char EditorState::getDefaultProbability(bool mono)
+int8_t EditorState::getDefaultProbability(bool mono)
 {
    if (mono)
-      return (char)mDefaultMono;
+      return (int8_t)mDefaultMono;
    else
-      return (char)mDefaultPoly;
+      return (int8_t)mDefaultPoly;
    
 }
 
-void EditorState::setDefaultProbability(char val, bool mono)
+void EditorState::setDefaultProbability(int8_t val, bool mono)
 {
    jassert(val >= SEQ_PROB_OFF && val <= SEQ_PROB_ON);
    if (mono)

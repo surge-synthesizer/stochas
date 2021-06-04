@@ -237,7 +237,7 @@ void SeqMidiDialog::seqDataToLocal()
    refreshAll();
 }
 
-void SeqMidiDialog::midiMsgReceived(char type, char chan, char num, char /*val*/)
+void SeqMidiDialog::midiMsgReceived(int8_t type, int8_t chan, int8_t num, int8_t /*val*/)
 {
    // we only care about SEQ_MIDI_NOTEON/OFF or SEQ_MIDI_CC
    if (type != SEQ_MIDI_NOTEON && type != SEQ_MIDI_NOTEOFF && type != SEQ_MIDI_CC)
@@ -414,13 +414,13 @@ SeqMidiRow::cptValueChange(int cptId, int value) {
       break;
    case SEQMIDI_CPT_CHAN: {
       SeqMidiMapItem m=mDlg->mMapping.getUnchecked(mRowNumber);
-      m.mChannel = (char)value;
+      m.mChannel = (int8_t)value;
       mDlg->mMapping.setUnchecked(mRowNumber, m);
       break;
    }
    case SEQMIDI_CPT_NOTE: {
       SeqMidiMapItem m = mDlg->mMapping.getUnchecked(mRowNumber);
-      m.mNote = (char)value;
+      m.mNote = (int8_t)value;
       mDlg->mMapping.setUnchecked(mRowNumber, m);
       break;
    }
@@ -439,7 +439,7 @@ void SeqMidiRow::comboBoxChanged(ComboBox * comboBox) {
    if (comboBox == &mCBAction) {
       // action changed
       // update the action
-      m.mAction = (char)(mCBAction.getSelectedId());
+      m.mAction = (int8_t)(mCBAction.getSelectedId());
       if (m.mAction == SEQMIDI_ACTION_PBIAS) {
          m.mType = SEQ_MIDI_CC;
          m.mValue = SEQMIDI_VALUE_VARIABLE;
@@ -462,13 +462,13 @@ void SeqMidiRow::comboBoxChanged(ComboBox * comboBox) {
    }
    else if (comboBox == &mCBTarget) {
       // target changed
-      m.mTarget = (char)(mCBTarget.getSelectedId());
+      m.mTarget = (int8_t)(mCBTarget.getSelectedId());
       mDlg->mMapping.setUnchecked(mRowNumber, m);
       
    }
    else if (comboBox == &mCBValue) {
       // value changed
-      m.mValue = (char)(mCBValue.getSelectedId());
+      m.mValue = (int8_t)(mCBValue.getSelectedId());
       mDlg->mMapping.setUnchecked(mRowNumber, m);
 
    }

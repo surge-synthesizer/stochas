@@ -105,7 +105,7 @@ void SeqChainDialog::setDesc()
    String srcLabel, destLabel;
    const char *midiName;
    const char *label;
-   char n;
+   int8_t n;
    char noteBuf[SEQ_NOTE_NAME_MAXLEN];
    
    n = data->getCurNote(mSrcRow);

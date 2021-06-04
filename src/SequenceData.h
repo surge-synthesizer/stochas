@@ -88,13 +88,13 @@ class SequenceLayer {
       // non-negative value denotes that the cell is "on"
       // in poly mode a value of 100 means always play
       // a value of 0 means never play and can only be activated by chains
-      char prob;     
+      int8_t prob;     
       // velocity 0-127
-      char velo;
+      int8_t velo;
       // length in number of cells 
       // 0 which is default, means single step, so 1 here means 2 steps)
-      char length;   
-      char offset; // a range from -50 to +50 that indicates how much to move the cell in time
+      int8_t length;   
+      int8_t offset; // a range from -50 to +50 that indicates how much to move the cell in time
       Cell() :prob(-1), velo(0), length(0), offset(0) {}
    };
 
@@ -108,7 +108,7 @@ class SequenceLayer {
       unsigned char col;      // source info
       unsigned char row;
       unsigned char targetrow; // which row it applies to
-      char flags;
+      int8_t flags;
       SourceCell() : col(0), row(0), targetrow(0), flags(0) {}
    };
    // each col has a chainsource which represents cells in other
@@ -140,7 +140,7 @@ class SequenceLayer {
    // Keep track of which midi note will play, and what the user wants to name it
    // in the case of custom
    struct Note {
-      char note;
+      int8_t note;
       char noteName[SEQ_MAX_NOTELABEL_LEN];
       Note() : note(0) {
          memset(noteName, 0, SEQ_MAX_NOTELABEL_LEN);
@@ -186,7 +186,7 @@ class SequenceLayer {
    int mClockDivider;
 
    // the midi channel that this layer plays on
-   char mMidiChannel;
+   int8_t mMidiChannel;
 
    // how long a note will play on each step. ie 100% will play that whole step, 50% will play half
    // 101% is legato (will play a little longer)
@@ -260,35 +260,35 @@ public:
    void copyScaleData(const SequenceLayer &src);
 
    // set velocity for a cell in the current pattern
-   void setVel(int row, int step, char vel, int pat=-1);
+   void setVel(int row, int step, int8_t vel, int pat=-1);
 
    // get a velocity for a cell, optionally specifying pattern
    // (current will be used if not specified)
-   char getVel(int row, int step, int pat = -1);
+   int8_t getVel(int row, int step, int pat = -1);
 
    // set probability for a cell (prob of -1 means turn it off)
-   void setProb(int row, int step, char prob, int pat=-1);
+   void setProb(int row, int step, int8_t prob, int pat=-1);
 
    // get probability for a cell, optionally specifying pattern 
    // (current will be used if not specified)
    // if the value is negative it means the cell is off
-   char getProb(int row, int step, int pat = -1);
+   int8_t getProb(int row, int step, int pat = -1);
 
    // set cell length. a value >0 means play for that many more cell lengths
    // (ie a value of 2 means play 3 cell lengths, the last of which is
    // shortened by the duty cycle)
-   void setLength(int row, int step, char length, int pat=-1);
+   void setLength(int row, int step, int8_t length, int pat=-1);
 
    // get length of a cell, optionally specifying a pattern
    // (current will be used if not specified)
-   char getLength(int row, int step, int pat = -1);
+   int8_t getLength(int row, int step, int pat = -1);
 
    // set cell offset in time. A value of -50 means start playing it half a step sooner
    // a value of 50 means play it half a step later
-   void setOffset(int row, int step, char length, int pat = -1);
+   void setOffset(int row, int step, int8_t length, int pat = -1);
 
    // get cell offset in time. value of -50 to 50. Default 0
-   char getOffset(int row, int step, int pat = -1);
+   int8_t getOffset(int row, int step, int pat = -1);
 
    // clear all data from cell
    void clearCell(int row, int step);
@@ -298,11 +298,11 @@ public:
    // set a note value to a midi note value
    // if custom is true, it is set on the custom note buffer,
    // otherwise on the standard
-   void setNote(int row, char val, bool custom);
+   void setNote(int row, int8_t val, bool custom);
 
    // get a midi note value for a row. if custom is true, it retrieves
    // from custom buffer, otherwise standard
-   char getNote(int row, bool custom);
+   int8_t getNote(int row, bool custom);
 
    // get the custom name (label) of a note row
    // this is a user specified name of length SEQ_MAX_NOTELABEL_LEN
@@ -313,11 +313,11 @@ public:
    void setNoteName(int row, const char *name);
 
    // get midi note from "current" (either custom or standard)
-   char getCurNote(int row);
+   int8_t getCurNote(int row);
 
    // !!! TESTING this is inefficient
    // returns -1 if not exist
-   int getRowForNote(char note);
+   int getRowForNote(int8_t note);
 
    // set us to point to either custom or standard
    // which determines which notes play
@@ -372,10 +372,10 @@ public:
    void setClockDivider(int c);
 
    // determine the midi channel used for this layer's playback
-   char getMidiChannel();
+   int8_t getMidiChannel();
 
    // determine the midi channel used for this layer's playback
-   void setMidiChannel(char val);
+   void setMidiChannel(int8_t val);
    
    // determine how many steps are in each measure. This defines
    // the time signature. eg 12 steps would be 3/4
@@ -423,13 +423,13 @@ public:
    mapping dlg for internal storage
 */
 struct SeqMidiMapItem {
-   char mAction;        // See SEQMIDI_ACTION_*
-   char mTarget;        // A value of 1-4 or SEQMIDI_TARGET_ALL
-   char mValue;         // See SEQMIDI_VALUE_* varies depending on action
-   char mType;          // type of msg see SEQ_MIDI_*
-   char mNote;          // midi note/cc to recognize 0-127
-   char mChannel;       // midi channel to recognize 1-16
-   SeqMidiMapItem(char act, char targ, char val, char type, char note, char chan) :
+   int8_t mAction;        // See SEQMIDI_ACTION_*
+   int8_t mTarget;        // A value of 1-4 or SEQMIDI_TARGET_ALL
+   int8_t mValue;         // See SEQMIDI_VALUE_* varies depending on action
+   int8_t mType;          // type of msg see SEQ_MIDI_*
+   int8_t mNote;          // midi note/cc to recognize 0-127
+   int8_t mChannel;       // midi channel to recognize 1-16
+   SeqMidiMapItem(int8_t act, int8_t targ, int8_t val, int8_t type, int8_t note, int8_t chan) :
       mAction(act), mTarget(targ), mValue(val), mType(type), mNote(note), mChannel(chan) {}
    SeqMidiMapItem()  { clear(); }
    // reset map item to it's default state
@@ -682,7 +682,7 @@ public:
    // get the current midi event (or 0 if there is none)
    // parameters are optional and return the values for the event
    // (see setMidiEventOccurred)
-   bool getMidiEventOccurred(char *type, char *channel, char *number, char *value);
+   bool getMidiEventOccurred(int8_t *type, int8_t *channel, int8_t *number, int8_t *value);
 
    bool getMuteState(int layer);
 
@@ -707,7 +707,7 @@ public:
    // channel
    // number - cc or note number
    // value - cc value or velocity
-   void setMidiEventOccurred(char type, char channel, char number, char value);
+   void setMidiEventOccurred(int8_t type, int8_t channel, int8_t number, int8_t value);
 
    // set a new playposition (-1 = off)
    void setPlayPosition(int layer, int val);

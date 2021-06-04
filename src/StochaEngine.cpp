@@ -13,7 +13,7 @@
 #define INVALIDREALPOS -1.0
 //#include <juce_core/logging/juce_Logger.h>
 
-bool StochaEngine::addMidiEvent(int startSamples, char note, char velo, char chan, int numSamples)
+bool StochaEngine::addMidiEvent(int startSamples, int8_t note, int8_t velo, int8_t chan, int numSamples)
 {
    int transp,i;
    StochaEvent *a = nullptr, *b = nullptr, *cur = nullptr;
@@ -27,7 +27,7 @@ bool StochaEngine::addMidiEvent(int startSamples, char note, char velo, char cha
    else if (transp < 0)
       note = 0;
    else
-      note = (char)transp;
+      note = (int8_t)transp;
 
    // see if we must combine with another playing note   
    // or stop that one before this one starts
@@ -257,10 +257,10 @@ StochaEngine::playPositionChange(int samples_per_step, // samples per sequencer 
          // add it to our tracker of notes that have played
          mDependencySource[position].set(mMulti[i].rowToPlay);
 
-         char whichNote = sd->getCurNote(mMulti[i].rowToPlay);
+         int8_t whichNote = sd->getCurNote(mMulti[i].rowToPlay);
          if (whichNote != -1) { // -1 is the "off" note, which we ignore
             int gruuv;
-            char velocity = sd->getVel(mMulti[i].rowToPlay, position, pat);
+            int8_t velocity = sd->getVel(mMulti[i].rowToPlay, position, pat);
             int humanpos, humanvel, humanlen;
 
             // get additional length to play (0 means play one step, 
@@ -327,7 +327,7 @@ StochaEngine::playPositionChange(int samples_per_step, // samples per sequencer 
                   h = 1;
                else if (h > 127)
                   h = 127;
-               velocity = (char)h;
+               velocity = (int8_t)h;
             }
 
             /////////////////////
@@ -354,7 +354,7 @@ StochaEngine::playPositionChange(int samples_per_step, // samples per sequencer 
                if (!addMidiEvent(gruuvOffset,
                   whichNote,            // which note to play
                   velocity,             // velocity
-                  (char)mOverrideOutputChannel.get(sd->getMidiChannel()), // midi channel to play on
+                  (int8_t)mOverrideOutputChannel.get(sd->getMidiChannel()), // midi channel to play on
                   lensize))             // size in steps + size of one step (which is adjusted by duty cycle)
                   return false;
             }
@@ -429,7 +429,7 @@ int StochaEngine::getRandomSingle(int position)
 
          // add it assuming it's not mandatorily off, and has some value
          if (!mandatoryOff.test(i)) {
-            char prob = sd->getProb(i, position, pat);
+            int8_t prob = sd->getProb(i, position, pat);
             if (prob != SEQ_PROB_OFF) {
                if (prob > 0) {
                   // the normal case
@@ -1142,7 +1142,7 @@ void StochaEngine::setPlaybackStartPosition(double pos)
 }
 
 bool
-StochaEngine::getMidiEvent(int numSamplesInBlock, int * pos, char * note, char * velo, char *chan)
+StochaEngine::getMidiEvent(int numSamplesInBlock, int * pos, int8_t * note, int8_t * velo, int8_t *chan)
 {
    StochaEvent *cur = nullptr;
    bool rc = true;
@@ -1210,9 +1210,9 @@ StochaEngine::doneBlock(int numSamplesInBlock)
 
 bool
 StochaEngine::incomingMidiData(int type,     // note on, off or cc
-                               char number,  // note number or cc number                               
-                               char chan,    // channel
-                               char val)     // if cc number will be cc val
+                               int8_t number,  // note number or cc number                               
+                               int8_t chan,    // channel
+                               int8_t val)     // if cc number will be cc val
 {
    bool ret = false;
    if (!mMappingIsValid)

@@ -1116,7 +1116,7 @@ void SeqAudioProcessorEditor::respondFileChooser()
       for (int i = 0; i < SEQ_MAX_ROWS - 1; i++)
       {
          char *nn = sl->getNoteName(i);
-         char n = sl->getCurNote(i);
+         int8_t n = sl->getCurNote(i);
          noteLines.append(String::formatted("%d \"", (int)n), 5);
          noteLines.append(nn, SEQ_MAX_NOTELABEL_LEN);
          noteLines.append("\"\n", 2);
@@ -1142,7 +1142,7 @@ void SeqAudioProcessorEditor::respondFileChooser()
             theName = pair[1].removeCharacters("\"");
             sl->setNoteName(i, theName.getCharPointer());
             if (nval < 128 && nval > -1)
-               sl->setNote(i, (char)nval, true);
+               sl->setNote(i, (int8_t)nval, true);
          }
       }
       mGlob.mSeqBuf->swap(); // since we may have called setNote
@@ -1442,7 +1442,7 @@ void SeqAudioProcessorEditor::timerCallback(int timerID)
 }
 void SeqAudioProcessorEditor::checkForRecordedNotes()
 {
-   char prob;
+   int8_t prob;
    int midiRecNum, midiRecVel, midiRecLen, midiRecPos;
    SeqDataBuffer *sd = mGlob.mSeqBuf;
    SequenceData *s = sd->getUISeqData();
@@ -1454,12 +1454,12 @@ void SeqAudioProcessorEditor::checkForRecordedNotes()
    while (mGlob.mAudNotify->getCompletedMidiNote(&midiRecNum, &midiRecVel, &midiRecLen, &midiRecPos))
    {
       // determine if note falls into active row (todo: getRowForNote is inefficient function!)
-      row = lyr->getRowForNote((char)midiRecNum);
+      row = lyr->getRowForNote((int8_t)midiRecNum);
       if (row != -1)
       {
          lyr->setProb(row, midiRecPos, prob);
-         lyr->setLength(row, midiRecPos, (char)midiRecLen);
-         lyr->setVel(row, midiRecPos, (char)midiRecVel);
+         lyr->setLength(row, midiRecPos, (int8_t)midiRecLen);
+         lyr->setVel(row, midiRecPos, (int8_t)midiRecVel);
          changed = true;
       }
    }
@@ -1472,7 +1472,7 @@ void SeqAudioProcessorEditor::mainTimer()
 {
    // this timer is running at 30hz
 
-   char type, chan, num, val;
+   int8_t type, chan, num, val;
 
    // tell the play panel to see whether one of the play lights needs to be lit
    mPlayPanel.check();

@@ -60,7 +60,7 @@ int SeqProcessorNotifier::getCurrentPattern(int layer)
 }
 
 bool 
-SeqProcessorNotifier::getMidiEventOccurred(char *type, char *channel, char *number, char *value)
+SeqProcessorNotifier::getMidiEventOccurred(int8_t *type, int8_t *channel, int8_t *number, int8_t *value)
 {
    int val = mMidiEvent.exchange(0);
    if (val) {
@@ -96,7 +96,7 @@ bool SeqProcessorNotifier::getStepPlayedState(int layer, int position, int noten
 }
 
 void 
-SeqProcessorNotifier::setMidiEventOccurred(char type, char channel, char number, char value)
+SeqProcessorNotifier::setMidiEventOccurred(int8_t type, int8_t channel, int8_t number, int8_t value)
 {
    int sum = (type << 24) | (channel << 16) | (number << 8) | value;
    mMidiEvent.set(sum);
@@ -724,7 +724,7 @@ SequenceLayer::setNumSteps(int val)
       for (int j = 0; j < mNumRows; j++) {
          Cell *c = &mPats[mCurrentPattern].mRows[j].mSteps[i];
          if (/*i + */c->length >= mNumSteps-1) {
-            setLength(j, i, (char)(mNumSteps - 1)); // (i + 1)));
+            setLength(j, i, (int8_t)(mNumSteps - 1)); // (i + 1)));
          }
       }
    }
@@ -732,7 +732,7 @@ SequenceLayer::setNumSteps(int val)
 }
 
 void 
-SequenceLayer::setVel(int row, int step, char vel, int pat) 
+SequenceLayer::setVel(int row, int step, int8_t vel, int pat) 
 {
    jassert(row >= 0 && row < SEQ_MAX_ROWS);
    jassert(step >= 0 && step < SEQ_MAX_STEPS);
@@ -742,7 +742,7 @@ SequenceLayer::setVel(int row, int step, char vel, int pat)
    mPats[pat].mRows[row].mSteps[step].velo = vel;
 }
 
-char 
+int8_t 
 SequenceLayer::getVel(int row, int step, int pat) 
 {
    jassert(row >= 0 && row < SEQ_MAX_ROWS);
@@ -754,7 +754,7 @@ SequenceLayer::getVel(int row, int step, int pat)
 }
 
 void 
-SequenceLayer::setProb(int row, int step, char prob, int pat) 
+SequenceLayer::setProb(int row, int step, int8_t prob, int pat) 
 {
    jassert(row >= 0 && row < SEQ_MAX_ROWS);
    jassert(step >= 0 && step < SEQ_MAX_STEPS);
@@ -784,7 +784,7 @@ SequenceLayer::setProb(int row, int step, char prob, int pat)
    }
 }
 
-char 
+int8_t 
 SequenceLayer::getProb(int row, int step, int pat) 
 {
    jassert(row >= 0 && row < SEQ_MAX_ROWS);
@@ -797,7 +797,7 @@ SequenceLayer::getProb(int row, int step, int pat)
 }
 
 void 
-SequenceLayer::setLength(int row, int step, char length, int pat) 
+SequenceLayer::setLength(int row, int step, int8_t length, int pat) 
 {
    jassert(row >= 0 && row < SEQ_MAX_ROWS);
    jassert(step >= 0 && step < SEQ_MAX_STEPS);
@@ -808,7 +808,7 @@ SequenceLayer::setLength(int row, int step, char length, int pat)
    mPats[pat].mRows[row].mSteps[step].length = length;
 }
 
-char
+int8_t
 SequenceLayer::getLength(int row, int step, int pat) 
 {
    jassert(row >= 0 && row < SEQ_MAX_ROWS);
@@ -820,7 +820,7 @@ SequenceLayer::getLength(int row, int step, int pat)
    return mPats[pat].mRows[row].mSteps[step].length;
 }
 
-void SequenceLayer::setOffset(int row, int step, char offset, int pat)
+void SequenceLayer::setOffset(int row, int step, int8_t offset, int pat)
 {
    jassert(row >= 0 && row < SEQ_MAX_ROWS);
    jassert(step >= 0 && step < SEQ_MAX_STEPS);
@@ -831,7 +831,7 @@ void SequenceLayer::setOffset(int row, int step, char offset, int pat)
    mPats[pat].mRows[row].mSteps[step].offset = offset;
 }
 
-char SequenceLayer::getOffset(int row, int step, int pat)
+int8_t SequenceLayer::getOffset(int row, int step, int pat)
 {
    jassert(row >= 0 && row < SEQ_MAX_ROWS);
    jassert(step >= 0 && step < SEQ_MAX_STEPS);
@@ -852,7 +852,7 @@ void SequenceLayer::clearCell(int row, int step)
 
 void SequenceLayer::copyCell(int targRow, int targStep, int srcRow, int srcStep)
 {
-   char srcProb;
+   int8_t srcProb;
    // clear out chains from target (if any)
    clearCell(targRow, targStep);
 
@@ -879,14 +879,14 @@ void SequenceLayer::copyCell(int targRow, int targStep, int srcRow, int srcStep)
 }
 
 void 
-SequenceLayer::setNote(int row, char val, bool custom) 
+SequenceLayer::setNote(int row, int8_t val, bool custom) 
 {
    jassert(row >= 0 && row < SEQ_MAX_ROWS);
    WhichNoteSet s = custom ? customSet : standardSet;
    mNoteSets[s].notes[row].note = val;
 }
 
-char 
+int8_t 
 SequenceLayer::getNote(int row, bool custom) 
 {
    jassert(row >= 0 && row < SEQ_MAX_ROWS);
@@ -911,7 +911,7 @@ SequenceLayer::setNoteName(int row, const char * name)
 
 // get note from "current" (either custom or standard)
 
-char 
+int8_t 
 SequenceLayer::getCurNote(int row) 
 {
    jassert(row >= 0 && row < SEQ_MAX_ROWS);
@@ -919,7 +919,7 @@ SequenceLayer::getCurNote(int row)
 }
 
 int 
-SequenceLayer::getRowForNote(char note)
+SequenceLayer::getRowForNote(int8_t note)
 {
    NoteSet *set = &mNoteSets[mCurrentNoteSet];
    for (int i = SEQ_MAX_ROWS-1; i >= 0; i--) {
@@ -1018,14 +1018,14 @@ SequenceLayer::setClockDivider(int c)
    mClockDivider = c;
 }
 
-char
+int8_t
 SequenceLayer::getMidiChannel() 
 {
    return mMidiChannel;
 }
 
 void
-SequenceLayer::setMidiChannel(char val) 
+SequenceLayer::setMidiChannel(int8_t val) 
 {
    jassert(val >= 1 && val <= 16);
    mMidiChannel = val;

@@ -1,5 +1,5 @@
 # Stochas 
-[Main web site](https://surge-synth-team.org/stochas/)
+[Main web site](https://stochas.org)
 
 ## Download
 To download pre-built binaries and installations go [here](https://github.com/surge-synthesizer/stochas/releases)

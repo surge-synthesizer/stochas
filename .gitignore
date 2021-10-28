@@ -10,3 +10,4 @@ cmake-build-release/
 build.install/
 *.code-workspace
 *.code-search
+CMakeUserPresets.json

@@ -11,22 +11,6 @@
 #include "CommonComponents.h"
 #include "NotePanel.h"
 
-// this is temporary
-void
-logMessage(String msg)
-{
-   std::unique_ptr<FileOutputStream> os;
-   String fn;
-   File dir = File::getSpecialLocation(File::currentExecutableFile);
-   fn = dir.getFullPathName();
-   fn.append(".log", 0xFF);
-   os = File(fn).createOutputStream();
-   if (os != nullptr) {
-      msg += "\n";
-      os->writeText(msg, false, false,0);
-   }
-}
-
 
 
 /*===========================================================================================

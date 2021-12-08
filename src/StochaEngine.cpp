@@ -192,7 +192,7 @@ bool StochaEngine::getMuteState()
 }
 
 bool
-StochaEngine::playPositionChange(int samples_per_step, // samples per sequencer step 
+StochaEngine::playPositionChange(int samples_per_step, // samples per sequencer step
                                  int step_position, // which step position is next
                                  int samples_until)  // num samples between now and next step pos                                 
 {
@@ -934,10 +934,12 @@ StochaEngine::quiesceMidi(bool moveNoteOffs)
             // we will really have a note off unless you are an idiot
             jassert(cur->mCorrespondingNoteOff != nullptr);
             cur->mCorrespondingNoteOff->clear(); // remove it's corresponding note off event
+            mNumActiveNoteOffEvents--;
             cur->clear(); // and remove itself
          }
       }
    }
+   mNumActiveNoteOnEvents=0;
 
    if (moveNoteOffs) { // find any remaining note off events and move them forward
       for (i = 0; i < SEQ_MAX_MIDI_EVENTS; i++) {
@@ -950,12 +952,6 @@ StochaEngine::quiesceMidi(bool moveNoteOffs)
    }
 }
 
-/*
-TODO - some issues related to boundaries:
-- If playing a looped section (like one measure), we still seem to be getting a dummy note at
-the end of the measure (length 0)
-
-*/
 bool StochaEngine::processBlock(double beatPosition,    // which quarter measure we are on
    double sampleRate,      // current sample rate
    int numSamplesInBlock,  // number of samples in the block
@@ -1038,40 +1034,35 @@ bool StochaEngine::processBlock(double beatPosition,    // which quarter measure
    // which step we need to look at next (in step count) relative to track
    int next_step_position = 0;
 
-   // somewhat of a hack here. If the play position jumped back, or is jumping forward more than one
+   // If the play position jumped back, or is jumping forward more than one
    // step, we need to make sure we reposition properly
    if ((steppos_in_track < mOldStepPosInTrack) ||
       (mCurrentStepPosition != INVALIDPOS && steppos_in_track >= (double)(mCurrentStepPosition + 1))) {
 
       // force to look at next upcoming
       mCurrentStepPosition = INVALIDPOS;
-      quiesceMidi(false);  // there may be events that were already added for step which
-                           // hasnt occurred yet, remove them      
+      quiesceMidi(false);   // there may be events that were already added for step which
+                                        // have not occurred yet. remove them
    }
 
    mOldStepPosInTrack = steppos_in_track;
    
    // 1. determine the next step position that we need to deal with (mCurrentStepPosition is the last one we played)
    if (mCurrentStepPosition == INVALIDPOS) {
-      // if we are just starting playback
-
-      /*I noticed that it's not always a whole number, even when it's positioned exactly on start of
-        measure. So round to 4 decimal places seems to fix things. Although I can't come up with any
-        valid reason for that specific value. */
-      double rounded = ((double)((juce::int64)(steppos_in_track*10000.0))) / 10000.0;
-      
-      // none have played yet, so get the first upcoming one
-      if ((double)((int)steppos_in_track) == rounded) { 
-         // we are exactly on that step position, so this is it
-         next_step_position = (int)steppos_in_track;
-      }
-      else if (steppos_in_track < 0) {
-         // in cubase and maybe others, the step position can be negative when playing from 0 position
-         next_step_position = 0;
-      } else {
-         // we are not exactly on a position, so it will be the next one
-         next_step_position = (int)steppos_in_track + 1;
-      }
+       // if we are just starting playback (or have looped around)
+       if (steppos_in_track < 0) {
+           // in cubase (and maybe others), the step position can be negative when playing from 0 position
+           next_step_position = 0;
+       } else {
+           // Since we looped or are starting playback:
+           // If we are less than half-way between one step and another step, we will play the first step
+           // (eg for step 0, if we are at 0.4 we will still play step 0 even though it's actually in the past).
+           // this is to solve the issue of looping when a sample block does not start at the beginning of the loop.
+           // if this becomes problematic for people (cant see how it would) then we could always round down at eg 0.1
+           // and round up otherwise. i'm just trying to handle the case of eg combination of a very large block
+           // size and a very high tempo
+           next_step_position = roundToInt(steppos_in_track);
+       }
    }
    else {
       // we played one already, so we want the next one
@@ -1091,11 +1082,11 @@ bool StochaEngine::processBlock(double beatPosition,    // which quarter measure
    double last_step_pos_in_block = steppos_in_track + (numSamplesInBlock *steps_per_sample);
    while (next_half_step_pos < last_step_pos_in_block) {
       // yes, it would occur in this block
-      // 4. if so, determine how many samples are occuring between now and the next _step_ position
+      // 4. if so, determine how many samples are occurring between now and the next _step_ position
       int samples_until = (int)(((double)next_step_position - steppos_in_track)*spss);
 
-      // if this is negative you have issues with play position (again)
-      jassert(samples_until >= 0);
+      if(samples_until < 0)
+          samples_until=0; // just play it now (this would happen if we rounded down above)
 
       // 6. insert event with that many samples and that step position
 #ifdef CUBASE_HACKS
@@ -1172,7 +1163,14 @@ StochaEngine::getMidiEvent(int numSamplesInBlock, int * pos, int8_t * note, int8
       for (int i = 0; i < SEQ_MAX_MIDI_EVENTS; i++) {
          cur = &mEvents[i];
          if (cur->mNumSamples != -1) { // it's occupied
-            if (cur->mNumSamples < numSamplesInBlock) { // it needs to be sent out with this block
+             // regarding the -1 here: this is to try to resolve the issue of looped playback
+             // when it loops back around and we get an extra note. I'm guessing that its because we
+             // are putting out a note in a block prior to where it actually should be put out.
+             // This may be due to rounding(?)
+             // note that this issue only crops up with certain block sizes and tempos obviously because
+             // it happens (i think) when the event is at the very end of the block and should actually
+             // be fired in the following block.
+            if (cur->mNumSamples < numSamplesInBlock-1) { // it needs to be sent out with this block
                *pos = cur->mNumSamples;
                *note = cur->mNote;
                *velo = cur->mVelo;
@@ -1194,7 +1192,6 @@ void
 StochaEngine::doneBlock(int numSamplesInBlock)
 {
    int x;
-   
    for (int i = 0; i < SEQ_MAX_MIDI_EVENTS; i++) {
       x = mEvents[i].mNumSamples;
       if (x != -1) { // if active
@@ -1205,7 +1202,7 @@ StochaEngine::doneBlock(int numSamplesInBlock)
          mEvents[i].mNumSamples = x;
       }
    }
-   
+
 }
 
 bool

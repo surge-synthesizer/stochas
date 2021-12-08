@@ -194,7 +194,4 @@ private:
 };
 
 
-// todo remove this at some point
-void logMessage(String msg);
-
 #endif  // PLUGINEDITOR_H_INCLUDED

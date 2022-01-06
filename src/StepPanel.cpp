@@ -111,7 +111,14 @@ StepCpt::getEffectiveColorAndText(juce::Colour &c, juce::String &txt, int layer)
          val = d->getVel(mRow, mCol);
       else if (mode == EditorState::editingOffset)
          val = d->getOffset(mRow, mCol);
-      else
+      else if (mode == EditorState::editingTriggers) {
+        int v=d->getLength(mRow, mCol);
+        // length less than 0 represents retrigger amount
+        if (v < 0)
+          val = (-v) + 1;
+        else
+          val = 1;
+      } else
          val = probVal;
       
 
@@ -188,6 +195,15 @@ StepCpt::getEffectiveColorAndText(juce::Colour &c, juce::String &txt, int layer)
          }
 
          break;
+      case EditorState::editingTriggers:
+        if (val > 1 ||probVal != SEQ_PROB_OFF) {
+          txt = String().formatted("%d", val);
+          c = e->getColorFor(EditorState::coloredElements::stepHighVel);
+        } else {
+          c = e->getColorFor(EditorState::coloredElements::stepOff);
+        }
+
+        break;
       default:
          jassert(false);
          break;
@@ -500,6 +516,10 @@ StepPanel::mouseDrag(const MouseEvent &event)
                   // clamp to -50 to +50
                   newval = mMouseStartVal + mouseDist;
                   newval = newval > 50 ? 50 : newval < -50 ? -50 : newval;
+               } else if (e->getEditMode() == EditorState::editingTriggers) {
+                 // clamp to 1 to max triggers
+                 newval = mMouseStartVal + mouseDist;
+                 newval = newval > SEQ_MAX_RETRIGGER ? SEQ_MAX_RETRIGGER : newval < 1 ? 1 : newval;
                }
                else if (data->isMonoMode()) {
                   // since there are limited possible values in monoMode, make the mouse less sensitive
@@ -602,6 +622,14 @@ void StepPanel::mouseDown(const MouseEvent & event)
          if (data->getProb(c->mRow, c->mCol) != SEQ_PROB_OFF) // only allow offset edit on "on" notes
             mMouseStartVal = data->getOffset(c->mRow, c->mCol);
       }
+      else if (e->getEditMode() == EditorState::editingTriggers) {
+         auto v = data->getLength(c->mRow, c->mCol);
+         if(v < 0) {
+           mMouseStartVal = (-v)+1;
+         } else {
+           mMouseStartVal = 1;
+         }
+      }
       else if (e->getEditMode() == EditorState::editingSteps) {
          mMouseStartVal = data->getProb(c->mRow, c->mCol);
 
@@ -634,6 +662,10 @@ void StepPanel::mouseUp(const MouseEvent & event)
          jassert(c != nullptr);
          int totWidth = data->getNumSteps();
          int len = data->getLength(c->mRow, c->mCol);
+         if(len < 0) {
+           // if cell is retrigger mode (len < 0) then we'll just clear that
+           len=0;
+         }
          if (rightMouse) // right mouse click resets length to 0
             len = 0;
          else {
@@ -731,11 +763,18 @@ void StepPanel::mouseUp(const MouseEvent & event)
          repaint();
       } // if mChainStartItem
 
-      int8_t newProb, newVel, newOffs;
-      int8_t oldProb, oldVel, oldOffs;
+      int8_t t;
+      int8_t newProb, newVel, newOffs, newTrig;
+      int8_t oldProb, oldVel, oldOffs, oldTrig;
       oldVel = newVel = data->getVel(c->mRow, c->mCol);
       oldProb = newProb = data->getProb(c->mRow, c->mCol);
       oldOffs = newOffs = data->getOffset(c->mRow, c->mCol);
+      t=data->getLength(c->mRow, c->mCol);
+      if(t < 0)
+        t=(-t)+1;
+      else
+        t=1;
+      oldTrig = newTrig = t;
       mAxis = unknown;
       if (mMouseStartVal != MOUSE_STARTVAL_INVALID &&
          e->getNumSelectedCells() < 2) { // if we are interacting with a valid cell
@@ -748,11 +787,13 @@ void StepPanel::mouseUp(const MouseEvent & event)
                newOffs = c->mTempValue;
             else if (e->getEditMode() == EditorState::editingSteps)
                newProb = c->mTempValue;
+            else if (e->getEditMode() == EditorState::editingTriggers)
+              newTrig = c->mTempValue;
          }
          else {
             if (rightMouse) {
                // if it's a right click (not a drag which is handled above)
-               // we either cycle down or delete
+               // we either cycle down or delete or reset to default
                if (e->getEditMode() == EditorState::editingVelocity) {
                   if (e->getMouseRightClickAction() == EditorState::deleteCell) {
                      newVel = 0;
@@ -764,6 +805,9 @@ void StepPanel::mouseUp(const MouseEvent & event)
                }
                else if (e->getEditMode() == EditorState::editingOffset) {
                   newOffs = 0;
+               }
+               else if (e->getEditMode() == EditorState::editingTriggers) {
+                 newTrig = 1;
                }
                else if (e->getEditMode() == EditorState::editingSteps) {
                   if (e->getMouseRightClickAction() == EditorState::deleteCell) {
@@ -796,6 +840,15 @@ void StepPanel::mouseUp(const MouseEvent & event)
          data->setProb(c->mRow, c->mCol, newProb);
          data->setVel(c->mRow, c->mCol, newVel);
          data->setOffset(c->mRow, c->mCol, newOffs);
+
+         if(newTrig != oldTrig && e->getEditMode() == EditorState::editingTriggers) {
+           // since we are repurposing length to also store trigger stuff, adjust
+           if (newTrig > 1) {
+             data->setLength(c->mRow, c->mCol, -(newTrig - 1));
+           } else {
+             data->setLength(c->mRow, c->mCol, 0);
+           }
+         }
 
          if (e->getEditMode() == EditorState::editingSteps) {
             // if it was off going to on, set velocity to default
@@ -932,7 +985,7 @@ StepPanel::paintGhostedLayer(Graphics &g)
 
          Rectangle<int>lenRect = cpt->getBoundsInParent();
          int steplen = data->getLength(cpt->mRow, cpt->mCol);
-         if (steplen) {
+         if (steplen>0) {
             // extend it
             lenRect.setWidth(lenRect.getWidth() * (steplen));
          }
@@ -1197,6 +1250,8 @@ StepPanel::paintLengthBars(Graphics & g)
          if (i == mSelGridItem) {
             int totWidth = data->getNumSteps();
             steplen = data->getLength(cpt->mRow, cpt->mCol);
+            if(steplen<0) // retrigger mode
+              steplen=0;
             // add or subtract the delta
             steplen += mLengthEditCursor.mLenDelta;
             if (steplen < 0) // if dragging left, we wrap around
@@ -1381,6 +1436,8 @@ StepPanel::moveLengthEditCursor()
          int maxBeforeWrap = data->getNumSteps() - c->mCol - 1;
          // length will be relative to left edge (in num cells)
          int length = data->getLength(c->mRow, c->mCol);
+         if(length < 0)
+           length=0;
          if (length > maxBeforeWrap) {
             length -= maxBeforeWrap;
             length--;

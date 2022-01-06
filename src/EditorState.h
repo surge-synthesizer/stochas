@@ -29,7 +29,8 @@ public:
       editingSteps,
       editingVelocity,
       editingChain,
-      editingOffset
+      editingOffset,
+      editingTriggers
    };
 
    // note the order of these need to correspond with ordering (and elements) in Colors.h

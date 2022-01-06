@@ -801,7 +801,7 @@ SequenceLayer::setLength(int row, int step, int8_t length, int pat)
 {
    jassert(row >= 0 && row < SEQ_MAX_ROWS);
    jassert(step >= 0 && step < SEQ_MAX_STEPS);
-   jassert(length >= 0);
+   jassert(length >= -1 * (SEQ_MAX_RETRIGGER-1));
    if (pat == -1)
       pat = mCurrentPattern;
    jassert(pat >= 0 && pat < SEQ_MAX_PATTERNS);

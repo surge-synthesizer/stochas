@@ -93,6 +93,7 @@ class SequenceLayer {
       int8_t velo;
       // length in number of cells 
       // 0 which is default, means single step, so 1 here means 2 steps)
+      // negative values represent stutter. so eg -1 means two hits for the cell, etc.
       int8_t length;   
       int8_t offset; // a range from -50 to +50 that indicates how much to move the cell in time
       Cell() :prob(-1), velo(0), length(0), offset(0) {}

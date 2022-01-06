@@ -28,6 +28,7 @@ HelpPair gHelpText[] = {
                            CTRL "-shift-drag to create a custom chain. "
                            "Right-click a target cell to clear chains leading to that cell" },
    {"stepPanelOffsMode", "Shift cells forward and backward in time. Negative values will cause the cell to play sooner. Positive values will cause the cell to play later. A value of -50 will cause the cell to play halfway between the previous step and the step it is on"},
+   {"stepPanelTrigMode", "Allows retriggering of the cell a number of times at this position. This can be used to create a drum fill for example. The value specified represents how many times the cell is triggered.  Default is 1. Cells that retrigger cannot have a length greater than 1"},
    { "sectionSelect" , "Select which section of the current pattern to make visible for editing"},
    {"editButton",    "Opens a dialog to allow copying, clearing and bulk editing"},
    {"helpButton",    "Launches the browser to display a user manual" },
@@ -42,7 +43,7 @@ HelpPair gHelpText[] = {
    { "numHumanLength",  "Varies the length of the played cells. A higher value results in more variation. The value selected is a percentage of the actual cell length, so it will always subtract from the length. A value of 100% would allow the cell length to decrease all the way to 0" },
    {"patternSelect", "Select the active pattern for playback. Normally this will change to the same pattern for all layers" },
    {"midiIndicator", "Will be lit when incoming MIDI data is received"},
-   {"editModeSelect","Select which edit mode is currently active. In 'prob' mode you can add/remove cells and edit lengths. In 'velo' mode you can change velocity values for each cell. In 'chain' mode you can create dependencies between cells"},
+   {"editModeSelect","Select which edit mode is currently active. 'prob' mode: add/remove cells and edit lengths. 'velo' mode: change velocity values for each cell. 'chain' mode: create dependencies between cells. 'retrig' mode: cause cell to retrigger (eg drum fill)"},
    { "tgMP" ,        "Mono mode - a single note is randomly selected for each step, based on the cells that are on. Poly mode - multiple notes may play for each step in the sequence. For drum programming use poly mode"},
    { "tgClkDiv",     "Specifies how fast to play the sequence. A value of 1 will play all of the steps in a measure in time with the DAW tempo. A value of 1/2 will play at half the speed of the DAW tempo"},
    {"tgScale" ,      "Standard scales are preset to their respective intervals. Custom scales may be edited"},

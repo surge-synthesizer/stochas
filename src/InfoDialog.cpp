@@ -85,7 +85,14 @@ SeqInfoDialog::SeqInfoDialog(SeqGlob * glob, CptNotify *parent) :
    mLblDescription->setFont(Font(14.0f, Font::plain));
    mLblDescription->setMultiLine(true);
    mLblDescription->setReadOnly(true);
-   mLblDescription->setText(SeqImageX::infobox_txt, false);
+   String desc("Build time: ");
+   desc += Stochas::Build::BuildDate;
+   desc += " ";
+   desc += Stochas::Build::BuildTime;
+   desc += "\n\n";
+   desc += SeqImageX::infobox_txt;
+
+   mLblDescription->setText(desc, false);
    //mLblDescription->setJustificationType(/*Justification::horizontallyJustified | */ Justification::top);
    //mLblDescription->setMinimumHorizontalScale(1.0f);
 

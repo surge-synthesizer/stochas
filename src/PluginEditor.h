@@ -120,10 +120,7 @@ class SeqAudioProcessorEditor  : public AudioProcessorEditor,
    SeqProcessorNotifier::PlayRecordState mPlayStateCache;
 
    SeqMidiDialog mMidiDlg;
-   
-   // will be false if this is not the first time they have shown the UI for
-   // this instance of the plugin
-   bool mFirstTimeEditor;
+
    // set active chord for painting, -1 is off
    void chordSelect(int id);
    void fixButtonColors();

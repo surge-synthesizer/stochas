@@ -263,12 +263,29 @@ StochaEngine::playPositionChange(int samples_per_step, // samples per sequencer 
             int8_t velocity = sd->getVel(mMulti[i].rowToPlay, position, pat);
             int humanpos, humanvel, humanlen;
 
-            // get additional length to play (0 means play one step, 
-            // so 1 means play one additional step)
-            // length here is in samples and represents whole steps.
-            int lensize = samples_per_step * sd->getLength(mMulti[i].rowToPlay, position, pat);
-            // add the step size with duty cycle applied
-            lensize += step_size;
+            // get additional length to play, or get number of times to trigger (0 means play one step,
+            // so 1 means play one additional step. anything negative is for multiple triggers which
+            // the step will be divided into that many)
+            int numtriggers=1; // will be >1 for multi trigger
+            int lensize=0;
+            int steplen=sd->getLength(mMulti[i].rowToPlay, position, pat);
+
+            if (steplen < 0) { // multi trigger
+              numtriggers = (-steplen)+1; // ie. -1 means two triggers
+              // determine total length of each sub step using duty cycle
+              double substeplen = (double)samples_per_step / (double)numtriggers;
+              double d = dds;
+              // to keep things simple, max out our duty cycle around 100
+              if(d > 0.99) d=0.99;
+              lensize = (int)(substeplen * d);
+
+            } else { // single trigger with optional additional length to play
+              // length here is in samples and represents whole steps.
+              lensize = samples_per_step * steplen; // will be 0 in the case of no additional length
+              // add the step size with duty cycle applied
+              lensize += step_size;
+            }
+
 
             
             ////////////////////////////
@@ -331,8 +348,8 @@ StochaEngine::playPositionChange(int samples_per_step, // samples per sequencer 
             }
 
             /////////////////////
-            // humanize length
-            if ((humanlen = mOverrideLengthVariance.get(sd->getHumanLength())) != 0) {
+            // humanize length (only for single triggering)
+            if ((humanlen = mOverrideLengthVariance.get(sd->getHumanLength())) != 0 && numtriggers == 1) {
                // a value between 1..100
                // so get 1..humanlen  inclusive
                int h = mRand.getNextRandom(humanlen)+1;
@@ -348,16 +365,25 @@ StochaEngine::playPositionChange(int samples_per_step, // samples per sequencer 
 
             if (gruuvOffset < 0)
                gruuvOffset = 0; // can't go back in time
+
+            // determine offsets for multiple triggers
+            int samples_per_trigger = samples_per_step / numtriggers;
             
             // and finally add it assuming it has a length
             if (lensize) {
-               if (!addMidiEvent(gruuvOffset,
-                  whichNote,            // which note to play
-                  velocity,             // velocity
-                  (int8_t)mOverrideOutputChannel.get(sd->getMidiChannel()), // midi channel to play on
-                  lensize))             // size in steps + size of one step (which is adjusted by duty cycle)
-                  return false;
-            }
+               for (int j = 0; j < numtriggers; j++) {
+                  if (!addMidiEvent(gruuvOffset,
+                whichNote, // which note to play
+                velocity,  // velocity
+                (int8_t)mOverrideOutputChannel.get(
+                sd->getMidiChannel()), // midi channel to play on
+          lensize)) // size in steps + size of one step (which is adjusted by duty cycle)
+                    return false;
+
+                  // set position for next trigger (if applicable)
+                  gruuvOffset += samples_per_trigger;
+               } // for each trigger
+            } // if we have a length
          } // note is not -1
       } // for 0 to playcount
    } // if not muted

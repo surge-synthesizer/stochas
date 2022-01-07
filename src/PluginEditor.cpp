@@ -114,6 +114,7 @@ SeqAudioProcessorEditor::SeqAudioProcessorEditor(SeqAudioProcessor &p)
    mEditToggle.addItem(SEQCTL_EDIT_TOGGLE_VELO, "Velo");
    mEditToggle.addItem(SEQCTL_EDIT_TOGGLE_CHAIN, "Chain");
    mEditToggle.addItem(SEQCTL_EDIT_TOGGLE_OFFSET, "Shift");
+   mEditToggle.addItem(SEQCTL_EDIT_TOGGLE_TRIGGERS, "Retrig");
 
    // set up the current values from the Edit model
    switch (mGlob.mEditorState->getEditMode())
@@ -130,6 +131,9 @@ SeqAudioProcessorEditor::SeqAudioProcessorEditor(SeqAudioProcessor &p)
    case EditorState::editingOffset:
       tmp = SEQCTL_EDIT_TOGGLE_OFFSET;
       break;
+   case EditorState::editingTriggers:
+     tmp = SEQCTL_EDIT_TOGGLE_TRIGGERS;
+     break;
    default:
       jassert(false);
       break;
@@ -423,7 +427,7 @@ void SeqAudioProcessorEditor::resized()
    mLblPatternName.setBounds(tmp);
 
    // View label and view toggle
-   tmp = gridctrl.removeFromRight(180);
+   tmp = gridctrl.removeFromRight(200);
    mEditToggle.setBounds(tmp);
    gridctrl.removeFromRight(4);
    tmp = gridctrl.removeFromRight(40);
@@ -753,6 +757,9 @@ void SeqAudioProcessorEditor::cptValueChange(int cptId, int id)
       case SEQCTL_EDIT_TOGGLE_OFFSET:
          em = EditorState::editingOffset;
          break;
+      case SEQCTL_EDIT_TOGGLE_TRIGGERS:
+        em = EditorState::editingTriggers;
+        break;
       default:
          jassert(false);
       }
@@ -1606,6 +1613,9 @@ void SeqAudioProcessorEditor::updateUI()
    case EditorState::editingOffset:
       mStepPanel.setName("stepPanelOffsMode");
       break;
+   case EditorState::editingTriggers:
+     mStepPanel.setName("stepPanelTrigMode");
+     break;
    default:
       jassertfalse;
       break;

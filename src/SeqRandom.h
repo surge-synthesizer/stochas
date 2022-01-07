@@ -76,6 +76,7 @@ public:
    // values for each seq position
    void prepareSeqPosition(int pos);
    // get next random number for the current seq position
+   // returns a number from 0 to size-1 inclusive
    int getNextRandom(int size);
 
 };

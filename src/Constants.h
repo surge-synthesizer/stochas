@@ -160,6 +160,8 @@ in mono mode are 0..high val where 0 is off, and the following applies
 #define SEQ_LAYER_NAME_MAXLEN 15    // max len for layer name
 #define SEQ_PATTERN_NAME_MAXLEN 15  // max len for layer name
 
+#define SEQ_MAX_RETRIGGER     8     // maximum retriggers for a cell
+
 // for midi passthru option and respond
 #define SEQ_MIDI_PASSTHRU_NONE      1
 #define SEQ_MIDI_PASSTHRU_UNHANDLED 2
@@ -207,6 +209,7 @@ in mono mode are 0..high val where 0 is off, and the following applies
 #define SEQCTL_EDIT_TOGGLE_VELO     2
 #define SEQCTL_EDIT_TOGGLE_CHAIN    3
 #define SEQCTL_EDIT_TOGGLE_OFFSET   4
+#define SEQCTL_EDIT_TOGGLE_TRIGGERS 5
 
 #define SEQCTL_HELP_BUTTON          3  //*
 

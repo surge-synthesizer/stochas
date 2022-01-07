@@ -216,6 +216,8 @@ jobs:
   dependsOn: Build
   # only publish if it was merged to main (ie not on a pr) or if a tag was pushed
   condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Build.SourceBranch'], 'refs/tags/')))
+  pool:
+    vmImage: 'ubuntu-20.04'
   
   steps:
   - task: DownloadPipelineArtifact@0

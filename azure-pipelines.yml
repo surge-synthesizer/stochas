@@ -16,12 +16,9 @@ jobs:
   strategy:
     matrix:
       mac:
-        imageName: 'macos-10.14'
+        imageName: 'macos-10.15'
         isMac: True
         doUpload: True
-      win-2017:
-        imageName: 'vs2017-win2016'
-        isWindows: True
       win-2019:
         imageName: 'windows-2019'
         isWindows: True
@@ -75,7 +72,7 @@ jobs:
 
   - bash: |
       set -ex
-      git submodule update --init --recursive
+      git submodule update --depth 1 --init --recursive
     displayName: Submodule Update
 
   - bash: |
@@ -236,6 +233,11 @@ jobs:
       artifactName: 'LINUX_BUILD'
       targetPath: $(Build.ArtifactStagingDirectory)
 
+  - task: DownloadSecureFile@1
+    inputs:
+      secureFile: discord-nightly-stochas.webhook
+
+
   - bash: |
      scripts/release-notes.sh > $(Build.ArtifactStagingDirectory)/ReleaseNotes.md
      ls $(Build.ArtifactStagingDirectory)
@@ -315,3 +317,8 @@ jobs:
       releaseNotesFile: $(Build.ArtifactStagingDirectory)/ReleaseNotes.md
       assets: $(Build.ArtifactStagingDirectory)/*.*
     
+
+  - bash: |
+        curl -i -H "Accept: application/json" -H "Content-Type:application/json" -X POST --data "{\"content\": \"A new Stochas Nightly is available.\n${GH} ${DATE}\nhttps://github.com/surge-synthesizer/shortcircuit-xt/releases/tag/developer\"}" `cat $AGENT_TEMPDIRECTORY/discord-nightly-stochas.webhook`
+    displayName: Tell Discord
+    condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')

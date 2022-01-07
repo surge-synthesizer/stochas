@@ -321,6 +321,6 @@ jobs:
     
 
   - bash: |
-        curl -i -H "Accept: application/json" -H "Content-Type:application/json" -X POST --data "{\"content\": \"A new Stochas Nightly is available.\n${GH} ${DATE}\nhttps://github.com/surge-synthesizer/shortcircuit-xt/releases/tag/developer\"}" `cat $AGENT_TEMPDIRECTORY/discord-nightly-stochas.webhook`
+        curl -i -H "Accept: application/json" -H "Content-Type:application/json" -X POST --data "{\"content\": \"A new Stochas Nightly is available.\n${GH} ${DATE}\nhttps://github.com/surge-synthesizer/stochas/releases/tag/developer\"}" `cat $AGENT_TEMPDIRECTORY/discord-nightly-stochas.webhook`
     displayName: Tell Discord
     condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')

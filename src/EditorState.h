@@ -155,6 +155,9 @@ public:
    void setScaleFactor(int factor);
    int getScaleFactor();
 
+   void setPatLayerLinked(bool isLinked);
+   bool isPatLayerLinked();
+
 private:
    // read or write settings to the config file
    void configSerialization(bool read);
@@ -193,6 +196,7 @@ private:
    int mKeyboardDisabled;
    int mPPQOffset;
    int mScaleFactor;
+   int mPatLayerLinked;
 public:
 };
 

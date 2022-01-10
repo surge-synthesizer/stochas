@@ -177,7 +177,7 @@ int StochaEngine::getNumSteps()
 int StochaEngine::getPlayingPattern()
 {
    SequenceData *s = mSeq->getAudSeqData();
-   return mOverridePattern.get(s->getCurrentPattern());   
+   return mOverridePattern.get(s->getLayer(mLayer)->getCurrentPattern());
 }
 
 bool StochaEngine::getMuteState()
@@ -206,7 +206,7 @@ StochaEngine::playPositionChange(int samples_per_step, // samples per sequencer 
 
    s = mSeq->getAudSeqData();
    sd=s->getLayer(mLayer);
-   int pat = mOverridePattern.get(s->getCurrentPattern());
+   int pat = mOverridePattern.get(s->getLayer(mLayer)->getCurrentPattern());
    int numsteps = mOverrideNumSteps.get(sd->getNumSteps());
    bool muted;
    // how long to play a step for (assuming a length 0 step. gets added to non-zero ones)
@@ -405,7 +405,7 @@ int StochaEngine::getRandomSingle(int position)
    
    sd =s->getLayer(mLayer);
    int maxprob = 0;
-   int pat = mOverridePattern.get(s->getCurrentPattern());
+   int pat = mOverridePattern.get(s->getLayer(mLayer)->getCurrentPattern());
 
    // notes go bottom to top so chop off higher notes
    startrow = SEQ_MAX_ROWS - sd->getMaxRows();
@@ -508,7 +508,7 @@ int StochaEngine::getRandomMulti(int position, int maxpoly)
    int used = 0;
    bool mandOff = false; // mandatorily off
    int nummand = 0;
-   int pat = mOverridePattern.get(s->getCurrentPattern());
+   int pat = mOverridePattern.get(s->getLayer(mLayer)->getCurrentPattern());
    int bias = mOverridePolyBias.get(sd->getPolyBias());
    bool playNone=false; // don't play any (except mandatory)
    bool playNoneMand = false; // don't play any at all

@@ -241,7 +241,6 @@ void SequenceData::setDefaultMidiMapItems()
 }
 
 SequenceData::SequenceData() :
-   mCurrentPattern(0),
    mSwing(0),
    mMidiPassthru(SEQ_MIDI_PASSTHRU_NONE),
    mMidiRespond(SEQCTL_MIDI_RESPOND_YES),
@@ -273,22 +272,6 @@ SequenceData::getLayer(int layer)
 {
    jassert(layer >= 0 && layer < SEQ_MAX_LAYERS);
    return &mLayers[layer];
-}
-
-int 
-SequenceData::getCurrentPattern() 
-{
-   return mCurrentPattern;
-}
-
-void 
-SequenceData::setCurrentPattern(int p) 
-{
-   jassert(p >= 0 && p < SEQ_MAX_PATTERNS);
-   mCurrentPattern = p;
-   for (int i = 0; i < SEQ_MAX_LAYERS; i++) {
-      mLayers[i].mCurrentPattern = p;
-   }
 }
 
 int SequenceData::getGroove(int idx) 
@@ -1117,6 +1100,17 @@ const char * SequenceLayer::getPatternName(int pat)
       pat = mCurrentPattern;
    jassert(pat >= 0 && pat < SEQ_MAX_PATTERNS);
    return mPats[pat].mName;
+}
+
+
+int SequenceLayer::getCurrentPattern()
+{
+  return mCurrentPattern;
+}
+void SequenceLayer::setCurrentPattern(int p)
+{
+  jassert(p >=0 && p < SEQ_MAX_PATTERNS);
+  mCurrentPattern = p;
 }
 
 /*============================================

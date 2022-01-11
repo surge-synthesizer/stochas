@@ -417,6 +417,8 @@ public:
    void setLayerName(const char *txt);
    void setPatternName(const char *txt, int pat = -1);
    const char *getPatternName(int pat = -1);
+   int getCurrentPattern();
+   void setCurrentPattern(int p);
 };
 
 
@@ -452,9 +454,6 @@ class SequenceData {
 
    SequenceLayer mLayers[SEQ_MAX_LAYERS];
 
-   // which is the current pattern we are on
-   int mCurrentPattern;
-
    // groove values are -50 to 50
    int mGroove[SEQ_DEFAULT_NUM_STEPS];
 
@@ -487,10 +486,7 @@ class SequenceData {
 public:
    SequenceData();
    SequenceLayer *getLayer(int layer);
-   // Right now there is a current pattern that applies to all layers
-   // from midi, individual layers can be set to different patterns
-   int getCurrentPattern();
-   void setCurrentPattern(int p);
+
    // get a groove value for a specific position
    // which can be 0..SEQ_DEFAULT_NUM_STEPS
    int getGroove(int idx);

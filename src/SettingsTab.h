@@ -37,6 +37,7 @@ class SettingsTab : public Component, public CptNotify {
    Label mLblVersionBuild;
    Label mLblPosOffset;
    Label mLblUIScale;
+   Label mLblPatLayerLink;
 
    NumberCpt mNumMouseSense;
    ToggleCpt mTglRightMouseAction;
@@ -48,6 +49,7 @@ class SettingsTab : public Component, public CptNotify {
    ToggleCpt mTglShiftReversed;
    NumberCpt mNumPosOffset;
    NumberCpt mNumUIScale;
+   ToggleCpt mTglPatLayerLink;
 
    void cptValueChange(int cptId, int value) override;
    void paint(Graphics &) override;

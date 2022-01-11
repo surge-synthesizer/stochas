@@ -101,6 +101,7 @@ void SeqPersist::storeLayer(int idx, SequenceLayer * item, XmlElement * parent)
    lyr->prependChildElement(addKeyVal("mono", item->isMonoMode() ? 1ll : 0ll));
    lyr->prependChildElement(addKeyVal("numsteps", (int64)item->getNumSteps()));
    lyr->prependChildElement(addKeyVal("numrows", (int64)item->getMaxRows()));
+   lyr->prependChildElement(addKeyVal("curpat",(int64)item->getCurrentPattern()));
 
    item->getKeyScaleOct(&scale, &key, &oct);
    k = new XmlElement("sko");
@@ -216,6 +217,10 @@ void SeqPersist::retrieveLayer(XmlElement * e, SequenceLayer * lay)
          String key = ch->getStringAttribute("stdkey");
          int oct = ch->getIntAttribute("stdoct");
          lay->setKeyScaleOct(scale.getCharPointer(), key.getCharPointer(), oct);
+      }
+      else if (ch->hasTagName("curpat")) {
+        if (getKeyVal(ch, &ival))
+          lay->setCurrentPattern(ival);
       }
    }
 }
@@ -381,7 +386,6 @@ const XmlElement & SeqPersist::store(SequenceData * sourceData)
    mRoot.prependChildElement(addKeyVal("bpm", sourceData->getStandaloneBPM()));
    mRoot.prependChildElement(addKeyVal("autoplay", (int64)sourceData->getAutoPlayMode())); 
    mRoot.prependChildElement(addKeyVal("offtime", (int64)sourceData->getOffsetTime())); // global offset time
-   mRoot.prependChildElement(addKeyVal("curpat",(int64)sourceData->getCurrentPattern()));
    mRoot.prependChildElement(addKeyVal("swing", (int64)sourceData->getSwing()));
    mRoot.prependChildElement(addKeyVal("seed", sourceData->getRandomSeed()));
    mRoot.prependChildElement(addKeyVal("midipass", (int64)sourceData->getMidiPassthru()));
@@ -491,8 +495,15 @@ bool SeqPersist::retrieve(SequenceData * targetData, const XmlElement * sourceDa
 
       }
       else if (e->hasTagName("curpat")) {
-         if (getKeyVal(e, &val))
-            targetData->setCurrentPattern((int)val);
+        // this is legacy from when pat/layer were always linked.
+        // set current pattern on all layers
+
+         if (getKeyVal(e, &val)) {
+           for(int i=0;i<SEQ_MAX_LAYERS;i++) {
+             auto lyr = targetData->getLayer(i);
+             lyr->setCurrentPattern((int)val);
+           }
+         }
 
       }
       else if (e->hasTagName("offtime")) {

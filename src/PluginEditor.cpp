@@ -146,11 +146,11 @@ SeqAudioProcessorEditor::SeqAudioProcessorEditor(SeqAudioProcessor &p)
 
    //=============================Layers selector
    mLayerLabel.setText("Layer", juce::dontSendNotification);
-   tmp = mGlob.mEditorState->getCurrentLayer();
+   int curlyr = mGlob.mEditorState->getCurrentLayer();
    for (int i = 0; i < SEQ_MAX_LAYERS; i++)
    {
       String t = String::formatted("%d", i + 1);
-      mLayerToggle.addItem(i, t, tmp == i);
+      mLayerToggle.addItem(i, t, curlyr == i);
    }
    // we want to get notified even when user clicks same layer twice
    // this allows us to get rid of ghosting
@@ -206,7 +206,7 @@ SeqAudioProcessorEditor::SeqAudioProcessorEditor(SeqAudioProcessor &p)
    mPatternLabel.setText("Pattern Select", juce::dontSendNotification);
    //mPatternLabel.setColour(juce::Label::textColourId, txtclr);
    addAndMakeVisible(mPatternLabel);
-   mPatternSelect.setCurrentItem(mGlob.mSeqBuf->getUISeqData()->getCurrentPattern() + 1, true, false);
+   mPatternSelect.setCurrentItem(mGlob.mSeqBuf->getUISeqData()->getLayer(curlyr)->getCurrentPattern() + 1, true, false);
    addAndMakeVisible(mPatPlayPanel);
 
    // ============================== Section selector
@@ -768,15 +768,25 @@ void SeqAudioProcessorEditor::cptValueChange(int cptId, int id)
       updateUI();
       repaint();
       break;
-   case SEQCTL_PATSEL_TOGGLE:
-      // switching to a different pattern
-      s->setCurrentPattern(id - 1);
-      sd->swap();
-      // since we are switching patterns, unselect any selected steps
-      mStepPanel.unselectAll();
-      updateUI();
-      repaint();
-      break;
+   case SEQCTL_PATSEL_TOGGLE: {
+     // switching to a different pattern. if linked switch all
+     if (mGlob.mEditorState->isPatLayerLinked()) {
+       for (int i = 0; i < SEQ_MAX_LAYERS; i++) {
+         SequenceLayer *sl = s->getLayer(i);
+         sl->setCurrentPattern(id - 1);
+       }
+     } else {
+       // if not linked, switch only current layer
+       SequenceLayer *sl = s->getLayer(mGlob.mEditorState->getCurrentLayer());
+       sl->setCurrentPattern(id - 1);
+     }
+     sd->swap();
+     // since we are switching patterns, unselect any selected steps
+     mStepPanel.unselectAll();
+     updateUI();
+     repaint();
+     break;
+   }
    case SEQCTL_SECTION_TOGGLE:
    {
       int leftStep = -1;
@@ -1637,8 +1647,8 @@ void SeqAudioProcessorEditor::updateUI()
    // ensure valid steps are visible depending on which range of steps we are looking at
    setStepRangeVisible();
 
-   // make sure pattern select button reflects the current pattern
-   mPatternSelect.setCurrentItem(mGlob.mSeqBuf->getUISeqData()->getCurrentPattern() + 1, true, false);
+   // make sure pattern select button reflects the current pattern for this layer
+   mPatternSelect.setCurrentItem(lay->getCurrentPattern() + 1, true, false);
 }
 
 void SeqAudioProcessorEditor::clearGrooveOrCopySwing()

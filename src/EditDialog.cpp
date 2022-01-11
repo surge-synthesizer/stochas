@@ -479,9 +479,9 @@ void SeqEditDialog::doSelectionAction()
 
 void SeqEditDialog::recalcState()
 {
-   
-   int cp=mGlob->mSeqBuf->getUISeqData()->getCurrentPattern();
+
    int cl=mGlob->mEditorState->getCurrentLayer();
+   int cp=mGlob->mSeqBuf->getUISeqData()->getLayer(cl)->getCurrentPattern();
    mTargLayer = cl;
    mTargPat = cp;
    
@@ -651,7 +651,7 @@ void SeqEditDialog::doSetup()
 
    int i;
    int curlyr = mGlob->mEditorState->getCurrentLayer();
-   int curpat = mGlob->mSeqBuf->getUISeqData()->getCurrentPattern();
+   int curpat = mGlob->mSeqBuf->getUISeqData()->getLayer(curlyr)->getCurrentPattern();
 
    mPatLayerList->clear();
    mLyrLayerList->clear();

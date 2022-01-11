@@ -102,6 +102,13 @@ void SettingsTab::resized()
    mTglShiftReversed.setBounds(top);
    b2.removeFromTop(vgap);
 
+   // pat layer link
+   top = b3.removeFromTop(vspace);
+   left = top.removeFromLeft(tab);
+   mLblPatLayerLink.setBounds(left);
+   top.removeFromLeft(space);
+   mTglPatLayerLink.setBounds(top);
+
    // pos offset
    top = b3.removeFromTop(vspace);
    left = top.removeFromLeft(tab);
@@ -147,7 +154,8 @@ SettingsTab::SettingsTab(SeqGlob * glob, int id, CptNotify *notify) :
    mTglColorScheme(glob,SEQCTL_SET_COLOR,this,"setColor"),
    mTglShiftReversed(glob, SEQCTL_SET_SHIFTREV,this,"shiftRev"),
    mNumPosOffset(glob, SEQCTL_SET_POSOFFSET, this, "setPosOffset"),
-   mNumUIScale(glob, SEQCTL_SET_UISCALE, this, "setUIScale")
+   mNumUIScale(glob, SEQCTL_SET_UISCALE, this, "setUIScale"),
+   mTglPatLayerLink(glob, SEQCTL_SET_PATLAYERLINK, this, "patLayerLink")
 {
    setupLabel(mLblMouseSense,"Mouse Sensitivity");
    setupLabel(mLblRightMouseAction,"Right Click");
@@ -159,6 +167,7 @@ SettingsTab::SettingsTab(SeqGlob * glob, int id, CptNotify *notify) :
    setupLabel(mLblShiftReversed, "Shift Key");
    setupLabel(mLblPosOffset, "Pos. Offset.");
    setupLabel(mLblUIScale, "UI Scale");
+   setupLabel(mLblPatLayerLink, "Pat./Layer linked");
    String vs = String("Version: ");
    vs += Stochas::Build::FullVersionStr;
    setupLabel(mLblVersionBuild, vs);
@@ -207,6 +216,10 @@ SettingsTab::SettingsTab(SeqGlob * glob, int id, CptNotify *notify) :
 
    mNumUIScale.setSpec(SEQ_UI_SCALE_MIN, SEQ_UI_SCALE_MAX, 1, 0, "");
    addAndMakeVisible(mNumUIScale);
+
+   mTglPatLayerLink.addItem(0, "On", true);
+   mTglPatLayerLink.addItem(1, "Off", false);
+   addAndMakeVisible(mTglPatLayerLink);
    
 }
 
@@ -249,7 +262,12 @@ void SettingsTab::refreshAll()
 
    mTglRightMouseAction.setCurrentItem((int)em.getMouseRightClickAction(), true, false);
    mTglColorScheme.setCurrentItem(em.getColorTheme(), true, false);
-   
+   if(em.isPatLayerLinked())
+     mTglPatLayerLink.setCurrentItem(0, true, false);
+   else
+     mTglPatLayerLink.setCurrentItem(1, true, false);
+
+
 
 }
 
@@ -290,6 +308,9 @@ void SettingsTab::cptValueChange(int cptId, int value)
       break;
    case SEQCTL_SET_SHIFTREV:
       em.setShiftReversed(value == 1);
+      break;
+   case SEQCTL_SET_PATLAYERLINK:
+      em.setPatLayerLinked(value==0);
       break;
    case SEQCTL_SET_POSOFFSET:
       em.setPPQOffset(value);

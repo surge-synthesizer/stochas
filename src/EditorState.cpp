@@ -13,6 +13,12 @@
 #include "Colors.h"
 #include "Constants.h"
 
+#ifdef __linux__
+#include <cstddef>
+#define XDG_CONFIG_HOME "XDG_CONFIG_HOME"
+#define XDG_CONFIG_HOME_DEFAULT ".config"
+#endif
+
 EditorState::EditorState() : 
    mEditMode(editingSteps),
    mCurrentLayer(0),
@@ -306,6 +312,20 @@ int EditorState::getScaleFactor()
    return mScaleFactor;
 }
 
+String getConfigurationFolder() {
+#ifdef __linux__
+   const char* xdgConfigHome = std::getenv(XDG_CONFIG_HOME);
+
+   String folderName;
+   folderName += xdgConfigHome ? xdgConfigHome : XDG_CONFIG_HOME_DEFAULT;
+   folderName += "/" SEQ_CO_NAME;
+
+   return folderName;
+#else
+   return SEQ_CO_NAME;
+#endif
+}
+
 void EditorState::configSerialization(bool read)
 {
    int tmp;
@@ -317,7 +337,7 @@ void EditorState::configSerialization(bool read)
    options.commonToAllUsers = false;
    options.doNotSave = false;
    options.filenameSuffix = ".cfg";
-   options.folderName = SEQ_CO_NAME;
+   options.folderName = getConfigurationFolder();
    options.ignoreCaseOfKeyNames = true;
    options.osxLibrarySubFolder = "Application Support";
    appProperties.setStorageParameters(options);
@@ -367,7 +387,7 @@ void EditorState::loadColorsFromFile()
    options.commonToAllUsers = false;
    options.doNotSave = false;
    options.filenameSuffix = ".skin";
-   options.folderName = SEQ_CO_NAME;
+   options.folderName = getConfigurationFolder();
    options.ignoreCaseOfKeyNames = true;
    options.osxLibrarySubFolder = "Application Support";
    appProperties.setStorageParameters(options);

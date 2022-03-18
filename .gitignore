@@ -11,3 +11,4 @@ build.install/
 *.code-workspace
 *.code-search
 CMakeUserPresets.json
+ignore/*

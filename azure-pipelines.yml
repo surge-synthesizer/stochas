@@ -90,7 +90,7 @@ jobs:
   - bash: |
       set -ex
       # For now we expand this out so we can swap the STOCHAS_IS_SYNTH flag for the AU off
-      cmake -Bbuild -GXcode -DSTOCHAS_VERSION=${STOCHAS_VERSION} 
+      cmake -Bbuild -GXcode -DSTOCHAS_VERSION=${STOCHAS_VERSION} -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
       cmake --build build --target stochas_VST3 --config Release | xcpretty
       cmake --build build --target stochas_Standalone --config Release | xcpretty
 
@@ -98,7 +98,7 @@ jobs:
       cp -r build/stochas_artefacts/Release/VST3/* build/tmpasset
       cp -r build/stochas_artefacts/Release/Standalone/* build/tmpasset
 
-      cmake -Bbuild -DSTOCHAS_IS_SYNTH=FALSE -DSTOCHAS_VERSION=${STOCHAS_VERSION} 
+      cmake -Bbuild -DSTOCHAS_IS_SYNTH=FALSE -DSTOCHAS_VERSION=${STOCHAS_VERSION} -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
       cmake --build build --target stochas_AU --config Release | xcpretty
       cp -r build/stochas_artefacts/Release/AU/* build/tmpasset
       

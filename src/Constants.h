@@ -80,7 +80,7 @@ in mono mode are 0..high val where 0 is off, and the following applies
 
 // ui scaling
 #define SEQ_UI_SCALE_DEFAULT  100
-#define SEQ_UI_SCALE_MIN      100
+#define SEQ_UI_SCALE_MIN      50
 #define SEQ_UI_SCALE_MAX      200
 
 // duty cycle in % (101 is legato)

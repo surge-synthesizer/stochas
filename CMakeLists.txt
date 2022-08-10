@@ -94,6 +94,11 @@ juce_add_plugin(stochas
     VST3_CAN_REPLACE_VST2 TRUE  #hopefully this will allow old projects to load
     PRODUCT_NAME "Stochas")        # The name of the final executable, which can differ from the target name
 
+add_subdirectory(lib/clap-juce-extensions EXCLUDE_FROM_ALL)
+clap_juce_extensions_plugin(TARGET stochas
+        CLAP_ID "org.surge-synth-team.stochas"
+        CLAP_FEATURES "note-effect" "sequencer" "stochastic")
+
 add_dependencies( stochas git-info )
 include_directories( src )
 

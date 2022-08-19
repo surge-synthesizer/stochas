@@ -616,7 +616,7 @@ bool SeqMidiRow::getNumberCptCustomText(int id, int value, String & repl)
          suff = " (off)";
       }
       int lowOct = mGlob->mEditorState->getLowestOctave();
-      repl = SeqScale::getMidiNoteName((char)value, lowOct, buf);
+      repl = SeqScale::getMidiNoteName((char)value, lowOct, buf, mGlob->mEditorState->isShowMidiNumbers());
       repl << suff;
    }
    return true;

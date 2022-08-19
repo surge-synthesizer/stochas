@@ -38,8 +38,9 @@ public:
    /* Given a midi number, return the note name including the octave.
       lowOct - specify the display offset for the octave (eg: -2, -1 or 0)  
       buf cannot exceed SEQ_NOTE_NAME_MAXLEN
+      asNum - if true, will return the note number instead of name
    */
-   static const char *getMidiNoteName(int8_t num, int lowOct, char *buf);
+   static const char *getMidiNoteName(int8_t num, int lowOct, char *buf, bool asNum);
 
    /* For transpose. Get text to display for a given id*/
    static const char *getTransposeText(int id);

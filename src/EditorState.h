@@ -158,6 +158,9 @@ public:
    void setPatLayerLinked(bool isLinked);
    bool isPatLayerLinked();
 
+   void setShowMidiNumbers(bool useNumbers);
+   bool isShowMidiNumbers();
+
 private:
    // read or write settings to the config file
    void configSerialization(bool read);
@@ -197,6 +200,7 @@ private:
    int mPPQOffset;
    int mScaleFactor;
    int mPatLayerLinked;
+   int mShowMidiNumbers;
 public:
 };
 

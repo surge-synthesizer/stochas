@@ -46,7 +46,7 @@ String NoteCpt::getTextualValue()
    char noteBuf[SEQ_NOTE_NAME_MAXLEN];
    SequenceLayer *data = mGlob->mSeqBuf->getUISeqData()->getLayer(e->getCurrentLayer());
    n = data->getCurNote(mId);   
-   ret = SeqScale::getMidiNoteName(n, e->getLowestOctave(), noteBuf);
+   ret = SeqScale::getMidiNoteName(n, e->getLowestOctave(), noteBuf, e->isShowMidiNumbers());
    return ret;
 }
 void NoteCpt::trySetValue(const String & txt)
@@ -58,7 +58,7 @@ void NoteCpt::trySetValue(const String & txt)
    String cleaned = txt.removeCharacters(" ").toUpperCase();
    String comp;
    for (int i = 0; i < 128; i++) {
-      comp = SeqScale::getMidiNoteName((int8_t)i, e->getLowestOctave(), noteBuf);
+      comp = SeqScale::getMidiNoteName((int8_t)i, e->getLowestOctave(), noteBuf, e->isShowMidiNumbers());
       comp = comp.removeCharacters(" ").toUpperCase();
       if (comp.compare(cleaned) == 0) {
          data->setNote(mId,(int8_t) i, true);
@@ -146,8 +146,8 @@ NoteCpt::paint(Graphics & g)
    }
 
    // midi note name
-
-   g.drawText(SeqScale::getMidiNoteName(n,e->getLowestOctave(), noteBuf), r.toFloat(), 
+   const char *nn = SeqScale::getMidiNoteName(n,e->getLowestOctave(), noteBuf, e->isShowMidiNumbers());
+   g.drawText(nn, r.toFloat(),
       locked? Justification::centred : Justification::right);
 }
 

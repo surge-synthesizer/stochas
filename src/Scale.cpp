@@ -150,11 +150,23 @@ SeqScale::getScaleName(int idx)
    return gScaleNames[idx].name;
 }
 
-const char * SeqScale::getMidiNoteName(int8_t num, int lowOct, char * buf)
+const char * SeqScale::getMidiNoteName(int8_t num, int lowOct, char * buf, bool asNum)
 {
    int oct;
    if (num == SEQ_NOTE_OFF)
       return "Off";
+   if(asNum) {
+      unsigned char t = num / 100;
+      int p = 0;
+      if(t) buf[p++] = 48 + t;
+      num -= t * 100;
+      t = num / 10;
+      if (t || p) buf[p++] = 48 + t;
+      num -= t * 10;
+      buf[p++] = 48 + num;
+      buf[p] = 0;
+      return buf;
+   }
    jassert(lowOct >= SEQ_BASE_OCT_LOW && lowOct <= SEQ_BASE_OCT_HIGH);
 
    // get the note number (0 is C, 9 is A, 11 is B)

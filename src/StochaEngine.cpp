@@ -520,8 +520,8 @@ int StochaEngine::getRandomMulti(int position, int maxpoly)
       bool playMand = false;
       // we always generate it so that if the user has selected "Stable" for random
       // values, they can still add in other cells, and the existing ones will play fine
-      // 0..99 inclusive
-      randy = mRand.getNextRandom(100);
+      // 1..100 inclusive.
+      randy = 1 + mRand.getNextRandom(100);
 
       prob = (int)sd->getProb(i, position, pat);
       // adjust for bias

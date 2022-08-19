@@ -109,7 +109,7 @@ void SeqChainDialog::setDesc()
    char noteBuf[SEQ_NOTE_NAME_MAXLEN];
    
    n = data->getCurNote(mSrcRow);
-   midiName = SeqScale::getMidiNoteName(n, e->getLowestOctave(), noteBuf);
+   midiName = SeqScale::getMidiNoteName(n, e->getLowestOctave(), noteBuf, e->isShowMidiNumbers());
    label = data->getNoteName(mSrcRow);
 
    srcLabel << "When " << midiName;
@@ -119,7 +119,7 @@ void SeqChainDialog::setDesc()
    srcLabel << " step " << (mSrcStep+1);
 
    n = data->getCurNote(mTgtRow);
-   midiName = SeqScale::getMidiNoteName(n, e->getLowestOctave(), noteBuf);
+   midiName = SeqScale::getMidiNoteName(n, e->getLowestOctave(), noteBuf, e->isShowMidiNumbers());
    label = data->getNoteName(mTgtRow);
 
    destLabel << "then " << midiName;

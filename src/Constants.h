@@ -313,6 +313,7 @@ in mono mode are 0..high val where 0 is off, and the following applies
 #define SEQCTL_SET_POSOFFSET        10
 #define SEQCTL_SET_UISCALE          11
 #define SEQCTL_SET_PATLAYERLINK     12
+#define SEQCTL_SET_MIDINOTENUM      13
 
 
 ///////////////////////////

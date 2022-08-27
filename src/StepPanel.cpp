@@ -634,7 +634,7 @@ void StepPanel::mouseDown(const MouseEvent & event)
          mMouseStartVal = data->getProb(c->mRow, c->mCol);
 
          // force paint to think that it's changing to make the ui look more responsive
-         // (that's all) TODO do this always if selsize==1 rather otherwise it doesnt work as desired when shifted
+         // (that's all) TODO do this always if selsize==1 rather otherwise it doesn't work as desired when shifted
          if (mMouseStartVal == SEQ_PROB_OFF && !shifted)
             mGrid[mSelGridItem].mTempValue = SEQ_PROB_OFF;
       }

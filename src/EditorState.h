@@ -247,7 +247,7 @@ public:
 // random generators
 int64 generateNewRootSeed();
 
-// another shared funtion I don't know where to put
+// another shared function I don't know where to put
 void fixColors(EditorState *e, Component * cpt);
 // call this from "editorShown" when a label gets converted to a text edit box
 // to fix colors and optionally limit max length

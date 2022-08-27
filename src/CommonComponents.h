@@ -82,7 +82,7 @@ public:
    // clear all items
    void clearItems();
    int getNumItems() { return mItems.size(); }
-   /* Set the current item. does not trigger valueChange unless 3nd param is set.
+   /* Set the current item. does not trigger valueChange unless 3rd param is set.
    val parameter - only applicable if single item and determines whether to toggle on or off   
    */
    void setCurrentItem(int id, bool val, bool triggerNotify);
@@ -297,7 +297,7 @@ Modal Dialog Popup
 
 /* 
 Generic Dialog helper.
-To use this, you need to override it, and add an instance of the overriden class to the
+To use this, you need to override it, and add an instance of the overridden class to the
 main component. When you want the dialog to show, call openDialog.
 */
 class SeqModalDialog : public Component,

@@ -1608,14 +1608,14 @@
 		<dict>
 			<key>BACKGROUND</key>
 			<dict>
-				<key>APPEARANCES</key>
+				<key>APPAREANCES</key>
 				<dict>
 					<key>DARK_AQUA</key>
 					<dict/>
 					<key>LIGHT_AQUA</key>
 					<dict/>
 				</dict>
-				<key>SHARED_SETTINGS_FOR_ALL_APPEARANCES</key>
+				<key>SHARED_SETTINGS_FOR_ALL_APPAREANCES</key>
 				<true/>
 			</dict>
 			<key>INSTALLATION TYPE</key>

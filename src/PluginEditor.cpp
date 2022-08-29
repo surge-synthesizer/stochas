@@ -12,7 +12,7 @@
 #include "PluginEditor.h"
 #include "Persist.h"
 
-/* Given a number of steps, return number of pages needed to accomodate that
+/* Given a number of steps, return number of pages needed to accommodate that
  number of steps
  */
 static int
@@ -1227,7 +1227,7 @@ void SeqAudioProcessorEditor::scrollBarMoved(ScrollBar *sb, double newRangeStart
       // reposition or hide the length editing cursor as appropriate
       mStepPanel.moveLengthEditCursor();
       setStepRangeVisible();
-      setSectionSelectItems(); // higlight or unhighlight one of the page change buttons
+      setSectionSelectItems(); // highlight or unhighlight one of the page change buttons
       repaint();
    }
 }
@@ -1392,7 +1392,7 @@ void SeqAudioProcessorEditor::labelTextChanged(Label *labelThatHasChanged)
    }
    else if (labelThatHasChanged == &mLblPatternName)
    {
-      // since the ui intertwines layers and pattens, change name on all layers
+      // since the ui intertwines layers and patterns, change name on all layers
       for (int i = 0; i < SEQ_MAX_LAYERS; i++)
       {
          lay = s->getLayer(i);

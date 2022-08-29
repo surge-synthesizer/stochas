@@ -193,7 +193,7 @@ public:
    /* this returns step position in the whole track (ie doesn't flip back to 0 when numsteps is reached */
    int getCurrentOverallPosition(int *fraction = 0);
 
-   //get effective number of steps (with overriden value)
+   //get effective number of steps (with overridden value)
    int getNumSteps();
 
    /* This returns the current pattern that is playing. it will either be current pattern,

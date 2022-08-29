@@ -40,7 +40,7 @@ public:
 
    // sets the help text to a specific string
    void setText(const String &text);
-   // sets help text based on a component. get's it's name, looks at it's parent, etc
+   // sets help text based on a component. gets its name, looks at its parent, etc
    void lookupAndSetText(const Component * id);
    SeqHelpBanner(SeqGlob *glob);
    void resized() override;

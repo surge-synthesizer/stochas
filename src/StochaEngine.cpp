@@ -534,7 +534,7 @@ int StochaEngine::getRandomMulti(int position, int maxpoly)
       }
 
 
-      // determine if it's mandatory (it must also be on. can't play a cell thats not on even if mand.)
+      // determine if it's mandatory (it must also be on. can't play a cell that's not on even if mand.)
       // so it may have a prob of 0 which would allow it to play in this case but not otherwise. 
       if (isMandatory(position, i, &mandOff, pat)) {
          // we need to only add it if it's not mand off
@@ -1084,7 +1084,7 @@ bool StochaEngine::processBlock(double beatPosition,    // which quarter measure
            // If we are less than half-way between one step and another step, we will play the first step
            // (eg for step 0, if we are at 0.4 we will still play step 0 even though it's actually in the past).
            // this is to solve the issue of looping when a sample block does not start at the beginning of the loop.
-           // if this becomes problematic for people (cant see how it would) then we could always round down at eg 0.1
+           // if this becomes problematic for people (can't see how it would) then we could always round down at eg 0.1
            // and round up otherwise. i'm just trying to handle the case of eg combination of a very large block
            // size and a very high tempo
            next_step_position = roundToInt(steppos_in_track);

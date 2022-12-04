@@ -357,7 +357,7 @@ void EditorState::configSerialization(bool read)
    configGetSetInt(pf, read, mKeyboardDisabled, "disablehotkeys", 0, 1, 0);
    configGetSetInt(pf, read, mShiftReversed, "shiftBehaviorReversed", 0, 1, 0);
    configGetSetInt(pf, read, mPatLayerLinked, "patternLayerLinked", 0, 1, 1);
-   configGetSetInt(pf, read, mShowMidiNumbers, "showMidiNumbers", 0, 1, 1);
+   configGetSetInt(pf, read, mShowMidiNumbers, "showMidiNumbers", 0, 1, 0);
    configGetSetInt(pf, read, mMouseSense, "mouseSense", 1, SEQ_MOUSE_SENSE_MAX, SEQ_MOUSE_SENSE_DEFAULT);
    configGetSetInt(pf, read, mDefaultVelocity, "defaultVelocity", 0, 127, SEQ_VELOCITY_DEFAULT);
    configGetSetInt(pf, read, mLowestOctave, "lowestOctave", SEQ_BASE_OCT_LOW, SEQ_BASE_OCT_HIGH, SEQ_BASE_OCT_DEFAULT);

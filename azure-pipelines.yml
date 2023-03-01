@@ -162,7 +162,8 @@ jobs:
       # build the innosetup install
       nuget install innosetup
       mkdir -p build/product/
-      iscc //Obuild\\product //Fstochas_windows_installer //DSTOCHAS_VERSION=${STOCHAS_VERSION}.${GH} "install\\win\\install.iss"
+      iscc //Obuild\\product //Fstochas_windows_installer64 //DMyAppVersion=${STOCHAS_VERSION} //DSTOCHAS_SRC="..\\..\\" //DSTOCHAS_BIN="..\\..\\build\\" "install\\win\\stochas64.iss"
+      iscc //Obuild\\product //Fstochas_windows_installer32 //DMyAppVersion=${STOCHAS_VERSION} //DSTOCHAS_SRC="..\\..\\" //DSTOCHAS_BIN="..\\..\\build32\\" "install\\win\\stochas32.iss"
 
     displayName: Package Windows
     condition: and(variables.isWindows, variables.doUpload)

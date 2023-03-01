@@ -154,7 +154,7 @@ public:
     // make sure that the currently selected step range (as selected by the toggle) is visible
     void setStepRangeVisible();
 
-    // make sure the groove reflects whats in sequence data
+    // make sure the groove reflects what's in sequence data
     void setGrooveItems();
 
     // used by child components to get to the sequencer data

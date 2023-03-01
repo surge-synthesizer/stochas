@@ -123,6 +123,14 @@ void SettingsTab::resized()
    top.removeFromLeft(space);
    mNumUIScale.setBounds(top);
 
+   // midi note number
+   top = b3.removeFromTop(vspace);
+   left = top.removeFromLeft(tab);
+   mLblUseMidiNum.setBounds(left);
+   top.removeFromLeft(space);
+   mTglMidiNoteNumber.setBounds(top);
+
+
    // version
    top = b3.removeFromBottom(vspace);
    mLblVersionBuild.setBounds(top);
@@ -155,7 +163,8 @@ SettingsTab::SettingsTab(SeqGlob * glob, int id, CptNotify *notify) :
    mTglShiftReversed(glob, SEQCTL_SET_SHIFTREV,this,"shiftRev"),
    mNumPosOffset(glob, SEQCTL_SET_POSOFFSET, this, "setPosOffset"),
    mNumUIScale(glob, SEQCTL_SET_UISCALE, this, "setUIScale"),
-   mTglPatLayerLink(glob, SEQCTL_SET_PATLAYERLINK, this, "patLayerLink")
+   mTglPatLayerLink(glob, SEQCTL_SET_PATLAYERLINK, this, "patLayerLink"),
+   mTglMidiNoteNumber(glob,SEQCTL_SET_MIDINOTENUM, this, "showMidiNum")
 {
    setupLabel(mLblMouseSense,"Mouse Sensitivity");
    setupLabel(mLblRightMouseAction,"Right Click");
@@ -167,6 +176,7 @@ SettingsTab::SettingsTab(SeqGlob * glob, int id, CptNotify *notify) :
    setupLabel(mLblShiftReversed, "Shift Key");
    setupLabel(mLblPosOffset, "Pos. Offset.");
    setupLabel(mLblUIScale, "UI Scale");
+   setupLabel(mLblUseMidiNum, "MIDI Note Numbers");
    setupLabel(mLblPatLayerLink, "Pat./Layer linked");
    String vs = String("Version: ");
    vs += Stochas::Build::FullVersionStr;
@@ -220,6 +230,10 @@ SettingsTab::SettingsTab(SeqGlob * glob, int id, CptNotify *notify) :
    mTglPatLayerLink.addItem(0, "On", true);
    mTglPatLayerLink.addItem(1, "Off", false);
    addAndMakeVisible(mTglPatLayerLink);
+
+   mTglMidiNoteNumber.addItem(0, "Off", true);
+   mTglMidiNoteNumber.addItem(1, "On", false);
+   addAndMakeVisible(mTglMidiNoteNumber);
    
 }
 
@@ -267,6 +281,10 @@ void SettingsTab::refreshAll()
    else
      mTglPatLayerLink.setCurrentItem(1, true, false);
 
+   if(em.isShowMidiNumbers())
+     mTglMidiNoteNumber.setCurrentItem(1, true, false);
+   else
+     mTglMidiNoteNumber.setCurrentItem(0,true,false);
 
 
 }
@@ -312,6 +330,8 @@ void SettingsTab::cptValueChange(int cptId, int value)
    case SEQCTL_SET_PATLAYERLINK:
       em.setPatLayerLinked(value==0);
       break;
+   case SEQCTL_SET_MIDINOTENUM:
+      em.setShowMidiNumbers(value==1);
    case SEQCTL_SET_POSOFFSET:
       em.setPPQOffset(value);
       break;

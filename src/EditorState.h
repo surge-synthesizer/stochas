@@ -158,6 +158,9 @@ public:
    void setPatLayerLinked(bool isLinked);
    bool isPatLayerLinked();
 
+   void setShowMidiNumbers(bool useNumbers);
+   bool isShowMidiNumbers();
+
 private:
    // read or write settings to the config file
    void configSerialization(bool read);
@@ -197,6 +200,7 @@ private:
    int mPPQOffset;
    int mScaleFactor;
    int mPatLayerLinked;
+   int mShowMidiNumbers;
 public:
 };
 
@@ -243,7 +247,7 @@ public:
 // random generators
 int64 generateNewRootSeed();
 
-// another shared funtion I don't know where to put
+// another shared function I don't know where to put
 void fixColors(EditorState *e, Component * cpt);
 // call this from "editorShown" when a label gets converted to a text edit box
 // to fix colors and optionally limit max length

@@ -345,7 +345,7 @@ void ButtonCpt::paint(Graphics & g)
    juce::Colour c;
    // background
    //g.fillAll(mGlob->mEditorState->getColorFor(EditorState::background));
-   // see if color is overriden
+   // see if color is overridden
    if (mOverrideColor != Colour())
       c = mOverrideColor;
    else

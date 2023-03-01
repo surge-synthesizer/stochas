@@ -13,6 +13,12 @@
 #include "Colors.h"
 #include "Constants.h"
 
+#ifdef __linux__
+#include <cstddef>
+#define XDG_CONFIG_HOME "XDG_CONFIG_HOME"
+#define XDG_CONFIG_HOME_DEFAULT ".config"
+#endif
+
 EditorState::EditorState() : 
    mEditMode(editingSteps),
    mCurrentLayer(0),
@@ -271,6 +277,15 @@ void EditorState::setPatLayerLinked(bool isLinked)
   mPatLayerLinked = isLinked ? 1:0;
 }
 
+void EditorState::setShowMidiNumbers(bool useNumbers)
+{
+  mShowMidiNumbers = useNumbers ? 1:0;
+}
+bool EditorState::isShowMidiNumbers()
+{
+  return mShowMidiNumbers==1;
+}
+
 void EditorState::setFileDirectory(const String & dir)
 {
    mDefaultFileDir = dir;
@@ -306,6 +321,20 @@ int EditorState::getScaleFactor()
    return mScaleFactor;
 }
 
+String getConfigurationFolder() {
+#ifdef __linux__
+   const char* xdgConfigHome = std::getenv(XDG_CONFIG_HOME);
+
+   String folderName;
+   folderName += xdgConfigHome ? xdgConfigHome : XDG_CONFIG_HOME_DEFAULT;
+   folderName += "/" SEQ_CO_NAME;
+
+   return folderName;
+#else
+   return SEQ_CO_NAME;
+#endif
+}
+
 void EditorState::configSerialization(bool read)
 {
    int tmp;
@@ -317,7 +346,7 @@ void EditorState::configSerialization(bool read)
    options.commonToAllUsers = false;
    options.doNotSave = false;
    options.filenameSuffix = ".cfg";
-   options.folderName = SEQ_CO_NAME;
+   options.folderName = getConfigurationFolder();
    options.ignoreCaseOfKeyNames = true;
    options.osxLibrarySubFolder = "Application Support";
    appProperties.setStorageParameters(options);
@@ -328,6 +357,7 @@ void EditorState::configSerialization(bool read)
    configGetSetInt(pf, read, mKeyboardDisabled, "disablehotkeys", 0, 1, 0);
    configGetSetInt(pf, read, mShiftReversed, "shiftBehaviorReversed", 0, 1, 0);
    configGetSetInt(pf, read, mPatLayerLinked, "patternLayerLinked", 0, 1, 1);
+   configGetSetInt(pf, read, mShowMidiNumbers, "showMidiNumbers", 0, 1, 0);
    configGetSetInt(pf, read, mMouseSense, "mouseSense", 1, SEQ_MOUSE_SENSE_MAX, SEQ_MOUSE_SENSE_DEFAULT);
    configGetSetInt(pf, read, mDefaultVelocity, "defaultVelocity", 0, 127, SEQ_VELOCITY_DEFAULT);
    configGetSetInt(pf, read, mLowestOctave, "lowestOctave", SEQ_BASE_OCT_LOW, SEQ_BASE_OCT_HIGH, SEQ_BASE_OCT_DEFAULT);
@@ -367,7 +397,7 @@ void EditorState::loadColorsFromFile()
    options.commonToAllUsers = false;
    options.doNotSave = false;
    options.filenameSuffix = ".skin";
-   options.folderName = SEQ_CO_NAME;
+   options.folderName = getConfigurationFolder();
    options.ignoreCaseOfKeyNames = true;
    options.osxLibrarySubFolder = "Application Support";
    appProperties.setStorageParameters(options);

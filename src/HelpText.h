@@ -96,5 +96,6 @@ HelpPair gHelpText[] = {
    { "standaloneBPM", "Set the beats per minute for playback"},
    { "setUIScale",    "Sets the overall size of the UI, allowing you to enlarge the controls for better visibility on large screens."},
    { "patLayerLink",    "Determines whether patterns are linked together for a layer. If turned on, changing patterns on one layer will change to that same pattern on all layers"},
-   {0,0} // end sentinel
+    { "showMidiNum", "Determines whether MIDI note numbers are used instead of names to display note values."},
+    {0,0} // end sentinel
 };

@@ -15,6 +15,7 @@ jobs:
 - job: Build
   strategy:
     matrix:
+      # test
       mac-latest:
         imageName: 'macOS-12'
         isMac: True

@@ -16,7 +16,7 @@ jobs:
   strategy:
     matrix:
       mac-latest:
-        imageName: 'macos-13'
+        imageName: 'macOS-12'
         isMac: True
         doUpload: True
       mac:

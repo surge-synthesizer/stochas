@@ -15,6 +15,10 @@ jobs:
 - job: Build
   strategy:
     matrix:
+      mac-latest:
+        imageName: 'macos-13'
+        isMac: True
+        doUpload: True
       mac:
         imageName: 'macos-10.15'
         isMac: True

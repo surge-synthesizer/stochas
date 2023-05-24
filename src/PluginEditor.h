@@ -1,10 +1,10 @@
 /***************************************************************
  ** Copyright (C) 2016 by Andrew Shakinovsky
  **
- ** You may also use this code under the terms of the 
+ ** You may also use this code under the terms of the
  ** GPL v3 (see www.gnu.org/licenses).
- ** STOCHAS IS PROVIDED "AS IS" WITHOUT ANY WARRANTY, AND ALL 
- ** WARRANTIES, WHETHER EXPRESSED OR IMPLIED, INCLUDING 
+ ** STOCHAS IS PROVIDED "AS IS" WITHOUT ANY WARRANTY, AND ALL
+ ** WARRANTIES, WHETHER EXPRESSED OR IMPLIED, INCLUDING
  ** MERCHANTABILITY AND FITNESS FOR PURPOSE, ARE DISCLAIMED.
  ***************************************************************/
 
@@ -30,121 +30,123 @@
 /*
 Main UI Class
 */
-class SeqAudioProcessorEditor  : public AudioProcessorEditor, 
-   public CptNotify, public MultiTimer, public ScrollBar::Listener,
-   public Label::Listener, public ActionListener
+class SeqAudioProcessorEditor : public AudioProcessorEditor,
+                                public CptNotify,
+                                public MultiTimer,
+                                public ScrollBar::Listener,
+                                public Label::Listener,
+                                public ActionListener
 {
-   LookAndFeel_V3 mLookAndFeel; // maintain the v3 look and feel
-   SeqAudioProcessor& mProcessor;
-   // ================see the SeqAudioProcessorEditor ctor for more comments on each of these
-   SeqGlob mGlob;
-   Component mStepHolder;  
-   StepPanel mStepPanel;
-   Component mNoteHolder;  
-   NotePanel mNotePanel;
-   Component mPPHolder; 
-   ScrollBar mStepScrollbar;
-   ScrollBar mStepHScrollbar;
-   PlayLightCpt mMidiIndicator;
-   PlayPanel mPlayPanel;
-   PatternPlayPanel mPatPlayPanel;
-   ToggleCpt mEditToggle;  
-   Label mEditLabel;       
-   ButtonCpt mHelpBtn;
-   ButtonCpt mEditBtn;
-   ButtonCpt mUndoBtn;
-   ButtonCpt mRecordBtn;
-   ButtonCpt mPlayBtn;
-   ToggleCpt mPatternSelect;
-   Label mPatternLabel;
-   
-   ToggleCpt mSectionSelect;
-   SeqTabbedCpt mMainTabs;
-   Label mLblLayerName;
-   Label mLblPatternName;
-   Label mLblBPM; // standalone mode only
-   NumberCpt mBPM;  // standalone mode only
-   //----------------------------- groove tab
-   TabPanelCpt mTabGroove;
-   GrooveCpt mGroove;
-   ButtonCpt mClearGrooveBtn;
-   ButtonCpt  mBtnLoadGroove;
-   ButtonCpt  mBtnSaveGroove;
-   NumberCpt mGrooveSwing;
-   Label mGrooveSwingLabel;
-   Label mGrooveGrooveLabel;
-   Label mGrooveHelpLabel;
+    LookAndFeel_V3 mLookAndFeel; // maintain the v3 look and feel
+    SeqAudioProcessor &mProcessor;
+    // ================see the SeqAudioProcessorEditor ctor for more comments on each of these
+    SeqGlob mGlob;
+    Component mStepHolder;
+    StepPanel mStepPanel;
+    Component mNoteHolder;
+    NotePanel mNotePanel;
+    Component mPPHolder;
+    ScrollBar mStepScrollbar;
+    ScrollBar mStepHScrollbar;
+    PlayLightCpt mMidiIndicator;
+    PlayPanel mPlayPanel;
+    PatternPlayPanel mPatPlayPanel;
+    ToggleCpt mEditToggle;
+    Label mEditLabel;
+    ButtonCpt mHelpBtn;
+    ButtonCpt mEditBtn;
+    ButtonCpt mUndoBtn;
+    ButtonCpt mRecordBtn;
+    ButtonCpt mPlayBtn;
+    ToggleCpt mPatternSelect;
+    Label mPatternLabel;
 
-   //-----------------------------settings tab
-   SettingsTab mTabSettings;
+    ToggleCpt mSectionSelect;
+    SeqTabbedCpt mMainTabs;
+    Label mLblLayerName;
+    Label mLblPatternName;
+    Label mLblBPM;  // standalone mode only
+    NumberCpt mBPM; // standalone mode only
+    //----------------------------- groove tab
+    TabPanelCpt mTabGroove;
+    GrooveCpt mGroove;
+    ButtonCpt mClearGrooveBtn;
+    ButtonCpt mBtnLoadGroove;
+    ButtonCpt mBtnSaveGroove;
+    NumberCpt mGrooveSwing;
+    Label mGrooveSwingLabel;
+    Label mGrooveGrooveLabel;
+    Label mGrooveHelpLabel;
 
-   //-----------------------------chord tab
-   TabPanelCpt mTabChord;
-   ToggleCpt mTglChords;
-   Label mLblChords;
+    //-----------------------------settings tab
+    SettingsTab mTabSettings;
 
-   //-----------------------------layer options tab
-   OptionsPanel mOptionsPanel;
+    //-----------------------------chord tab
+    TabPanelCpt mTabChord;
+    ToggleCpt mTglChords;
+    Label mLblChords;
 
-   //-----------------------------patch options tab
-   TabPanelCpt mTabPatchOpts;
-   Label mLblMidiPass;
-   Label mLblPlaybackMode;
-   Label mLblMidiRespond;
-   ToggleCpt mMidiPass;
-   ToggleCpt mMidiRespond;
-   ToggleCpt mPlaybackMode;
-   ButtonCpt mMidiMap;
-   ButtonCpt mBtnLoadPatch;
-   ButtonCpt mBtnSavePatch;
+    //-----------------------------layer options tab
+    OptionsPanel mOptionsPanel;
 
-   Label mLblRandomization;
-   ToggleCpt mRandomToggle;
+    //-----------------------------patch options tab
+    TabPanelCpt mTabPatchOpts;
+    Label mLblMidiPass;
+    Label mLblPlaybackMode;
+    Label mLblMidiRespond;
+    ToggleCpt mMidiPass;
+    ToggleCpt mMidiRespond;
+    ToggleCpt mPlaybackMode;
+    ButtonCpt mMidiMap;
+    ButtonCpt mBtnLoadPatch;
+    ButtonCpt mBtnSavePatch;
 
-   
+    Label mLblRandomization;
+    ToggleCpt mRandomToggle;
 
-   SeqHelpBanner mHelpBanner;
-   ToggleCptWithLabel mLayerToggle;
-   Label mLayerLabel;
-   ButtonCpt mUISizePanic;          // zorder should be higher than layer label (does this do it?)
-   Label mSectionLabel;
-   SeqEditDialog mEditDialog;
-   SeqInfoDialog mInfoDialog;
-   SeqFileDialog mFileChooser;
-   SeqChainDialog mChainDialog;
+    SeqHelpBanner mHelpBanner;
+    ToggleCptWithLabel mLayerToggle;
+    Label mLayerLabel;
+    ButtonCpt mUISizePanic; // zorder should be higher than layer label (does this do it?)
+    Label mSectionLabel;
+    SeqEditDialog mEditDialog;
+    SeqInfoDialog mInfoDialog;
+    SeqFileDialog mFileChooser;
+    SeqChainDialog mChainDialog;
 
-   int mMidiLightCountDown;
-   int mTimeDivider;
-   // just to avoid excessive repaints
-   SeqProcessorNotifier::PlayRecordState mRecStateCache;
-   SeqProcessorNotifier::PlayRecordState mPlayStateCache;
+    int mMidiLightCountDown;
+    int mTimeDivider;
+    // just to avoid excessive repaints
+    SeqProcessorNotifier::PlayRecordState mRecStateCache;
+    SeqProcessorNotifier::PlayRecordState mPlayStateCache;
 
-   SeqMidiDialog mMidiDlg;
+    SeqMidiDialog mMidiDlg;
 
-   // set active chord for painting, -1 is off
-   void chordSelect(int id);
-   void fixButtonColors();
-   void showFileChooser(int mode);
-   // will be called when ok is hit on the file chooser
-   void respondFileChooser();
-   void mouseWheelMove(const MouseEvent &event, const MouseWheelDetails &wheel) override;
+    // set active chord for painting, -1 is off
+    void chordSelect(int id);
+    void fixButtonColors();
+    void showFileChooser(int mode);
+    // will be called when ok is hit on the file chooser
+    void respondFileChooser();
+    void mouseWheelMove(const MouseEvent &event, const MouseWheelDetails &wheel) override;
 
-   void scrollBarMoved(ScrollBar *scrollBarThatHasMoved, double newRangeStart) override;
-   void loadMidiGroove(const String &filename);
-   void saveMidiGroove(const String &filename);
-   /** Called when a Label goes into editing mode and displays a TextEditor. */
-   void editorShown(Label*, TextEditor&) override;
-   void labelTextChanged(Label* labelThatHasChanged)  override;
-   void loadPatch(const String &fn);
-   void savePatch(const String &fn);
-   void checkForRecordedNotes();
-public:
-   // set alert text which stays up for a few seconds
-   void setAlertText(const String &txt);
-   
-    SeqAudioProcessorEditor (SeqAudioProcessor&);
+    void scrollBarMoved(ScrollBar *scrollBarThatHasMoved, double newRangeStart) override;
+    void loadMidiGroove(const String &filename);
+    void saveMidiGroove(const String &filename);
+    /** Called when a Label goes into editing mode and displays a TextEditor. */
+    void editorShown(Label *, TextEditor &) override;
+    void labelTextChanged(Label *labelThatHasChanged) override;
+    void loadPatch(const String &fn);
+    void savePatch(const String &fn);
+    void checkForRecordedNotes();
+
+  public:
+    // set alert text which stays up for a few seconds
+    void setAlertText(const String &txt);
+
+    SeqAudioProcessorEditor(SeqAudioProcessor &);
     ~SeqAudioProcessorEditor();
-    void paint (Graphics&) override;
+    void paint(Graphics &) override;
     void resized() override;
 
     // display the correct choices for selecting a range of steps to be displayed.
@@ -169,7 +171,7 @@ public:
     // this timer polls to see if anything needs updating on the ui
     void timerCallback(int timerID) override;
     void mainTimer();
-// this will ensure that the UI matches the model and there are no invalid
+    // this will ensure that the UI matches the model and there are no invalid
     // selections in the UI. Should be called before a repaint, after something
     // might have changed
     void updateUI();
@@ -182,13 +184,12 @@ public:
 
     void setMuteUnmuteLayers();
 
-private:
-   // don't know what this is right now so I leave it here
-   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SeqAudioProcessorEditor)
+  private:
+    // don't know what this is right now so I leave it here
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SeqAudioProcessorEditor)
 
-      // Inherited via ActionListener
-      virtual void actionListenerCallback(const String & message) override;
+    // Inherited via ActionListener
+    virtual void actionListenerCallback(const String &message) override;
 };
 
-
-#endif  // PLUGINEDITOR_H_INCLUDED
+#endif // PLUGINEDITOR_H_INCLUDED

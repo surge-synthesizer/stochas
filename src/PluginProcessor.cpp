@@ -11,6 +11,7 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 #include "Persist.h"
+#include <stdio.h>
 
 void SeqAudioProcessor::addAutParam(SeqAudioProcessorParameter * p)
 {
@@ -65,6 +66,7 @@ SeqAudioProcessor::SeqAudioProcessor()  :
       addAutParam(new SeqAudioProcessorParameter(this, SEQ_AUT_CURRENT_PATTERN, 0, SEQ_MAX_PATTERNS-1, i,"pattern"));
    }
    addAutParam(new SeqAudioProcessorParameter(this, SEQ_AUT_GLOBAL_SWING, SEQ_MIN_SWING, SEQ_MAX_SWING, -1,"swing"));
+   addAutParam(new SeqAudioProcessorParameter(this, SEQ_AUT_RECORD, 0, 1, -1,"record"));
    // special case one handled internally
    addParameter(new SeqPlaybackParameter(this));
 
@@ -1181,9 +1183,21 @@ float SeqAudioProcessorParameter::getValue() const
    return ret;
 }
 
-
+// not sure whether Juce or Reaper, but if you stack multiple automation clips
+// you can end up with a value > 1.0. The value according to Juce docs says
+// will be 0.0 to 1.0. Possibly a later Juce fixes this.
+float clampAutRange(float v) {
+   if(v > 1.0)
+      return 1.0;
+   if(v < 0.0)
+      return 0.0;
+   return v;
+}
 void SeqAudioProcessorParameter::setValue(float newValue)
 {
+
+   newValue = clampAutRange(newValue);
+
    // host is setting value
    mValue = roundToInt(jmap<float>(newValue, (float)mRangeLo - 1.0f, (float)mRangeHi));
    // if mValue is rangeLo-1 it means default
@@ -1217,6 +1231,7 @@ String SeqAudioProcessorParameter::getLabel() const
 
 String SeqAudioProcessorParameter::getText(float value, int) const
 {
+   value = clampAutRange(value);
    int v = roundToInt(jmap<float>(value, (float)mRangeLo - 1.0f, (float)mRangeHi));
    if (v == mRangeLo - 1)
       return "as assigned";
@@ -1254,6 +1269,19 @@ void SeqAudioProcessorParameter::reset()
 //==========implement AutParamNotify ============================
 void SeqAudioProcessor::automationParameterHasChanged(int paramId, int paramValue, int layer)
 {
+   // There is a special case for record start/stop. The stocha engines are
+   // oblivious to this feature and its handled here in the processor
+   if(paramId == SEQ_AUT_RECORD){
+      if(paramValue == 1 && !mRecordingMode) {
+          mRecordingMode=true;
+          recordingModeChanged();
+      } else if(paramValue == 0 && mRecordingMode) {
+         mRecordingMode=false;
+         recordingModeChanged();
+      }
+      return;
+   }
+
    // talk to StochaEngine to tell it to override some value
    if(layer != -1)
       mStocha[layer].setAutomationParameterValue(paramId, paramValue);
@@ -1282,7 +1310,8 @@ String SeqAudioProcessor::getTextForAutomationParameterValue(int paramId, int pa
    case SEQ_AUT_GLOBAL_SWING:
       ret = String::formatted("%d%%", paramValue);
       break;
-
+   case SEQ_AUT_RECORD:
+      ret = paramValue == 0 ? "off" : paramValue == 1 ? "on" : "";
    case SEQ_AUT_MUTED: // no/yes
       if (paramValue)
          ret = "yes";
@@ -1324,6 +1353,12 @@ int SeqAudioProcessor::parseTextForAutomationParameterValue(int paramId, String 
             break;
          }
       }      
+      break;
+   case SEQ_AUT_RECORD:
+      if(text.compare("on")==0)
+         res = 1;
+      else if(text.compare("off")==0)
+         res = 0;
       break;
    case SEQ_AUT_NOTE_LENGTH: // percentage
    case SEQ_AUT_POS_VARIANCE:

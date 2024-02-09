@@ -629,6 +629,7 @@ void StochaEngine::setAutomationParameterValue(int paramId, int value)
       case SEQ_AUT_CURRENT_PATTERN: targ = &mOverridePattern; break;
       case SEQ_AUT_TRANSPOSE: targ = &mOverrideTranspose; break;
       case SEQ_AUT_GLOBAL_SWING: targ = &mOverrideSwing; break;
+      //case SEQ_AUT_RECORD: targ =
       default: break;
       }
       if (targ)

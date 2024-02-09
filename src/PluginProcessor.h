@@ -67,6 +67,7 @@ transpose
 __Global:
 swing value (Ranged integer with %)
 playback
+record
 */
 class SeqAudioProcessorParameter : public AudioProcessorParameter {
    // Inherited via AudioProcessorParameter

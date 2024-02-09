@@ -430,6 +430,8 @@ in mono mode are 0..high val where 0 is off, and the following applies
 #define SEQ_AUT_TRANSPOSE           13
 // global
 #define SEQ_AUT_GLOBAL_SWING        14
+#define SEQ_AUT_RECORD              15 // 0=off, 1=on
+
 
 // special value to indicate automation value is set to default
 #define SEQ_AUT_DEFAULT_VALUE_DESIG 0xFFFF

@@ -16,15 +16,15 @@ jobs:
   strategy:
     matrix:
       mac:
-        imageName: 'macos-10.15'
+        imageName: 'macos-latest'
         isMac: True
         doUpload: True
       win-2019:
         imageName: 'windows-2019'
         isWindows: True
         doUpload: True
-      lin-18:
-        imageName: 'ubuntu-18.04'
+      lin:
+        imageName: 'ubuntu-latest'
         isLinux: True
         doUpload: True
       lin-20:

@@ -10,6 +10,7 @@ cmake_minimum_required(VERSION 3.16)
 
 # always statically link c runtime on windows
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # default to 10.11 (earlier versions will fail)
 if (NOT DEFINED STOCHAS_MAC_SDK_VER)
@@ -19,10 +20,13 @@ endif()
 set(CMAKE_OSX_DEPLOYMENT_TARGET ${STOCHAS_MAC_SDK_VER} CACHE STRING "Build for ${STOCHAS_MAC_SDK_VER}")
 
 if (NOT DEFINED STOCHAS_VERSION)
-  set (STOCHAS_VERSION 1.3.0)
+  set (STOCHAS_VERSION 1.3.10)
 endif()  
 
 project(Stochas VERSION ${STOCHAS_VERSION})
+
+option(STOCHAS_COPY_AFTER_BUILD FALSE "Copy after build")
+
 message( STATUS "Building Stochas with version ${STOCHAS_VERSION}" )
 if( APPLE )
   message( STATUS "Building using ${CMAKE_OSX_DEPLOYMENT_TARGET}" )
@@ -85,7 +89,7 @@ juce_add_plugin(stochas
     NEEDS_MIDI_OUTPUT TRUE
     IS_MIDI_EFFECT ${STOCHAS_IS_MIDI_EFFECT}  
     # EDITOR_WANTS_KEYBOARD_FOCUS TRUE/FALSE    # Does the editor need keyboard focus?
-    # COPY_PLUGIN_AFTER_BUILD TRUE/FALSE        # Should the plugin be installed to a default location after building?
+    COPY_PLUGIN_AFTER_BUILD ${STOCHAS_COPY_AFTER_BUILD}        # Should the plugin be installed to a default location after building?
     PLUGIN_MANUFACTURER_CODE AuVi               # allows compatibility with older patches from AV days
     PLUGIN_CODE Stoc
     FORMATS VST3 ${VST2} AU Standalone     # The formats to build. Other valid formats are: AAX Unity VST AU AUv3

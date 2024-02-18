@@ -85,12 +85,14 @@ SeqInfoDialog::SeqInfoDialog(SeqGlob * glob, CptNotify *parent) :
    mLblDescription->setFont(Font(14.0f, Font::plain));
    mLblDescription->setMultiLine(true);
    mLblDescription->setReadOnly(true);
-   String desc("Build time: ");
+   String desc;
+   desc += SeqImageX::infobox_txt;
+   desc += "\n\nBuild Time: ";
    desc += Stochas::Build::BuildDate;
    desc += " ";
    desc += Stochas::Build::BuildTime;
-   desc += "\n\n";
-   desc += SeqImageX::infobox_txt;
+   desc += "\nJUCE Version: ";
+   desc += String(JUCE_MAJOR_VERSION) + "." + String(JUCE_MINOR_VERSION) + "." + String(JUCE_BUILDNUMBER);
 
    mLblDescription->setText(desc, false);
    //mLblDescription->setJustificationType(/*Justification::horizontallyJustified | */ Justification::top);

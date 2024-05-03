@@ -92,10 +92,12 @@ jobs:
       # For now we expand this out so we can swap the STOCHAS_IS_SYNTH flag for the AU off
       cmake -Bbuild -GXcode -DSTOCHAS_VERSION=${STOCHAS_VERSION} -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
       cmake --build build --target stochas_VST3 --config Release | xcpretty
+      cmake --build build --target stochas_CLAP --config Release | xcpretty
       cmake --build build --target stochas_Standalone --config Release | xcpretty
 
       mkdir build/tmpasset
       cp -r build/stochas_artefacts/Release/VST3/* build/tmpasset
+      cp -r build/stochas_artefacts/Release/CLAP/* build/tmpasset
       cp -r build/stochas_artefacts/Release/Standalone/* build/tmpasset
 
       cmake -Bbuild -DSTOCHAS_IS_SYNTH=FALSE -DSTOCHAS_VERSION=${STOCHAS_VERSION} -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
@@ -145,8 +147,10 @@ jobs:
       mkdir -p zip/x86
       mkdir -p zip/x64
       cp -r build/stochas_artefacts/Release/VST3/* zip/x64
+      cp -r build/stochas_artefacts/Release/CLAP/* zip/x64
       cp -r build/stochas_artefacts/Release/Standalone/* zip/x64
       cp -r build32/stochas_artefacts/Release/VST3/* zip/x86
+      cp -r build32/stochas_artefacts/Release/CLAP/* zip/x86
       cp -r build32/stochas_artefacts/Release/Standalone/* zip/x86
       NM=stochas-${STOCHAS_VERSION}.${GH}-win.zip
       # see what we have
@@ -179,8 +183,9 @@ jobs:
       mkdir -p build/product/
       mkdir -p build/Stochas/Standalone
       cp -r build/stochas_artefacts/VST3/* build/Stochas
+      cp -r build/stochas_artefacts/CLAP/* build/Stochas
       cp -r build/stochas_artefacts/Standalone/* build/Stochas/Standalone      
-      tar czf "build/product/${NM}" -C build Stochas
+      tar cvzf "build/product/${NM}" -C build Stochas
     displayName: Build Linux
     condition: variables.isLinux
   

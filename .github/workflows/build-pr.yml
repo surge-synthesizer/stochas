@@ -42,5 +42,5 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           cmake -S . -B ./build -DCMAKE_BUILD_TYPE=Debug -DSTOCHAS_VERSION=0.0.0
-          cmake --build ./build --config Debug --target bstep-products --parallel 3
+          cmake --build ./build --config Debug --target stochas_Standalone --parallel 3
 

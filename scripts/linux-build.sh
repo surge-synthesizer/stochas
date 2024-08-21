@@ -1,3 +1,5 @@
+#!/bin/bash
+
 cmake -Bignore/build -DSTOCHAS_VERSION=${STOCHAS_VERSION}
 cmake --build ignore/build --config Release
 LINARCH=`uname -m`

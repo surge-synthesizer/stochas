@@ -29,13 +29,18 @@ jobs:
           gccversion: 9
 
       - name: Build pull request version (macos)
-        if: ${{ matrix.os }} == 'macos-latest'
+        if: runner.os == 'macOS'
         run: |
-          STOCHAS_VERSION=NIGHTLY.PR ./scripts/mac-build.sh
+          STOCHAS_VERSION=0.0.0 ./scripts/mac-build.sh
 
-      - name: Build pull request version (others)
-        if: ${{ matrix.os }} != 'macos-latest'
+      - name: Build pull request version (linux)
+        if: runner.os == 'Linux'
         run: |
-          cmake -S . -B ./build -DCMAKE_BUILD_TYPE=Debug 
-          cmake --build ./build --config Debug --target bstep-products --parallel 3
+          STOCHAS_VERSION=0.0.0 ./scripts/linux-build.sh
+
+      - name: Build pull request version (windows)
+        if: runner.os == 'Windows'
+        run: |
+          cmake -S . -B ./build -DCMAKE_BUILD_TYPE=Debug -DSTOCHAS_VERSION=0.0.0
+          cmake --build ./build --config Debug --target stochas_Standalone --parallel 3
 

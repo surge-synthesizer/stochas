@@ -5,6 +5,7 @@ buildlin/
 build32/
 .vscode/
 .idea/
+installer-tmp/
 cmake-build-debug/
 cmake-build-release/
 build.install/

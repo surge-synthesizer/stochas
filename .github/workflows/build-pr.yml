@@ -33,8 +33,13 @@ jobs:
         run: |
           STOCHAS_VERSION=NIGHTLY.PR ./scripts/mac-build.sh
 
-      - name: Build pull request version (others)
-        if: ${{ matrix.os }} != 'macos-latest'
+      - name: Build pull request version (linux)
+        if: ${{ matrix.os }} == 'ubuntu-latest'
+        run: |
+          STOCHAS_VERSION=NIGHTLY.PR ./scripts/linux-build.sh
+
+      - name: Build pull request version (windows)
+        if: ${{ matrix.os }} == 'windows-latest'
         run: |
           cmake -S . -B ./build -DCMAKE_BUILD_TYPE=Debug 
           cmake --build ./build --config Debug --target bstep-products --parallel 3

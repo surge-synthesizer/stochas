@@ -29,7 +29,7 @@ jobs:
           gccversion: 9
 
       - name: Build pull request version (macos)
-        if: runner.os = 'macOS'
+        if: runner.os == 'macOS'
         run: |
           STOCHAS_VERSION=0.0.0 ./scripts/mac-build.sh
 

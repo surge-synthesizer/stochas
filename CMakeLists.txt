@@ -27,6 +27,8 @@ project(Stochas VERSION ${STOCHAS_VERSION})
 
 option(STOCHAS_COPY_AFTER_BUILD FALSE "Copy after build")
 
+set(CMAKE_CXX_STANDARD 17)
+
 message( STATUS "Building Stochas with version ${STOCHAS_VERSION}" )
 if( APPLE )
   message( STATUS "Building using ${CMAKE_OSX_DEPLOYMENT_TARGET}" )

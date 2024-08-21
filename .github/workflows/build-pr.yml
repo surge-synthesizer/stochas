@@ -1,0 +1,41 @@
+name: Build Pull Request
+on:
+  pull_request:
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build_plugin:
+    name: PR - ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+          - os: macos-latest
+          - os: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Prepare for JUCE
+        uses: surge-synthesizer/sst-githubactions/prepare-for-juce@main
+        with:
+          os: ${{ runner.os }}
+          gccversion: 9
+
+      - name: Build pull request version (macos)
+        if: ${{ matrix.os }} == 'macos-latest'
+        run: |
+          STOCHAS_VERSION=NIGHTLY.PR ./scripts/mac-build.sh
+
+      - name: Build pull request version (others)
+        if: ${{ matrix.os }} != 'macos-latest'
+        run: |
+          cmake -S . -B ./build -DCMAKE_BUILD_TYPE=Debug 
+          cmake --build ./build --config Debug --target bstep-products --parallel 3
+

@@ -246,11 +246,13 @@ void SeqMidiDialog::midiMsgReceived(int8_t type, int8_t chan, int8_t num, int8_t
    if (mLearningRow!=-1) {
       SeqMidiMapItem mi;
       mi = mMapping.getUnchecked(mLearningRow);
+      // these actions are CC
+      auto isCC = (mi.mAction == SEQMIDI_ACTION_PBIAS || mi.mAction == SEQMIDI_ACTION_POSVAR);
 
       // using a CC for a non-cc type action is not accepted
       // using a note for a cc-type is not accepted either
-      if((mi.mAction == SEQMIDI_ACTION_PBIAS && type ==SEQ_MIDI_CC) ||
-         (mi.mAction != SEQMIDI_ACTION_PBIAS && (type == SEQ_MIDI_NOTEON||type==SEQ_MIDI_NOTEOFF))) {
+      if((isCC && type ==SEQ_MIDI_CC) ||
+         (!isCC && (type == SEQ_MIDI_NOTEON||type==SEQ_MIDI_NOTEOFF))) {
 
          mi.mChannel = chan;         
          if (type == SEQ_MIDI_NOTEOFF) {
@@ -393,6 +395,7 @@ void SeqMidiRow::addActionsToCombo(ComboBox & cb, bool addall)
    cb.addItem("Transpose", SEQMIDI_ACTION_TRANS);
    cb.addItem("Set Num Steps", SEQMIDI_ACTION_STEPS);
    cb.addItem("Set Poly Bias", SEQMIDI_ACTION_PBIAS);
+   cb.addItem("Set Position Variance", SEQMIDI_ACTION_POSVAR);
    cb.addItem("Playback", SEQMIDI_ACTION_PLAYBACK);
    cb.addItem("Record", SEQMIDI_ACTION_RECORD);
    if(addall) // this would not be added when the list is being used as a target
@@ -440,7 +443,7 @@ void SeqMidiRow::comboBoxChanged(ComboBox * comboBox) {
       // action changed
       // update the action
       m.mAction = (int8_t)(mCBAction.getSelectedId());
-      if (m.mAction == SEQMIDI_ACTION_PBIAS) {
+      if (m.mAction == SEQMIDI_ACTION_PBIAS || m.mAction == SEQMIDI_ACTION_POSVAR) {
          m.mType = SEQ_MIDI_CC;
          m.mValue = SEQMIDI_VALUE_VARIABLE;
          mNumNote.setSpec(0, 127, 1, 0, "");
@@ -538,6 +541,7 @@ SeqMidiRow::fillValueListBasedOnAction()
       addActionsToCombo(mCBValue,false);
       break;
    case SEQMIDI_ACTION_PBIAS:
+   case SEQMIDI_ACTION_POSVAR:
       // no items
       mCBValue.addItem("CC Value", SEQMIDI_VALUE_VARIABLE);
       mCBValue.setEnabled(false);
@@ -606,7 +610,7 @@ bool SeqMidiRow::getNumberCptCustomText(int id, int value, String & repl)
    jassert(id == SEQMIDI_CPT_NOTE);
    jassert(value >= -128 && value < 128);
    int action = mCBAction.getSelectedId();
-   if (action == SEQMIDI_ACTION_PBIAS) {
+   if (action == SEQMIDI_ACTION_PBIAS || action == SEQMIDI_ACTION_POSVAR) {
       repl << "CC" << value;
    }
    else {

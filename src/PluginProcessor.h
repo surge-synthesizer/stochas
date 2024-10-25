@@ -140,8 +140,9 @@ class SeqPlaybackParameter : public AudioProcessorParameter {
    // should return a string representing the value
    bool isAutomatable() const override { return true; }
 public:
-   SeqPlaybackParameter(SeqAudioProcessor *parent) : mParent(parent),mValue(0) {}
-
+   explicit SeqPlaybackParameter(SeqAudioProcessor *parent) :
+   AudioProcessorParameter(1), // fix the assert. if we add more aut params later this num needs to increase for new ones
+   mParent(parent),mValue(0) {}
 };
 
 // for recording midi

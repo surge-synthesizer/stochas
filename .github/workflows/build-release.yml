@@ -2,9 +2,9 @@ name: Build Release Installer
 on:
   push:
     branches:
-      - main-deactivate-for-now
+      - main
     tags:
-      - 'deactivate-v**'
+      - 'v**'
 
 defaults:
   run:
@@ -18,8 +18,14 @@ jobs:
       matrix:
         include:
           - os: windows-latest
+          - build_script: win-build.sh
+
           - os: macos-latest
+          - build_script: mac-build.sh
+
           - os: ubuntu-latest
+          - build_script: linux-build.sh
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -48,17 +54,18 @@ jobs:
           export MAC_SIGNING_1UPW="${{ secrets.MAC_SIGNING_1UPW }}"
           export MAC_SIGNING_TEAM="${{ secrets.MAC_SIGNING_TEAM }}"
           
-          cmake -S . -B ./build -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" 
-          cmake --build ./build --config Release --target bstep-installer --parallel 3
+          export SVER=`cat VERSION`
+          export GH=`git log -1 --format=%h`
+          STOCHAS_VERSION="${SVER}" ./scripts/${{ matrix.build_script }}
 
       - name: Show Installer Directory
         run: |
-          ls -l ./build/installer
+          ls -l ./product
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          path: build/installer
+          path: ./product
           name: build-${{ matrix.os }}
 
   publish-bstep-nightly:
@@ -78,9 +85,9 @@ jobs:
       - name: Post to Discord
         uses: surge-synthesizer/sst-githubactions/discord-release-notify@main
         with:
-          webhook: ${{ secrets.DISCORD_MONOPLUGS_WEBHOOK }}
+          webhook: ${{ secrets.DISCORD_STOCHAS_WEBHOOK }}
           tag: Nightly
-          title: "A New BStep Nightly is Available"
+          title: "A New Stochas Nightly is Available"
 
 
   publish-bstep-release:
@@ -100,8 +107,8 @@ jobs:
       - name: Post to Discord
         uses: surge-synthesizer/sst-githubactions/discord-release-notify@main
         with:
-          webhook: ${{ secrets.DISCORD_MONOPLUGS_WEBHOOK }}
+          webhook: ${{ secrets.DISCORD_STOCHAS_WEBHOOK }}
           tag: ${{ github.ref_name }}
-          title: "A New BStep Release is Available"
+          title: "A New Stochas Release is Available"
           subtitle: "Release ${{ github.ref_name }}"
 

@@ -38,5 +38,8 @@ jobs:
         run: |
           export SVER=`cat VERSION`
           export GH=`git log -1 --format=%h`
-          STOCHAS_VERSION="${SVER}.${GH}" ./scripts/${{ matrix.build_script }}
+          STOCHAS_VERSION="${SVER}" ./scripts/${{ matrix.build_script }}
+
+      - name: Show built product
+        run: ls product
 

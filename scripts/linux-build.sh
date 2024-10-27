@@ -11,3 +11,6 @@ cp -r ignore/build/stochas_artefacts/VST3/* build/Stochas
 cp -r ignore/build/stochas_artefacts/CLAP/* build/Stochas
 cp -r ignore/build/stochas_artefacts/Standalone/* build/Stochas/Standalone
 tar cvzf "ignore/build/product/${NM}" -C ignore/build Stochas
+
+mkdir product
+mv ignore/build/product/* product

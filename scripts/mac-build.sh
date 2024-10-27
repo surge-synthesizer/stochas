@@ -22,5 +22,8 @@ cp -r ignore/build_au/stochas_artefacts/AU/* ignore/mac_assets
 
 mkdir -p ignore/mac_installer
 lib/sst-plugininfra/scripts/installer_mac/make_installer.sh Stochas ignore/mac_assets resources ignore/mac_installer ${STOCHAS_VERSION}
+
+mkdir product
+mv ignore/mac_installer/*dmg product
       
 

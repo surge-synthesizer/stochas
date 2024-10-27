@@ -18,3 +18,6 @@ ls build/product
 nuget install innosetup
 mkdir -p build/product/
 iscc //Obuild\\product //Fstochas_windows_installer //DSTOCHAS_VERSION=${STOCHAS_VERSION}.${GH} "install\\win\\install.iss"
+
+mkdir -p product
+mv build/product/* product

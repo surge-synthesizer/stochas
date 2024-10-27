@@ -41,6 +41,5 @@ jobs:
       - name: Build pull request version (windows)
         if: runner.os == 'Windows'
         run: |
-          cmake -S . -B ./build -DCMAKE_BUILD_TYPE=Debug -DSTOCHAS_VERSION=0.0.0
-          cmake --build ./build --config Debug --target stochas_Standalone --parallel 3
+          STOCHAS_VERSION=0.0.0 ./scripts/win-build.sh
 

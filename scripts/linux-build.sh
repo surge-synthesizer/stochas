@@ -1,7 +1,7 @@
 #!/bin/bash
 
-cmake -Bbuild -DSTOCHAS_VERSION=${STOCHAS_VERSION} -DCMAKE_BUILD_TYPE=Release
-cmake --build build --config Release
+cmake -Bbuild -GNinja -DSTOCHAS_VERSION=${STOCHAS_VERSION} -DCMAKE_BUILD_TYPE=Release
+cmake --build build --config Release --parallel
 LINARCH=`uname -m`
 GH=`git log -1 --format=%h`
 NM=stochas-${STOCHAS_VERSION}.${GH}.linux-${LINARCH}.tgz

@@ -62,3 +62,15 @@ I have read somewhere it’s associated with how Xcode built the SDK at my end, 
 - Plugin Midi input
 - Plugin Midi output
 - Midi Effect Plugin
+
+# Notes on CI
+
+Unlike the other things at surge-synthesizer land, because of a few
+oddities in AU formatting and flags, a production build of stochas requires
+multiple compile passes. As such, a set of scripts in `scripts/{os}-build.sh`
+assemble the final product on a per-platform basis into a directory
+called `product/` and the actions flow in `.github/workflows` calls 
+out to this, then uses the standard surge upload etc... pattern.
+
+If you want to change a production build, you can just run the scripts
+on your local machine to see what they do and to adjust them.

@@ -21,6 +21,7 @@ void
 StepCpt::paint(Graphics &g)
 {
    String txt;
+   bool isDashed=false;
    juce::Colour c;
    EditorState *e = mGlob->mEditorState;
    int curLayer = e->getCurrentLayer();
@@ -28,7 +29,7 @@ StepCpt::paint(Graphics &g)
    g.fillAll(e->getColorFor(EditorState::background));
 
    // if it's visible
-   if(getEffectiveColorAndText(c,txt)) {
+   if(getEffectiveColorAndText(c,txt, isDashed)) {
       Rectangle<int> r = getLocalBounds();
       Rectangle<int> b;
       SeqDataBuffer *s = mGlob->mSeqBuf;
@@ -67,10 +68,24 @@ StepCpt::paint(Graphics &g)
          }
          g.fillRect(b.toFloat());
       }
-      
+
       // current color
       g.setColour(c);
       g.fillRect(r.toFloat());
+
+      // in chain mode we want a dashed border to make things clearer that mouse behavior is different
+      if(isDashed) {
+         g.setColour(c.contrasting(.5));
+         Path path;
+         path.addRectangle(r.toFloat());
+         PathStrokeType pathStrokType(1.0);
+         float dashedLengh[2];
+         dashedLengh[0]=4;
+         dashedLengh[1]=4;
+         pathStrokType.createDashedStroke(path, path, dashedLengh, 2);
+         g.strokePath(path, pathStrokType);
+      }
+
 
       r.reduce(1, 1);
       // see how much space we have
@@ -95,7 +110,7 @@ StepCpt::paint(Graphics &g)
 }
 
 bool
-StepCpt::getEffectiveColorAndText(juce::Colour &c, juce::String &txt, int layer)
+StepCpt::getEffectiveColorAndText(juce::Colour &c, juce::String &txt, bool &dashed, int layer)
 {
    EditorState *e = mGlob->mEditorState;
    SeqDataBuffer *s = mGlob->mSeqBuf;
@@ -159,7 +174,16 @@ StepCpt::getEffectiveColorAndText(juce::Colour &c, juce::String &txt, int layer)
                   txt = String().formatted("%d%%",val);
             }
 
-
+         if(mode==EditorState::editingChain) {
+            if(val != SEQ_PROB_OFF) {
+               // in chain mode we want to add some dashed lines around the cells so the user knows that
+               // the mouse click behavior is going to be different than editingSteps mode
+               dashed = true;
+            } else {
+               // we also want the off cells to have something that indicates we are not in regular mode
+               txt = "-";
+            }
+         }
          break;
       case EditorState::editingVelocity:
          if (val ||probVal != SEQ_PROB_OFF)
@@ -539,8 +563,8 @@ StepPanel::mouseDrag(const MouseEvent &event)
                c->mTempValue = (int8_t)newval;
             } 
             repaint();
-         }
-         else {  // mouse start val not -1               
+         } else {
+            // mouse start val == INVALID
             if (mChainStartItem) {
                // dragging for chain, get item we are over
                MouseEvent mm = event.getEventRelativeTo(this);
@@ -569,8 +593,7 @@ void StepPanel::mouseDown(const MouseEvent & event)
    if(e->isShiftReversed())
       shifted = !shifted;
 
-
-   mChainStartItem = mChainEndItem = 0;
+   mChainStartItem = mChainEndItem = nullptr;
 
    if (&mLengthEditCursor == event.eventComponent) {
       // length cursor, start drag operation
@@ -578,7 +601,7 @@ void StepPanel::mouseDown(const MouseEvent & event)
    }
    else if(event.eventComponent->getName().compare("singleStep") == 0){
       jassert(mMouseStartVal == MOUSE_STARTVAL_INVALID);
-      StepCpt *c = static_cast<StepCpt *>(event.eventComponent);
+      auto *c = static_cast<StepCpt *>(event.eventComponent);
       SeqDataBuffer *buf = mGlob->mSeqBuf;
       SequenceLayer *data = buf->getUISeqData()->getLayer(e->getCurrentLayer());
 
@@ -594,49 +617,69 @@ void StepPanel::mouseDown(const MouseEvent & event)
       if (c->mCol >= data->getNumSteps())
          goto end; // past the end of our pattern, so don't bother doing anything
 
-      if (e->getEditMode() == EditorState::editingChain) {
-         // in chain mode, we drag to create arrows between cells
-         if (data->getProb(c->mRow, c->mCol) != SEQ_PROB_OFF) {
-            mChainStartItem = c;
-            mChainCustom = event.mods.isCommandDown() && event.mods.isShiftDown();
-            mChainNegTgt = event.mods.isCommandDown() && !event.mods.isShiftDown();
-
-         }
-      }
-
       // select a new item if it's different than current
       if (mSelGridItem != newSelItem) {
          mSelGridItem = newSelItem;
          mSelIsChanging = true; // used by mouse up event
-      }
-      else
+      } else
          mSelIsChanging = false;
 
-      // in drag mode, we swipe up and down to edit values
-      // keep track of original value so that mouse drag can be offset from this
-      if (e->getEditMode() == EditorState::editingVelocity) {
-         if (data->getProb(c->mRow, c->mCol) != SEQ_PROB_OFF) // only allow velocity edit on "on" notes
-            mMouseStartVal = data->getVel(c->mRow, c->mCol);
-      }
-      else if (e->getEditMode() == EditorState::editingOffset) {
-         if (data->getProb(c->mRow, c->mCol) != SEQ_PROB_OFF) // only allow offset edit on "on" notes
-            mMouseStartVal = data->getOffset(c->mRow, c->mCol);
-      }
-      else if (e->getEditMode() == EditorState::editingTriggers) {
-         auto v = data->getLength(c->mRow, c->mCol);
-         if(v < 0) {
-           mMouseStartVal = (-v)+1;
-         } else {
-           mMouseStartVal = 1;
-         }
-      }
-      else if (e->getEditMode() == EditorState::editingSteps) {
-         mMouseStartVal = data->getProb(c->mRow, c->mCol);
+      auto currentProb = data->getProb(c->mRow, c->mCol);
 
-         // force paint to think that it's changing to make the ui look more responsive
-         // (that's all) TODO do this always if selsize==1 rather otherwise it doesn't work as desired when shifted
-         if (mMouseStartVal == SEQ_PROB_OFF && !shifted)
-            mGrid[mSelGridItem].mTempValue = SEQ_PROB_OFF;
+      switch (e->getEditMode()) {
+         case EditorState::editingChain:
+            // in chain mode, we drag to create arrows between cells
+            if (currentProb != SEQ_PROB_OFF) {
+               mChainStartItem = c;
+               mChainCustom = event.mods.isCommandDown() && event.mods.isShiftDown();
+               mChainNegTgt = event.mods.isCommandDown() && !event.mods.isShiftDown();
+
+            }
+            break;
+
+         // in drag mode, we swipe up and down to edit values
+         // keep track of original value so that mouse drag can be offset from this
+         case EditorState::editingVelocity:
+            if (currentProb != SEQ_PROB_OFF)
+               // if the note is already on, we will initiate a value for velocity drag
+               mMouseStartVal = data->getVel(c->mRow, c->mCol);
+            else {
+               // if the note is not on, we are going to turn it on defaulting to
+               // default velocity (in case there is a drag)
+               mMouseStartVal = e->velocityCycleNext(0);
+            }
+            break;
+         case EditorState::editingOffset:
+            if (currentProb != SEQ_PROB_OFF) // only allow offset edit on "on" notes
+               mMouseStartVal = data->getOffset(c->mRow, c->mCol);
+            else {
+               // if the note is not on, we are going to turn it on defaulting to
+               // default offset of 0
+               mMouseStartVal = 0;
+            }
+            break;
+         case EditorState::editingTriggers:
+            if (currentProb != SEQ_PROB_OFF) { // only allow trigger edit on "on" notes
+               auto v = data->getLength(c->mRow, c->mCol);
+               if (v < 0) {
+                  mMouseStartVal = (-v) + 1;
+               } else {
+                  mMouseStartVal = 1;
+               }
+            } else {
+               // if the note is not on, we are going to turn it on defaulting to
+               // default trigger of 0
+               mMouseStartVal = 1;
+            }
+            break;
+         case EditorState::editingSteps:
+            mMouseStartVal = currentProb;
+            // force paint to think that it's changing to make the ui look more responsive
+            // (that's all) TODO do this always if selsize==1 rather otherwise it doesn't work as desired when shifted
+            if (mMouseStartVal == SEQ_PROB_OFF && !shifted)
+               mGrid[mSelGridItem].mTempValue = SEQ_PROB_OFF;
+            break;
+         default: ;
       }
 
    }
@@ -778,58 +821,96 @@ void StepPanel::mouseUp(const MouseEvent & event)
       mAxis = unknown;
       if (mMouseStartVal != MOUSE_STARTVAL_INVALID &&
          e->getNumSelectedCells() < 2) { // if we are interacting with a valid cell
+
          // if a drag has occurred where a value actually changed
          if (c->mTempValue != MOUSE_STARTVAL_INVALID && c->mTempValue != mMouseStartVal) {
             // a drag has occurred, tempvalue will hold the new value
-            if (e->getEditMode() == EditorState::editingVelocity)
+            auto em = e->getEditMode();
+            if (em == EditorState::editingVelocity) {
                newVel = c->mTempValue;
-            else if (e->getEditMode() == EditorState::editingOffset)
+            } else if (em == EditorState::editingOffset)
                newOffs = c->mTempValue;
-            else if (e->getEditMode() == EditorState::editingSteps)
+            else if (em == EditorState::editingSteps)
                newProb = c->mTempValue;
-            else if (e->getEditMode() == EditorState::editingTriggers)
+            else if (em == EditorState::editingTriggers)
               newTrig = c->mTempValue;
+
+            if (em != EditorState::editingChain && em != EditorState::editingSteps &&
+               oldProb == SEQ_PROB_OFF) {
+               // if the step was previously not turned on, turn it on now as the user is adjusting
+               // vel/trigger/offset on an 'off' step.
+               newProb = e->probCycleNext(oldProb, data->isMonoMode());
+               if(em != EditorState::editingVelocity) {
+                  // if we were editing velo, we'd have set the value above from the drag value.
+                  // if not, we need a default velo.
+                  newVel = e->velocityCycleNext(oldVel);
+               }
+            }
          }
          else {
+            auto em = e->getEditMode();
             if (rightMouse) {
                // if it's a right click (not a drag which is handled above)
                // we either cycle down or delete or reset to default
-               if (e->getEditMode() == EditorState::editingVelocity) {
-                  if (e->getMouseRightClickAction() == EditorState::deleteCell) {
-                     newVel = 0;
-                  }
-                  else {
-                     newVel = e->velocityCycleNext(newVel, false);
-                  }
-
-               }
-               else if (e->getEditMode() == EditorState::editingOffset) {
+               if (e->getMouseRightClickAction() == EditorState::deleteCell) {
+                  newVel = 0;
                   newOffs = 0;
-               }
-               else if (e->getEditMode() == EditorState::editingTriggers) {
-                 newTrig = 1;
-               }
-               else if (e->getEditMode() == EditorState::editingSteps) {
-                  if (e->getMouseRightClickAction() == EditorState::deleteCell) {
-                     newProb = SEQ_PROB_OFF;
+                  newTrig = 1;
+                  newProb = SEQ_PROB_OFF;
+               } else {
+                  if (em == EditorState::editingVelocity) {
+                     // cycle down assuming cell is on
+                     if (oldProb != SEQ_PROB_OFF) {
+                        newVel = e->velocityCycleNext(newVel, false);
+                     }
                   }
-                  else {
+                  else if (em == EditorState::editingOffset) {
+                     if (oldProb != SEQ_PROB_OFF) {
+                        newOffs = 0;
+                     }
+                  }
+                  else if (em == EditorState::editingTriggers) {
+                     if (oldProb != SEQ_PROB_OFF) {
+                        newTrig = 1;
+                     }
+                  }
+                  else if (em == EditorState::editingSteps) {
                      newProb = e->probCycleNext(oldProb, data->isMonoMode(), false);
                   }
-
                }
             }
             else {
                // if no drag occurred, or if the user dragged but changed their mind      
                // cycle thru some values            
-               if (e->getEditMode() == EditorState::editingVelocity) {
+               if (em == EditorState::editingVelocity) {
                   if (!mSelIsChanging) // only cycle once it has the focus
                      newVel = e->velocityCycleNext(oldVel);
-               }
-               else if (e->getEditMode() == EditorState::editingSteps) {// editing probability
+                  // this is the case where the user clicks on a velocity cell that
+                  // is not turned on. in this case, we just turn it on at the default
+                  // probability and velocity
+                  if (oldProb == SEQ_PROB_OFF) {
+                     newProb = e->probCycleNext(oldProb, data->isMonoMode());
+                     newVel = e->velocityCycleNext(oldVel);
+                  }
+               } else if (em == EditorState::editingSteps) {// editing probability
                      // only cycle if it was 0, or it has the focus already
                   if (!mSelIsChanging || oldProb == SEQ_PROB_OFF)
                      newProb = e->probCycleNext(oldProb, data->isMonoMode());
+               } else if (em == EditorState::editingOffset) {
+                  // cell is not on, turn it on and set default offset and vel
+                  if (oldProb == SEQ_PROB_OFF) {
+                     newProb = e->probCycleNext(oldProb, data->isMonoMode());
+                     newOffs = 0;
+                     newVel = e->velocityCycleNext(oldVel);
+                  }
+
+               } else if (em == EditorState::editingTriggers) {
+                  // cell is not on, turn it on and set default triggers
+                  if (oldProb == SEQ_PROB_OFF) {
+                     newProb = e->probCycleNext(oldProb, data->isMonoMode());
+                     newTrig = 1;
+                     newVel = e->velocityCycleNext(oldVel);
+                  }
                }
             }
          }
@@ -1208,7 +1289,8 @@ StepPanel::paintLengthBars(Graphics & g)
       StepCpt *cpt = &mGrid[i];
       juce::Colour c;
       juce::String txt;
-      if (cpt->getEffectiveColorAndText(c, txt) &&  // is it visible?
+      bool isDashed=false;
+      if (cpt->getEffectiveColorAndText(c, txt, isDashed) &&  // is it visible?
          data->getProb(cpt->mRow, cpt->mCol)!= SEQ_PROB_OFF) {     // is it on?
          Rectangle<int> b= cpt->getBoundsInParent();
          // for our length extender (if any)

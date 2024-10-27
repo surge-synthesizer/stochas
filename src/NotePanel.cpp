@@ -24,7 +24,7 @@ void NoteCpt::labelTextChanged(Label * lbl)
    s= lbl->getText(false);
    strncpy(noteBuf, s.getCharPointer(), SEQ_MAX_NOTELABEL_LEN);
    data->setNoteName(mId, noteBuf);
-
+   mGlob->mSeqBuf->swap();
 }
 
 void NoteCpt::resized()

@@ -756,6 +756,12 @@ void StochaEngine::performMidiMapAction(int action, int value)
       mOverridePolyBias.override(((range*value) / 127) + (SEQ_POLY_BIAS_MIN-1));
       break;
    }
+   case SEQMIDI_ACTION_POSVAR: {
+      // value will be variable in range 0 to 127
+      // convert to range 0..SEQ_MAX_HUMAN_POSITION incl.
+      mOverridePosVariance.override(value*SEQ_MAX_HUMAN_POSITION/127);
+      break;
+   }
    case SEQMIDI_ACTION_TRANS:
    {
       // transpose
@@ -796,6 +802,9 @@ void StochaEngine::performMidiMapAction(int action, int value)
          break;
       case SEQMIDI_ACTION_PBIAS:
          mOverridePolyBias.clear();
+         break;
+      case SEQMIDI_ACTION_POSVAR:
+         mOverridePosVariance.clear();
          break;
       default:
          jassertfalse;

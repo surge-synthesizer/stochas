@@ -33,7 +33,7 @@ public:
    // depending on mode, value, etc
    // returns false if the cell is not going to be visible (in this case the 
    // out parameters won't be touched)
-   bool getEffectiveColorAndText(juce::Colour &c, juce::String &txt, int layer=-1);
+   bool getEffectiveColorAndText(juce::Colour &c, juce::String &txt, bool &dashed, int layer=-1);
    // returns true if step is visible in current view (within row and column bounds, step page, etc)
    bool isStepInRange(int layer = -1);
 };

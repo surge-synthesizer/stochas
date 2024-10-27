@@ -133,7 +133,7 @@ void SeqPersist::retrieveLayer(XmlElement * e, SequenceLayer * lay)
    int idx;
    sval = e->getStringAttribute("name");
    lay->setLayerName(sval.getCharPointer());
-   forEachXmlChildElement(*e, ch) {
+   for (auto* ch : e->getChildIterator()) {
       if (ch->hasTagName("humlen")) {
          if (getKeyVal(ch, &ival))
             lay->setHumanLength((int)ival);
@@ -195,7 +195,7 @@ void SeqPersist::retrieveLayer(XmlElement * e, SequenceLayer * lay)
             lay->setMaxRows((int)ival);
       }
       else if (ch->hasTagName("notes")) {
-         forEachXmlChildElementWithTagName(*ch, note,"n") {            
+         for (auto* note : ch->getChildWithTagNameIterator("n")) {
             idx = note->getIntAttribute("idx");
             if (idx >= 0 && idx < SEQ_MAX_ROWS) {
                val = note->getIntAttribute("std");
@@ -203,12 +203,15 @@ void SeqPersist::retrieveLayer(XmlElement * e, SequenceLayer * lay)
                val = note->getIntAttribute("cust");
                lay->setNote(idx, (int8_t)val, true);
                sval = note->getStringAttribute("name");
-               lay->setNoteName(idx, sval.getCharPointer());
+               auto s = sval.getCharPointer();
+               if(strlen(s)) {
+                  lay->setNoteName(idx, s);
+               }
             }
          }
       }
       else if (ch->hasTagName("pats")) {
-         forEachXmlChildElementWithTagName(*ch, pat,"p") {
+         for (auto* pat : ch->getChildWithTagNameIterator("p")) {
             retrievePattern(pat, lay);
          }
       }
@@ -254,12 +257,12 @@ void SeqPersist::retrievePattern(XmlElement * e, SequenceLayer * lay)
    if(sval.length()) // if differs from default it will be saved
       lay->setPatternName(sval.getCharPointer(), pat);
 
-   forEachXmlChildElementWithTagName(*e, ch,"rows") {
-      forEachXmlChildElementWithTagName(*ch, row, "r") {
+   for (auto* ch : e->getChildWithTagNameIterator("rows")) {
+      for (auto* row : ch->getChildWithTagNameIterator("r")) {
          int rowidx=row->getIntAttribute("idx");
          if (rowidx >= 0 && rowidx < SEQ_MAX_ROWS) {
-            forEachXmlChildElementWithTagName(*row, cells, "cells") {
-               forEachXmlChildElementWithTagName(*cells, cell, "c") {
+            for (auto* cells : row->getChildWithTagNameIterator("cells")) {
+               for (auto* cell : cells->getChildWithTagNameIterator("c")) {
                   int cellidx = cell->getIntAttribute("idx");
                   if (cellidx >= 0 && cellidx < SEQ_MAX_STEPS) {
                      lay->setProb(rowidx, cellidx, (int8_t)cell->getIntAttribute("prob", SEQ_PROB_OFF), pat);
@@ -267,7 +270,7 @@ void SeqPersist::retrievePattern(XmlElement * e, SequenceLayer * lay)
                      lay->setLength(rowidx, cellidx, (int8_t)cell->getIntAttribute("len"), pat);
                      lay->setOffset(rowidx, cellidx, (int8_t)cell->getIntAttribute("offs"), pat);
 
-                     forEachXmlChildElementWithTagName(*cell, cs, "cs") {
+                     for (auto* cs : cell->getChildWithTagNameIterator("cs")) {
                         int srcRow=cs->getIntAttribute("row");
                         int srcStep=cs->getIntAttribute("col");
                         bool negtgt=(cs->getIntAttribute("neg") == 1);
@@ -435,9 +438,9 @@ bool SeqPersist::retrieve(SequenceData * targetData, const XmlElement * sourceDa
    std::unique_ptr<SequenceData> dummy(new SequenceData());
    *targetData = *dummy;
 
-   forEachXmlChildElement(*sourceData, e) {
+   for(auto *e : sourceData->getChildIterator()) {
       if (e->hasTagName("groove")) {
-         forEachXmlChildElement(*e, g) {
+         for(auto *g : e->getChildIterator()) {
             if (g->hasTagName("i")) {
                idx = g->getIntAttribute("idx");
                val = g->getIntAttribute("val");
@@ -449,7 +452,7 @@ bool SeqPersist::retrieve(SequenceData * targetData, const XmlElement * sourceDa
 
       else if (e->hasTagName("midimap")) {
          int mapcount = 0;
-         forEachXmlChildElement(*e, m) {
+         for(auto *m : e->getChildIterator()) {
             if (m->hasTagName("mm")) {
                idx = m->getIntAttribute("idx");
                if (idx >= 0 && idx < SEQMIDI_MAX_ITEMS) {
@@ -468,7 +471,7 @@ bool SeqPersist::retrieve(SequenceData * targetData, const XmlElement * sourceDa
       } // end midimap
 
       else if (e->hasTagName("layer")) {
-         forEachXmlChildElementWithTagName(*e, l,"l") {            
+         for (auto* l : e->getChildWithTagNameIterator("l")) {
             idx=l->getIntAttribute("idx");
             if (idx >= 0 && idx < SEQ_MAX_LAYERS)          
                retrieveLayer(l, targetData->getLayer(idx));

@@ -72,7 +72,9 @@ SeqAudioProcessor::SeqAudioProcessor()  :
 
    // this dummy parameter just used to tell the host that we need a "save" when the user
    // modifies some parameter
-   addParameter(mDummyParam=new AudioParameterFloat("_rsvd","reserved",NormalisableRange<float>(0.0f, 1.0f),0.0f));
+   addParameter(mDummyParam=new AudioParameterFloat(
+      ParameterID("_rsvd", 1), // this version hint has something to do with AU and is to avoid a runtime assert
+      "reserved",NormalisableRange<float>(0.0f, 1.0f),0.0f));
 
    // note that this is accessed from the UI thread as well!!
    // avoid non-atomic operations
@@ -1253,6 +1255,7 @@ float SeqAudioProcessorParameter::getValueForText(const String & text) const
 
 SeqAudioProcessorParameter::SeqAudioProcessorParameter(AutParamNotify * notify, 
    int paramId, int rangeLo, int rangeHi, int layerNum, const String &name) :
+   AudioProcessorParameter(1), // fix the assert. if we add more aut params later this num needs to increase for new ones
    mNotify(notify), mLayerNumber(layerNum), mParamId(paramId), mRangeLo(rangeLo), 
    mRangeHi(rangeHi),mValue(rangeLo-1),mName(name)
 {

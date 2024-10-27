@@ -68,11 +68,11 @@ class StochaEngine {
    MidiOverride mOverrideTranspose; // value will be semitones to transpose
    MidiOverride mOverrideNumSteps;  // value will be num steps
    MidiOverride mOverridePolyBias;  // value will be the bias amount
+   MidiOverride mOverridePosVariance;
 
    // these are available via automation
    MidiOverride mOverrideStepsPerMeasure;
    MidiOverride mOverrideDutyCycle;
-   MidiOverride mOverridePosVariance;
    MidiOverride mOverrideVeloVariance;
    MidiOverride mOverrideLengthVariance;
    MidiOverride mOverrideOutputChannel;

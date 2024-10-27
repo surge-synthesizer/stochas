@@ -14,8 +14,14 @@ jobs:
       matrix:
         include:
           - os: windows-latest
+            build_script: win-build.sh
+
           - os: macos-latest
+            build_script: mac-build.sh
+
           - os: ubuntu-latest
+            build_script: linux-build.sh
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -28,18 +34,12 @@ jobs:
           os: ${{ runner.os }}
           gccversion: 9
 
-      - name: Build pull request version (macos)
-        if: runner.os == 'macOS'
+      - name: Build pull request version
         run: |
-          STOCHAS_VERSION=0.0.0 ./scripts/mac-build.sh
+          export SVER=`cat VERSION`
+          export GH=`git log -1 --format=%h`
+          STOCHAS_VERSION="${SVER}" ./scripts/${{ matrix.build_script }}
 
-      - name: Build pull request version (linux)
-        if: runner.os == 'Linux'
-        run: |
-          STOCHAS_VERSION=0.0.0 ./scripts/linux-build.sh
-
-      - name: Build pull request version (windows)
-        if: runner.os == 'Windows'
-        run: |
-          STOCHAS_VERSION=0.0.0 ./scripts/win-build.sh
+      - name: Show built product
+        run: ls product
 

@@ -13,3 +13,4 @@ build.install/
 *.code-search
 CMakeUserPresets.json
 ignore/*
+product/*

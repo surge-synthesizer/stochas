@@ -28,18 +28,25 @@ jobs:
           os: ${{ runner.os }}
           gccversion: 9
 
+      - name: Calculate Version
+        run: |
+          export SVER=`cat VERSION`
+          export GH=`git log -1 --format=%h`
+          export USEVER = ${SVER}.${GH}-nightly
+          echo "stochas_version=${USEVER}" >> $GITHUB_OUTPUT 
+
       - name: Build pull request version (macos)
         if: runner.os == 'macOS'
         run: |
-          STOCHAS_VERSION=0.0.0 ./scripts/mac-build.sh
+          STOCHAS_VERSION=${{ steps.vars.outputs.stochas_version }} ./scripts/mac-build.sh
 
       - name: Build pull request version (linux)
         if: runner.os == 'Linux'
         run: |
-          STOCHAS_VERSION=0.0.0 ./scripts/linux-build.sh
+          STOCHAS_VERSION=${{ steps.vars.outputs.stochas_version }} ./scripts/linux-build.sh
 
       - name: Build pull request version (windows)
         if: runner.os == 'Windows'
         run: |
-          STOCHAS_VERSION=0.0.0 ./scripts/win-build.sh
+          STOCHAS_VERSION=${{ steps.vars.outputs.stochas_version }} ./scripts/win-build.sh
 

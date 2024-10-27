@@ -29,7 +29,8 @@ jobs:
           gccversion: 9
 
       - name: Calculate Version
-        bash: |
+        shell: bash
+        run: |
           export SVER=`cat VERSION`
           export GH=`git log -1 --format=%h`
           export USEVER = ${SVER}.${GH}-nightly

@@ -33,7 +33,8 @@ jobs:
         run: |
           export SVER=`cat VERSION`
           export GH=`git log -1 --format=%h`
-          export USEVER = ${SVER}.${GH}-nightly
+          export USEVER=${SVER}.${GH}-nightly
+          echo ${USEVER}
           echo "stochas_version=${USEVER}" >> $GITHUB_OUTPUT 
 
       - name: Build pull request version (macos)

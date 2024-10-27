@@ -2,8 +2,8 @@
 
 set -ex
 # 64 bit
-cmake -Bbuild -A x64 -DSTOCHAS_VERSION=${STOCHAS_VERSION}
-cmake --build build --config Release
+cmake -Bbuild -A x64 -DSTOCHAS_VERSION=${STOCHAS_VERSION} -DCMAKE_BUILD_TYPE=Release
+cmake --build build --config Release --parallel
 # 32 bit
 mkdir -p build/product
 mkdir -p zip/x64

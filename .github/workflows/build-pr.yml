@@ -41,5 +41,5 @@ jobs:
           STOCHAS_VERSION="${SVER}" ./scripts/${{ matrix.build_script }}
 
       - name: Show built product
-        run: ls product
+        run: ls -l product
 

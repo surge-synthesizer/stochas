@@ -37,12 +37,12 @@ AllowNoIcons=yes
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
 [Files]
-Source: "{#vst64}\VST3\Stochas.vst3\Contents\x86_64-win\Stochas.vst3"; DestDir: "{code:install_dir}"; Flags: ignoreversion; Check: check_inst(1)
-Source: "{#vst64}\Standalone\Stochas.exe"; DestDir: "{code:install_dir}"; Flags: ignoreversion; Check: check_inst(3)
+Source: "{#vst64}\VST3\Stochas.vst3\Contents\x86_64-win\Stochas.vst3"; DestDir: "{code:install_dir}"; Flags: ignoreversion; Check: check_inst(0)
+Source: "{#vst64}\Standalone\Stochas.exe"; DestDir: "{code:install_dir}"; Flags: ignoreversion; Check: check_inst(1)
 [Icons]
-Name: "{group}\Stochas (64 bit)"; Filename: "{code:install_dir}\Stochas.exe"; WorkingDir: "{code:install_dir}"; Check: check_inst(3)
-Name: "{group}\Uninstall Stochas (64 bit) Plugin"; Filename: "{uninstallexe}"; Check: check_inst(1)
-Name: "{group}\Uninstall Stochas (64 bit)"; Filename: "{uninstallexe}"; Check: check_inst(3)
+Name: "{group}\Stochas (64 bit)"; Filename: "{code:install_dir}\Stochas.exe"; WorkingDir: "{code:install_dir}"; Check: check_inst(1)
+Name: "{group}\Uninstall Stochas (64 bit) Plugin"; Filename: "{uninstallexe}"; Check: check_inst(0)
+Name: "{group}\Uninstall Stochas (64 bit)"; Filename: "{uninstallexe}"; Check: check_inst(1)
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 [Code]
 var

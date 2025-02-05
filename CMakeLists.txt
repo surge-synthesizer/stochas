@@ -21,7 +21,13 @@ set(CMAKE_OSX_DEPLOYMENT_TARGET ${STOCHAS_MAC_SDK_VER} CACHE STRING "Build for $
 
 if (NOT DEFINED STOCHAS_VERSION)
   set (STOCHAS_VERSION 1.3.10)
-endif()  
+endif()
+
+# we don't want to mess with jack on mac
+set(STOCHAS_JACK 0)
+if (UNIX AND NOT APPLE)
+  set(STOCHAS_JACK 1)
+endif()
 
 project(Stochas VERSION ${STOCHAS_VERSION})
 
@@ -155,7 +161,7 @@ target_compile_definitions(stochas
     JUCE_REPORT_APP_USAGE=0
 
     # Some linux options
-    JUCE_JACK=1
+    JUCE_JACK=${STOCHAS_JACK}
     JUCE_ALSA=1
 )
 

@@ -220,10 +220,11 @@ class SeqAudioProcessor  : public AudioProcessor, public SeqProcessorNotifierHel
 
    void dispatchRecordedMidiNotes(MidiBuffer &midiNoteData);
 
-   // this is so that we can tell the host that something has changed, so that the host
+   // this was so that we could tell the host that something has changed, so that the host
    // can offer to save if the user hits exit.
+   // see SEQ_NOTIFY_HOST in cpp file for more info why we don't need it anymore
    // audioprocessor becomes the owner of this and will delete it
-   AudioParameterFloat *mDummyParam;
+   //AudioParameterFloat *mDummyParam;
    
    juce::Array<SeqAudioProcessorParameter*> mAutomationParameters;
    void addAutParam(SeqAudioProcessorParameter *p);

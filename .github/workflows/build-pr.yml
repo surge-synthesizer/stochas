@@ -32,7 +32,6 @@ jobs:
         uses: surge-synthesizer/sst-githubactions/prepare-for-juce@main
         with:
           os: ${{ runner.os }}
-          gccversion: 9
 
       - name: Build pull request version
         run: |

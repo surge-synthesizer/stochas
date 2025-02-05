@@ -70,11 +70,12 @@ SeqAudioProcessor::SeqAudioProcessor()  :
    // special case one handled internally
    addParameter(new SeqPlaybackParameter(this));
 
-   // this dummy parameter just used to tell the host that we need a "save" when the user
-   // modifies some parameter
-   addParameter(mDummyParam=new AudioParameterFloat(
-      ParameterID("_rsvd", 1), // this version hint has something to do with AU and is to avoid a runtime assert
-      "reserved",NormalisableRange<float>(0.0f, 1.0f),0.0f));
+   // this dummy parameter was used to tell the host that we need a "save" when the user
+   // modifies some parameter. now that we have another method we probably
+   // don't need it anymore. i'm leaving this commented as an indicator in case issues arise
+   // addParameter(mDummyParam=new AudioParameterFloat(
+   //    ParameterID("_rsvd", 1), // this version hint has something to do with AU and is to avoid a runtime assert
+   //    "reserved",NormalisableRange<float>(0.0f, 1.0f),0.0f));
 
    // note that this is accessed from the UI thread as well!!
    // avoid non-atomic operations
@@ -566,10 +567,14 @@ void SeqAudioProcessor::checkforUIIncomingData(MidiBuffer & processedMidi)
          rebuildMiniMidiMap();         
          break;
       case SEQ_NOTIFY_HOST: {
+         // old method probably no longer needed:
          // just effect a change so the host thinks somethings changed.
-         float f = mDummyParam->get();
-         f = f == 0 ? .5f : 0.0f;
-         mDummyParam->setValueNotifyingHost(f);
+         //float f = mDummyParam->get();
+         //f = f == 0 ? .5f : 0.0f;
+         // mDummyParam->setValueNotifyingHost(f);
+
+         // this is the proper way to do it
+         updateHostDisplay (ChangeDetails().withNonParameterStateChanged (true));
          break;
       }
       case SEQ_SET_RECORD_MODE:

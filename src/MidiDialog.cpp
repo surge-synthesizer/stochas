@@ -393,6 +393,7 @@ void SeqMidiRow::addActionsToCombo(ComboBox & cb, bool addall)
    cb.addItem("Mute/Unmute", SEQMIDI_ACTION_MUTE);
    cb.addItem("Set Speed", SEQMIDI_ACTION_SPEED);
    cb.addItem("Transpose", SEQMIDI_ACTION_TRANS);
+   cb.addItem("Relative Transpose", SEQMIDI_ACTION_TRANS_RELATIVE);
    cb.addItem("Set Num Steps", SEQMIDI_ACTION_STEPS);
    cb.addItem("Set Poly Bias", SEQMIDI_ACTION_PBIAS);
    cb.addItem("Set Position Variance", SEQMIDI_ACTION_POSVAR);
@@ -522,6 +523,7 @@ SeqMidiRow::fillValueListBasedOnAction()
       mCBValue.addItem("Double", SEQMIDI_VALUE_SPD_DBL);
       mCBValue.addItem("Half", SEQMIDI_VALUE_SPD_HALF);      
       break;
+   case SEQMIDI_ACTION_TRANS_RELATIVE:
    case SEQMIDI_ACTION_TRANS:
       for (int id = SEQMIDI_VALUE_TRANSPOSE_MIN; id <= SEQMIDI_VALUE_TRANSPOSE_MAX; id++) {
          mCBValue.addItem(SeqScale::getTransposeText(id), id);

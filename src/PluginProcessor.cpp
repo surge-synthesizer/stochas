@@ -61,7 +61,7 @@ SeqAudioProcessor::SeqAudioProcessor()  :
       addAutParam(new SeqAudioProcessorParameter(this, SEQ_AUT_OUTPUT_CHANNEL, 1, 16, i,"midi channel"));
       addAutParam(new SeqAudioProcessorParameter(this, SEQ_AUT_MAX_POLY, 1, SEQ_MAX_ROWS, i,"max poly"));
       addAutParam(new SeqAudioProcessorParameter(this, SEQ_AUT_POLY_BIAS, SEQ_POLY_BIAS_MIN, SEQ_POLY_BIAS_MAX, i,"poly bias"));
-      addAutParam(new SeqAudioProcessorParameter(this, SEQ_AUT_TRANSPOSE, SEQMIDI_VALUE_TRANSPOSE_MIN, SEQMIDI_VALUE_TRANSPOSE_MAX_AUT, i, "transpose"));
+      addAutParam(new SeqAudioProcessorParameter(this, SEQ_AUT_TRANSPOSE, SEQMIDI_VALUE_TRANSPOSE_MIN, SEQMIDI_VALUE_TRANSPOSE_MAX, i, "transpose"));
       // 0-based!
       addAutParam(new SeqAudioProcessorParameter(this, SEQ_AUT_CURRENT_PATTERN, 0, SEQ_MAX_PATTERNS-1, i,"pattern"));
    }
@@ -1355,7 +1355,7 @@ int SeqAudioProcessor::parseTextForAutomationParameterValue(int paramId, String 
       }
       break;
    case SEQ_AUT_TRANSPOSE:
-      for (i = 0; i < SEQMIDI_VALUE_TRANSPOSE_MAX_AUT; i++) {
+      for (i = 0; i < SEQMIDI_VALUE_TRANSPOSE_MAX; i++) {
          if (text.compare(SeqScale::getTransposeText(i)) == 0) {
             res = i;
             break;

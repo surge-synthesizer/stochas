@@ -463,6 +463,24 @@ bool SeqPersist::retrieve(SequenceData * targetData, const XmlElement * sourceDa
                   mm->mTarget = (int8_t)m->getIntAttribute("tgt");
                   mm->mType = (int8_t)m->getIntAttribute("typ");
                   mm->mValue = (int8_t)m->getIntAttribute("val");
+
+                  // legacy check: we need to see whether this is a transpose action (SEQMIDI_ACTION_TRANS) where the
+                  // value is SEQMIDI_VALUE_TRANS_NEXT_LEGACY or SEQMIDI_VALUE_TRANS_PREV_LEGACY.
+                  // in that case it needs to be ported to a SEQMIDI_ACTION_TRANS_RELATIVE action with values
+                  // 12 for +1 and 11 for -1
+                  // before this change, we had two items on the transpose list which would do relative transpose.
+                  // now we have a separate action for relative transpose which allows all the same transpose values
+                  if(mm->mAction ==SEQMIDI_ACTION_TRANS &&
+                     (mm->mValue == SEQMIDI_VALUE_TRANS_NEXT_LEGACY || mm->mValue == SEQMIDI_VALUE_TRANS_PREV_LEGACY)) {
+
+                     mm->mAction = SEQMIDI_ACTION_TRANS_RELATIVE;
+
+                     if (mm->mValue == SEQMIDI_VALUE_TRANS_NEXT_LEGACY)
+                        mm->mValue = SEQMIDI_VALUE_TRANS_NEXT_NEW;
+                     else
+                        mm->mValue = SEQMIDI_VALUE_TRANS_PREV_NEW;
+                  }
+
                   mapcount++;
                }
             }

@@ -349,6 +349,7 @@ in mono mode are 0..high val where 0 is off, and the following applies
 #define SEQMIDI_ACTION_PLAYBACK 8   // start/stop playback (not layer specific)
 #define SEQMIDI_ACTION_RECORD 9     // start/stop record (not layer specific)
 #define SEQMIDI_ACTION_POSVAR 10    // position variance
+#define SEQMIDI_ACTION_TRANS_RELATIVE 11    // relative transpose
 
 // midi mapping
 // targets (1-4 are layers 1-4)
@@ -382,16 +383,17 @@ in mono mode are 0..high val where 0 is off, and the following applies
 #define SEQMIDI_VALUE_SPD_DBL  -1 // mult by 2 (thereby making faster)
 #define SEQMIDI_VALUE_SPD_HALF -2 // div by 2 (making slower)
 // midi mapping
-// transpose. the ordering is: -11..-1 semi, +1..+11 semi, -2..-1 oct, 1..2 oct, next semi, prev semi
+// absolute transpose. the ordering is: -11..-1 semi, +1..+11 semi, -2..-1 oct, 1..2 oct, next semi, prev semi
 #define SEQMIDI_VALUE_TRANSPOSE_MIN   1
 // total number we need. the 2 are for next/prev
-#define SEQMIDI_VALUE_TRANSPOSE_MAX   28
-// for automation we don't expose the last two
-#define SEQMIDI_VALUE_TRANSPOSE_MAX_AUT   26
-// last two are next/prev
-#define SEQMIDI_VALUE_TRANS_NEXT (SEQMIDI_VALUE_TRANSPOSE_MAX-1) // +1 semitone
-#define SEQMIDI_VALUE_TRANS_PREV (SEQMIDI_VALUE_TRANSPOSE_MAX) // -1 semitone
+#define SEQMIDI_VALUE_TRANSPOSE_MAX   26
 
+// last two are next/prev which we are only using for legacy saved patches where we migrate them to
+// +1 semi and +2 semi on original list and set our action to SEQMIDI_ACTION_TRANS_RELATIVE
+#define SEQMIDI_VALUE_TRANS_NEXT_LEGACY 27 // +1 semitone
+#define SEQMIDI_VALUE_TRANS_PREV_LEGACY 28 // -1 semitone
+#define SEQMIDI_VALUE_TRANS_NEXT_NEW 12
+#define SEQMIDI_VALUE_TRANS_PREV_NEW 11
 // midi mapping
 // num steps (we will have 1-16, 24, 32, 48, 64)
 #define SEQMIDI_VALUE_NS_MIN  1 // minimum

@@ -76,9 +76,7 @@ static TransposeVal gTranspose[SEQMIDI_VALUE_TRANSPOSE_MAX] = {
    { "-2 octaves", -24 },
    { "-1 octave", -12 },
    { "+1 octave", 12 },
-   { "+2 octaves", 24 },
-   { "Up 1 semitone (relative)", 1 },      // special handling SEQMIDI_VALUE_TRANS_NEXT
-   { "Down 1 semitone (relative)", -1 } // special handling SEQMIDI_VALUE_TRANS_PREV
+   { "+2 octaves", 24 }
 };
 
 struct ClockDivVal {
@@ -208,15 +206,10 @@ const char * SeqScale::getTransposeText(int id)
    
 }
 
-bool SeqScale::getTransposeSemitones(int id, int * val)
+void SeqScale::getTransposeSemitones(int id, int * val)
 {
    jassert(id >= SEQMIDI_VALUE_TRANSPOSE_MIN && id <= SEQMIDI_VALUE_TRANSPOSE_MAX);
    *val = gTranspose[id - 1].semitones;
-   
-   // relative movement special handling. return false
-   if (id == SEQMIDI_VALUE_TRANS_NEXT || id== SEQMIDI_VALUE_TRANS_PREV)      
-      return false;
-   return true;
 
 }
 

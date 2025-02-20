@@ -766,16 +766,21 @@ void StochaEngine::performMidiMapAction(int action, int value)
    {
       // transpose
       int t;
-      if (SeqScale::getTransposeSemitones(value, &t)) {
-         // value is absolute
-         mOverrideTranspose.override(t);
-      }
-      else { // value is relative to current transpose and in semitones
-         // no real way to validate this properly. we need to validate when generating the note
-         int q = mOverrideTranspose.get(0) + t;
-         if(q >=-127 && q <= 127)
-            mOverrideTranspose.override(q);
-      }
+      SeqScale::getTransposeSemitones(value, &t);
+      // value is absolute
+      mOverrideTranspose.override(t);
+      break;
+   }
+   case SEQMIDI_ACTION_TRANS_RELATIVE:
+   {
+      // transpose relative
+      int t;
+      SeqScale::getTransposeSemitones(value, &t);
+      // value is relative to current transpose and in semitones
+      // the generated note ends up being clamped within this range in addMidiEvent
+      int q = mOverrideTranspose.get(0) + t;
+      if(q >=-127 && q <= 127)
+         mOverrideTranspose.override(q);
       break;
    }
    case SEQMIDI_ACTION_STEPS:
@@ -795,6 +800,7 @@ void StochaEngine::performMidiMapAction(int action, int value)
          mOverrideSpeed.clear();
          break;
       case SEQMIDI_ACTION_TRANS:
+      case SEQMIDI_ACTION_TRANS_RELATIVE:
          mOverrideTranspose.clear();
          break;
       case SEQMIDI_ACTION_STEPS:

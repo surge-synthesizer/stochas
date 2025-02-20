@@ -47,7 +47,7 @@ public:
    /*for transpose, get value in semitones for a given id.
    This returns true if the value is absolute and false if it's relative (ie add 1 semi, subtract 1 semi)
    */
-   static bool getTransposeSemitones(int id, int *val);
+   static void getTransposeSemitones(int id, int *val);
    
    /* Given 0 based index, return text at that index in val. Returns false if idx is past end*/
    static const char *getClockDividerTextAndId(int idx, int *id=0);

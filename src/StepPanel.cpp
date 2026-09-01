@@ -1183,7 +1183,7 @@ StepPanel::paintChains(Graphics &g)
    
    // do the chain that is being added currently
    if (mChainStartItem && mChainEndItem) {
-      juce::Colour selColor, srcBlobColor, posColor;
+      juce::Colour selColor, srcBlobColor, posColor, srcColor;
       Point<int> start = mChainStartItem->getBounds().getCentre();
       Point<int> end = mChainEndItem->getBounds().getCentre();
       bool up = false;
@@ -1193,8 +1193,12 @@ StepPanel::paintChains(Graphics &g)
          posColor = e->getColorFor(EditorState::chainNegative);
       else
          posColor = e->getColorFor(EditorState::chainPositive);
+      if(mChainNegSrc)
+         srcColor = e->getColorFor(EditorState::chainNegative);
+      else
+         srcColor = e->getColorFor(EditorState::chainPositive);
       selColor = posColor.withAlpha(0.5f);
-      srcBlobColor = posColor.withAlpha(0.5f);
+      srcBlobColor = srcColor.withAlpha(0.5f);
       drawCurve(start.toFloat(), end.toFloat(), g, up, true, selColor, srcBlobColor);
    }
 }

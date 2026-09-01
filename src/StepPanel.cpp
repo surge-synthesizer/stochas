@@ -287,6 +287,7 @@ StepPanel::StepPanel(SeqGlob *glob, int id, Component *mainCpt, CptNotify *notif
    mChainEndItem(0),
    mChainCustom(false),
    mChainNegTgt(false),
+   mChainNegSrc(false),
    mRowNotify(0),
    mDoingMultiSelect(false),
    mChordHandler(glob),
@@ -632,6 +633,7 @@ void StepPanel::mouseDown(const MouseEvent & event)
             if (currentProb != SEQ_PROB_OFF) {
                mChainStartItem = c;
                mChainCustom = event.mods.isCommandDown() && event.mods.isShiftDown();
+               mChainNegSrc = event.mods.isAltDown();
                mChainNegTgt = event.mods.isCommandDown() && !event.mods.isShiftDown();
 
             }
@@ -784,7 +786,7 @@ void StepPanel::mouseUp(const MouseEvent & event)
                   data->setProb(mChainEndItem->mRow, mChainEndItem->mCol, SEQ_PROB_NEVER);
                }
                if (data->addChainSource(mChainEndItem->mRow, mChainEndItem->mCol,
-                  mChainStartItem->mRow, mChainStartItem->mCol,mChainNegTgt, false)) {
+                  mChainStartItem->mRow, mChainStartItem->mCol,mChainNegTgt, mChainNegSrc)) {
                   buf->swap();
                   c = mChainEndItem; // so that this items ends up being selected (below where we select item)                                    
 

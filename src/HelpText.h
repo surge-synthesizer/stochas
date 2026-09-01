@@ -27,7 +27,6 @@ HelpPair gHelpText[] = {
    {"stepPanelVeloMode", "Click cell multiple times or click and drag to change velocity on valid cells"},
 {"stepPanelChainMode", "Click and drag on valid cells to create chains to other cells. "
                             CTRL "-drag to create a negative chain. "
-                            CTRL "-shift-drag to create a custom chain. "
                             ALT "-drag to create a chain that triggers the target when the source does not play. "
                             CTRL "-" ALT "-drag to create a chain that does not trigger the target when the source does not play. "
                             "Right-click a target cell to clear chains leading to that cell" },

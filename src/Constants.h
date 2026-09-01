@@ -248,7 +248,6 @@ in mono mode are 0..high val where 0 is off, and the following applies
 #define SEQCTL_LOAD_PATCH           23 //* load a new patch xml
 #define SEQCTL_SAVE_PATCH           24 //* save a patch
 #define SEQCTL_GRV_SAVE_BUTTON      25 //* save groove to midi file
-#define SEQCTL_ADDCHAINDIALOG       28 //* add chain dialog
 #define SEQCTL_UNDO_BUTTON          29 //* undo button
 #define SEQCTL_RECORD_BUTTON        30 //* record button
 #define SEQCTL_PLAYBACK_MODE        31 //* playback mode

@@ -70,7 +70,6 @@ SeqAudioProcessorEditor::SeqAudioProcessorEditor(SeqAudioProcessor &p)
       mEditDialog(&mGlob, this),                       // our edit dialog itself
       mInfoDialog(&mGlob, this),
       mFileChooser(&mGlob, this),
-      mChainDialog(&mGlob, this),
       mMidiLightCountDown(0),                         // for keeping the midi light lit for a specified time
       mTimeDivider(0),                                // for updating help text at bottom
       mRecStateCache(SeqProcessorNotifier::standby),  // force it to be different than default
@@ -94,7 +93,6 @@ SeqAudioProcessorEditor::SeqAudioProcessorEditor(SeqAudioProcessor &p)
    addChildComponent(mMidiDlg);
 
    addChildComponent(mFileChooser);
-   addChildComponent(mChainDialog);
 
    //=============================StepPanel and PlayPanel which are within their own holders
    addAndMakeVisible(mStepHolder);
@@ -998,9 +996,6 @@ void SeqAudioProcessorEditor::cptValueChange(int cptId, int id)
       respondFileChooser();
       repaint();
       break;
-   case SEQCTL_ADDCHAINDIALOG:
-      repaint();
-      break;
    case SEQCTL_PLAYBACK_MODE:
       if (id == SEQCTL_PLAYBACK_MODE_AUTO)
          s->setAutoPlayMode(SEQ_PLAYMODE_AUTO);
@@ -1769,25 +1764,5 @@ void SeqAudioProcessorEditor::setMuteUnmuteLayers()
          mLayerToggle.setLabel(i, "M");
       else if (!m && h)
          mLayerToggle.clearLabel(i);
-   }
-}
-
-void SeqAudioProcessorEditor::actionListenerCallback(const String &message)
-{
-   // there has got to be an easier way to do this...
-   StringArray tokens;
-   String type;
-   tokens.addTokens(message, "|", "");
-   if (tokens.size())
-   {
-      type = tokens[0];
-   }
-
-   // this listens for async events
-   if (type.compare("chainAdd") == 0)
-   {
-      mChainDialog.doSetup(tokens[1].getIntValue(), tokens[2].getIntValue(),
-                           tokens[3].getIntValue(), tokens[4].getIntValue());
-      mChainDialog.openDialog();
    }
 }

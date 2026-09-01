@@ -25,14 +25,13 @@
 #include "SettingsTab.h"
 #include "MidiDialog.h"
 #include "FileDialog.h"
-#include "ChainDialog.h"
 
 /*
 Main UI Class
 */
 class SeqAudioProcessorEditor  : public AudioProcessorEditor, 
    public CptNotify, public MultiTimer, public ScrollBar::Listener,
-   public Label::Listener, public ActionListener
+   public Label::Listener
 {
    LookAndFeel_V3 mLookAndFeel; // maintain the v3 look and feel
    SeqAudioProcessor& mProcessor;
@@ -111,7 +110,6 @@ class SeqAudioProcessorEditor  : public AudioProcessorEditor,
    SeqEditDialog mEditDialog;
    SeqInfoDialog mInfoDialog;
    SeqFileDialog mFileChooser;
-   SeqChainDialog mChainDialog;
 
    int mMidiLightCountDown;
    int mTimeDivider;
@@ -185,9 +183,6 @@ public:
 private:
    // don't know what this is right now so I leave it here
    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SeqAudioProcessorEditor)
-
-      // Inherited via ActionListener
-      virtual void actionListenerCallback(const String & message) override;
 };
 
 

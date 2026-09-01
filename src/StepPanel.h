@@ -137,11 +137,9 @@ class StepPanel : public Component, public KeyListener {
    StepCpt *mChainStartItem;
    StepCpt *mChainEndItem;
    
-   bool mChainCustom; // ctrl shift drag popup custom chain
    bool mChainNegTgt; // ctrl negative chain target
    bool mChainNegSrc; // alt negative chain source
    StepRowNotify *mRowNotify;
-   ActionBroadcaster mBroadcaster; // for sending messages to plugineditor
 
    int mCurPosition; // current play position
 

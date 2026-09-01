@@ -285,7 +285,6 @@ StepPanel::StepPanel(SeqGlob *glob, int id, Component *mainCpt, CptNotify *notif
    mMouseStartVal(MOUSE_STARTVAL_INVALID),
    mChainStartItem(0),
    mChainEndItem(0),
-   mChainCustom(false),
    mChainNegTgt(false),
    mChainNegSrc(false),
    mRowNotify(0),
@@ -294,11 +293,6 @@ StepPanel::StepPanel(SeqGlob *glob, int id, Component *mainCpt, CptNotify *notif
    mCurPosition(-1)
    
 {
-   // this is to notify the main window when a custom chain is being added
-   ActionListener *al = dynamic_cast<ActionListener *>(mainCpt);
-   jassert(al);
-   mBroadcaster.addActionListener(al);
-
    setWantsKeyboardFocus(true);
    for (int i = 0; i < SEQ_MAX_ROWS*SEQ_MAX_STEPS; i++) {
       addAndMakeVisible(mGrid[i]);
@@ -632,9 +626,8 @@ void StepPanel::mouseDown(const MouseEvent & event)
             // in chain mode, we drag to create arrows between cells
             if (currentProb != SEQ_PROB_OFF) {
                mChainStartItem = c;
-               mChainCustom = event.mods.isCommandDown() && event.mods.isShiftDown();
                mChainNegSrc = event.mods.isAltDown();
-               mChainNegTgt = event.mods.isCommandDown() && !event.mods.isShiftDown();
+               mChainNegTgt = event.mods.isCommandDown();
 
             }
             break;
@@ -789,14 +782,6 @@ void StepPanel::mouseUp(const MouseEvent & event)
                   mChainStartItem->mRow, mChainStartItem->mCol,mChainNegTgt, mChainNegSrc)) {
                   buf->swap();
                   c = mChainEndItem; // so that this items ends up being selected (below where we select item)                                    
-
-                  // if they ctrl drag, we make it negative and also popup the dialog
-                  // so they can further customize it
-                  if (mChainCustom) {
-                     String f=String::formatted("chainAdd|%d|%d|%d|%d", mChainStartItem->mRow,
-                        mChainStartItem->mCol, mChainEndItem->mRow, mChainEndItem->mCol);
-                     mBroadcaster.sendActionMessage(f);
-                  }
                } else {
                   // failed to add due to reaching limit
                   String txt=String::formatted("Maximum number of chains (%d) for this column has been reached", SEQ_MAX_CHAIN_SOURCES);

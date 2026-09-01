@@ -25,11 +25,11 @@ HelpPair gHelpText[] = {
    {"optionsPanel",  "Options on this pane are saved with the project/patch" },
    {"stepPanelStepMode",    "Left click selects a cell. Click multiple times, or click and drag to change value. Drag near right border of selected cell to change length. Shift-drag to select multiple cells. Arrow keys move selected cells. Delete key clears selected cells" },
    {"stepPanelVeloMode", "Click cell multiple times or click and drag to change velocity on valid cells"},
-{"stepPanelChainMode", "Click and drag on valid cells to create chains to other cells. "
-                            CTRL "-drag to create a negative chain. "
-                            ALT "-drag to create a chain that triggers the target when the source does not play. "
-                            CTRL "-" ALT "-drag to create a chain that does not trigger the target when the source does not play. "
-                            "Right-click a target cell to clear chains leading to that cell" },
+   {"stepPanelChainMode", "Click and drag on valid cells to create chains to other cells. "
+                           CTRL "-drag to block the target when the source plays. "
+                           ALT "-drag to trigger the target when the source doesn't play. "
+                           CTRL "-" ALT "-drag to combine them. "
+                          "Right-click a target cell to clear chains leading to that cell" },
    {"stepPanelOffsMode", "Shift cells forward and backward in time. Negative values will cause the cell to play sooner. Positive values will cause the cell to play later. A value of -50 will cause the cell to play halfway between the previous step and the step it is on"},
    {"stepPanelTrigMode", "Allows retriggering of the cell a number of times at this position. This can be used to create a drum fill for example. The value specified represents how many times the cell is triggered.  Default is 1. Cells that retrigger cannot have a length greater than 1"},
    { "sectionSelect" , "Select which section of the current pattern to make visible for editing"},

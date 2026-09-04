@@ -49,12 +49,8 @@ in mono mode are 0..high val where 0 is off, and the following applies
 #define SEQ_PROB_ON           100   // always on val (only valid in poly mode)
 #define SEQ_NOTE_OFF          -1    // note value that represents "off"
 
-#define SEQ_PROB_NEVER_TEXT   "--C--" // never
 #define SEQ_PROB_OFF_TEXT     "Off"
 #define SEQ_PROB_ON_TEXT      "On"
-#define SEQ_PROB_LOW_TEXT     "Low"
-#define SEQ_PROB_MED_TEXT     "Med"
-#define SEQ_PROB_HIGH_TEXT    "High"
 
 // default velocity when new steps are placed
 #define SEQ_VELOCITY_DEFAULT  127
@@ -313,6 +309,7 @@ in mono mode are 0..high val where 0 is off, and the following applies
 #define SEQCTL_SET_UISCALE          11
 #define SEQCTL_SET_PATLAYERLINK     12
 #define SEQCTL_SET_MIDINOTENUM      13
+#define SEQCTL_SET_MONORELPROB      14
 
 
 ///////////////////////////

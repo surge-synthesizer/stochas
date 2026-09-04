@@ -100,5 +100,6 @@ HelpPair gHelpText[] = {
    { "setUIScale",    "Sets the overall size of the UI, allowing you to enlarge the controls for better visibility on large screens."},
    { "patLayerLink",    "Determines whether patterns are linked together for a layer. If turned on, changing patterns on one layer will change to that same pattern on all layers"},
     { "showMidiNum", "Determines whether MIDI note numbers are used instead of names to display note values."},
+   { "monoRelProb", "Determines whether probabilities in mono mode are displayed as independent weights or relative percentage of the total weight in the column."},
     {0,0} // end sentinel
 };

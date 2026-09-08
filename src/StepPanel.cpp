@@ -142,20 +142,13 @@ StepCpt::getEffectiveColorAndText(juce::Colour &c, juce::String &txt, bool &dash
       case EditorState::editingChain:
          // val is probability. if 0, it's off
 
-         // colors will be same for mono/poly right now
          if (val == SEQ_PROB_OFF)
             c = e->getColorFor(EditorState::stepOff);
-         else if(val==SEQ_PROB_NEVER)
-            c = e->getColorFor(EditorState::stepNeverProb);
-         else if (val <= SEQ_PROB_LOW_VAL)
-            c = e->getColorFor(EditorState::stepLowProb);
-         else if (val <= SEQ_PROB_MED_VAL)
-            c = e->getColorFor(EditorState::stepMediumProb);
-         else if (val <= SEQ_PROB_ON)
-            c = e->getColorFor(EditorState::stepHighProb);
 
-         if (val != SEQ_PROB_OFF) {
-            if (d->isMonoMode() && e->isMonoRelativeProb()) {
+         else {
+            // In the mono mode, the color always represents the relative probability.
+            // The label represents either the weight (0-1) or the relative probability.
+            if (d->isMonoMode()) {
                // Calculate relative percentage of this note's weight vs total weight in column
                int totalWeight = 0;
                int numRows = d->getMaxRows();
@@ -173,16 +166,40 @@ StepCpt::getEffectiveColorAndText(juce::Colour &c, juce::String &txt, bool &dash
                      totalWeight += rowProb;
                }
 
-               if (totalWeight > 0)
-                  txt = String().formatted("%d%%", (val * 100) / totalWeight);
+               if (totalWeight > 0) {
+                  const auto relativePercentage = (val * 100) / totalWeight;
+
+                  if(relativePercentage==SEQ_PROB_NEVER)
+                     c = e->getColorFor(EditorState::stepNeverProb);
+                  else if (relativePercentage <= SEQ_PROB_LOW_VAL)
+                     c = e->getColorFor(EditorState::stepLowProb);
+                  else if (relativePercentage <= SEQ_PROB_MED_VAL)
+                     c = e->getColorFor(EditorState::stepMediumProb);
+                  else if (relativePercentage <= SEQ_PROB_ON)
+                     c = e->getColorFor(EditorState::stepHighProb);
+
+                  if (e->isMonoRelativeProb())
+                     txt = String::formatted("%d%%", relativePercentage);
+                  else
+                     txt = String::formatted("%0.2f", val / 100.0);
+               }
             }
+
+            // In the poly mode, both the color and the label represent the absolute probability.
             else {
+               if(val==SEQ_PROB_NEVER)
+                  c = e->getColorFor(EditorState::stepNeverProb);
+               else if (val <= SEQ_PROB_LOW_VAL)
+                  c = e->getColorFor(EditorState::stepLowProb);
+               else if (val <= SEQ_PROB_MED_VAL)
+                  c = e->getColorFor(EditorState::stepMediumProb);
+               else if (val <= SEQ_PROB_ON)
+                  c = e->getColorFor(EditorState::stepHighProb);
+
                if (val == SEQ_PROB_ON)
                   txt = SEQ_PROB_ON_TEXT;
-               else if (d->isMonoMode())
-                  txt = String().formatted("%0.2f", val / 100.0);
                else
-                  txt = String().formatted("%d%%", val);
+                  txt = String::formatted("%d%%", val);
             }
          }
 

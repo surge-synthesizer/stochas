@@ -28,7 +28,7 @@ HelpPair gHelpText[] = {
    {"stepPanelChainMode", "Click and drag on valid cells to create chains to other cells. "
                            CTRL "-drag to block the target when the source plays. "
                            ALT "-drag to trigger the target when the source doesn't play. "
-                           CTRL "-" ALT "-drag to combine them. "
+                           CTRL "-" ALT "-block the target when the source doesn't play. "
                           "Right-click a target cell to clear chains leading to that cell" },
    {"stepPanelOffsMode", "Shift cells forward and backward in time. Negative values will cause the cell to play sooner. Positive values will cause the cell to play later. A value of -50 will cause the cell to play halfway between the previous step and the step it is on"},
    {"stepPanelTrigMode", "Allows retriggering of the cell a number of times at this position. This can be used to create a drum fill for example. The value specified represents how many times the cell is triggered.  Default is 1. Cells that retrigger cannot have a length greater than 1"},

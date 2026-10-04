@@ -19,3 +19,4 @@ Andrew Shakinovsky (@rudeog)
 David Clissold - design, concepts
 Paul Walker (@baconpaul) - continuous integration
 John Valentine (@j5v) - logo design
+Paweł Ulita (@pawel-ulita)

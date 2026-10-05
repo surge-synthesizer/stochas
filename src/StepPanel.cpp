@@ -285,19 +285,14 @@ StepPanel::StepPanel(SeqGlob *glob, int id, Component *mainCpt, CptNotify *notif
    mMouseStartVal(MOUSE_STARTVAL_INVALID),
    mChainStartItem(0),
    mChainEndItem(0),
-   mChainCustom(false),
    mChainNegTgt(false),
+   mChainNegSrc(false),
    mRowNotify(0),
    mDoingMultiSelect(false),
    mChordHandler(glob),
    mCurPosition(-1)
    
 {
-   // this is to notify the main window when a custom chain is being added
-   ActionListener *al = dynamic_cast<ActionListener *>(mainCpt);
-   jassert(al);
-   mBroadcaster.addActionListener(al);
-
    setWantsKeyboardFocus(true);
    for (int i = 0; i < SEQ_MAX_ROWS*SEQ_MAX_STEPS; i++) {
       addAndMakeVisible(mGrid[i]);
@@ -631,8 +626,8 @@ void StepPanel::mouseDown(const MouseEvent & event)
             // in chain mode, we drag to create arrows between cells
             if (currentProb != SEQ_PROB_OFF) {
                mChainStartItem = c;
-               mChainCustom = event.mods.isCommandDown() && event.mods.isShiftDown();
-               mChainNegTgt = event.mods.isCommandDown() && !event.mods.isShiftDown();
+               mChainNegSrc = event.mods.isAltDown();
+               mChainNegTgt = event.mods.isCommandDown();
 
             }
             break;
@@ -784,17 +779,9 @@ void StepPanel::mouseUp(const MouseEvent & event)
                   data->setProb(mChainEndItem->mRow, mChainEndItem->mCol, SEQ_PROB_NEVER);
                }
                if (data->addChainSource(mChainEndItem->mRow, mChainEndItem->mCol,
-                  mChainStartItem->mRow, mChainStartItem->mCol,mChainNegTgt, false)) {
+                  mChainStartItem->mRow, mChainStartItem->mCol,mChainNegTgt, mChainNegSrc)) {
                   buf->swap();
                   c = mChainEndItem; // so that this items ends up being selected (below where we select item)                                    
-
-                  // if they ctrl drag, we make it negative and also popup the dialog
-                  // so they can further customize it
-                  if (mChainCustom) {
-                     String f=String::formatted("chainAdd|%d|%d|%d|%d", mChainStartItem->mRow,
-                        mChainStartItem->mCol, mChainEndItem->mRow, mChainEndItem->mCol);
-                     mBroadcaster.sendActionMessage(f);
-                  }
                } else {
                   // failed to add due to reaching limit
                   String txt=String::formatted("Maximum number of chains (%d) for this column has been reached", SEQ_MAX_CHAIN_SOURCES);
@@ -1181,7 +1168,7 @@ StepPanel::paintChains(Graphics &g)
    
    // do the chain that is being added currently
    if (mChainStartItem && mChainEndItem) {
-      juce::Colour selColor, srcBlobColor, posColor;
+      juce::Colour selColor, srcBlobColor, posColor, srcColor;
       Point<int> start = mChainStartItem->getBounds().getCentre();
       Point<int> end = mChainEndItem->getBounds().getCentre();
       bool up = false;
@@ -1191,8 +1178,12 @@ StepPanel::paintChains(Graphics &g)
          posColor = e->getColorFor(EditorState::chainNegative);
       else
          posColor = e->getColorFor(EditorState::chainPositive);
+      if(mChainNegSrc)
+         srcColor = e->getColorFor(EditorState::chainNegative);
+      else
+         srcColor = e->getColorFor(EditorState::chainPositive);
       selColor = posColor.withAlpha(0.5f);
-      srcBlobColor = posColor.withAlpha(0.5f);
+      srcBlobColor = srcColor.withAlpha(0.5f);
       drawCurve(start.toFloat(), end.toFloat(), g, up, true, selColor, srcBlobColor);
    }
 }

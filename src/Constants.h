@@ -259,6 +259,8 @@ in mono mode are 0..high val where 0 is off, and the following applies
 #define SEQCTL_PLAY_BUTTON          32 //* play button
 #define SEQCTL_INFODIALOG           33 // * info dialog itself (will notify when its done)
 #define SEQCTL_STANDALONE_BPM_BUTTON 34 // for standalone mode only
+#define SEQCTL_TRANSPORT_BUTTON     36 // standalone transport settings (cog) button
+#define SEQCTL_TRANSPORTDIALOG      37 // standalone transport settings dialog itself
 #define SEQCTL_SIZE_PANIC           35 // * press to restore UI size to default
 
 ///////////////////////

@@ -185,6 +185,10 @@ class SeqAudioProcessor  : public AudioProcessor, public SeqProcessorNotifierHel
     // cleared at some point after we stop. It's used to determine if we
     // are transitioning to playing or transitioning to stopping
     bool mPlaying;
+    // standalone midi clock/transport output state
+    bool mClockPrimed = false;
+    int64 mClockNextTick = 0; // next midi clock tick (1/24 beat) to send
+    bool mTransportRunning = false; // have we sent start/continue without a matching stop
     // this will be used to keep track of whether we have looped back to a
     // loop point (for randomization)
     double mLastPosition;
@@ -237,6 +241,7 @@ class SeqAudioProcessor  : public AudioProcessor, public SeqProcessorNotifierHel
    void positionInfoStandalone(AudioPlayHead::CurrentPositionInfo *posinfo);
    // change tempo in standalone mode
    void changeStandaloneTempo();
+   void sendMidiClockAndTransport(MidiBuffer &out, bool startingPlayback, int numSamples, double samplerate, double bpm, double ppqPosition);
    // given current tempo determine the current beat position
    double getStandaloneBeatPosition();
    // called when the recording mode has changed

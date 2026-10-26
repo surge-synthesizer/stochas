@@ -6,7 +6,9 @@ build32/
 .vscode/
 .idea/
 installer-tmp/
+build-debug/
 cmake-build-debug/
+build-release/
 cmake-build-release/
 build.install/
 *.code-workspace

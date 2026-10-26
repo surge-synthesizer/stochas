@@ -136,6 +136,8 @@ target_sources(stochas PRIVATE
     src/SequenceData.cpp
     src/SettingsTab.cpp
     src/StepPanel.cpp
+    src/StandaloneSettings.cpp
+    src/TransportDialog.cpp
     src/StochaEngine.cpp
 
     ${CMAKE_BINARY_DIR}/geninclude/version.cpp
@@ -172,6 +174,7 @@ target_compile_definitions(stochas
 # Conversion to binary-data will happen when your target is built.
 
 juce_add_binary_data(assets NAMESPACE SeqImageX SOURCES 
+    image/cog.png
     image/exclamation-64.png
     image/not.png
     image/play.png

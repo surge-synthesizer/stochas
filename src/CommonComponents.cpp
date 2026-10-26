@@ -340,6 +340,12 @@ ButtonCpt::ButtonCpt(SeqGlob *glob, int id, CptNotify *notify, String name) :
 
 }
 
+void ButtonCpt::setImage(const juce::Image &img)
+{
+   mImage = img;
+   repaint();
+}
+
 void ButtonCpt::paint(Graphics & g)
 {
    juce::Colour c;
@@ -357,7 +363,10 @@ void ButtonCpt::paint(Graphics & g)
    //g.fillRect(r.toFloat());
    g.fillRoundedRectangle(r.toFloat(), 3.0f);
    g.setColour(c.contrasting(.5));
-   g.drawText(mText, r.toFloat(), Justification::centred);
+   if (mImage.isValid())
+      g.drawImage(mImage, r.reduced(2).toFloat(), RectanglePlacement::centred);
+   else
+      g.drawText(mText, r.toFloat(), Justification::centred);
 }
 
 void ButtonCpt::setText(String txt)

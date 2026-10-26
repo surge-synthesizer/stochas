@@ -21,6 +21,7 @@
 #include "EditorState.h"
 #include "Constants.h"
 #include "EditDialog.h"
+#include "TransportDialog.h"
 #include "InfoDialog.h"
 #include "SettingsTab.h"
 #include "MidiDialog.h"
@@ -54,6 +55,7 @@ class SeqAudioProcessorEditor  : public AudioProcessorEditor,
    ButtonCpt mUndoBtn;
    ButtonCpt mRecordBtn;
    ButtonCpt mPlayBtn;
+   ButtonCpt mTransportBtn; // standalone only: cog that opens transport settings
    ToggleCpt mPatternSelect;
    Label mPatternLabel;
    
@@ -109,6 +111,7 @@ class SeqAudioProcessorEditor  : public AudioProcessorEditor,
    Label mSectionLabel;
    SeqEditDialog mEditDialog;
    SeqInfoDialog mInfoDialog;
+   SeqTransportDialog mTransportDialog;
    SeqFileDialog mFileChooser;
 
    int mMidiLightCountDown;

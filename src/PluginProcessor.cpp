@@ -11,6 +11,7 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 #include "Persist.h"
+#include "StandaloneSettings.h"
 #include <stdio.h>
 
 void SeqAudioProcessor::addAutParam(SeqAudioProcessorParameter * p)
@@ -162,6 +163,8 @@ void SeqAudioProcessor::prepareToPlay (double , int )
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
+    if (wrapperType == wrapperType_Standalone)
+        StandaloneSettings::load();
 }
 
 void SeqAudioProcessor::releaseResources()
@@ -795,6 +798,49 @@ void SeqAudioProcessor::changeStandaloneTempo() {
    mStandaloneTempo = newTempo;
 }
 
+// standalone only: add midi clock and start/continue/stop to the outgoing midi.
+// Clock is derived from the (faked) standalone beat position, so it is sent whether
+// or not the sequencer is playing. Start/stop follow the sequencer's own play state.
+void SeqAudioProcessor::sendMidiClockAndTransport(MidiBuffer &out, bool startingPlayback,
+   int numSamples, double samplerate, double bpm, double ppqPosition)
+{
+   // transport
+   bool wantRunning = mPlaying && StandaloneSettings::getSendMidiTransport();
+   if (startingPlayback && wantRunning) {
+      out.addEvent(MidiMessage::midiStart(), 0);
+      mTransportRunning = true;
+   }
+   else if (wantRunning != mTransportRunning) {
+      // either transport was switched on/off mid-play, or we are stopping
+      out.addEvent(wantRunning ? MidiMessage::midiContinue() : MidiMessage::midiStop(), 0);
+      mTransportRunning = wantRunning;
+   }
+
+   // clock, 24 ticks per beat
+   if (!StandaloneSettings::getSendMidiClock() || numSamples <= 0 || bpm <= 0.0) {
+      mClockPrimed = false;
+      return;
+   }
+   double beatsInBlock = numSamples * bpm / (60.0 * samplerate);
+   double startTick = ppqPosition * 24.0;
+   double endTick = startTick + beatsInBlock * 24.0;
+   int64 first = (int64)std::ceil(startTick);
+   int64 end = (int64)std::ceil(endTick);
+   // (re)sync if just enabled or the position jumped by more than a beat
+   if (!mClockPrimed || first < mClockNextTick - 24 || first > mClockNextTick + 24) {
+      mClockNextTick = first;
+      mClockPrimed = true;
+   }
+   // block timing jitter can overlap or leave small gaps; the running counter
+   // ensures that every tick is sent exactly once
+   for (int64 t = mClockNextTick; t < end; t++) {
+      int pos = (int)(((double)t - startTick) / (endTick - startTick) * numSamples);
+      out.addEvent(MidiMessage::midiClock(), jlimit(0, numSamples - 1, pos));
+   }
+   if (end > mClockNextTick)
+      mClockNextTick = end;
+}
+
 void SeqAudioProcessor::processBlock(AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 {
    
@@ -1041,6 +1087,10 @@ void SeqAudioProcessor::processBlock(AudioSampleBuffer& buffer, MidiBuffer& midi
       for (i = 0; i < SEQ_MAX_LAYERS; i++)
          mStocha[i].doneBlock(samplesperblock);
    }
+
+   if (wrapperType == wrapperType_Standalone)
+      sendMidiClockAndTransport(processedMidi, startingPlayback, samplesperblock, samplerate,
+         posinfo.bpm, posinfo.ppqPosition);
 
    // see if the UI has any data for us that we need to process
    checkforUIIncomingData(processedMidi);

@@ -42,6 +42,7 @@ SeqAudioProcessorEditor::SeqAudioProcessorEditor(SeqAudioProcessor &p)
       mUndoBtn(&mGlob, SEQCTL_UNDO_BUTTON, this, "undoButton"),        // button that brings up edit dialog
       mRecordBtn(&mGlob, SEQCTL_RECORD_BUTTON, this, "recordButton"),
       mPlayBtn(&mGlob, SEQCTL_PLAY_BUTTON, this, "playButton"),
+      mTransportBtn(&mGlob, SEQCTL_TRANSPORT_BUTTON, this, "transportButton"),
       mPatternSelect(&mGlob, SEQCTL_PATSEL_TOGGLE, this, "patternSelect"),      // select current pattern
       mSectionSelect(&mGlob, SEQCTL_SECTION_TOGGLE, this, "sectionSelect"),     // select section when number of steps exceeds 16
       mMainTabs(SEQCTL_TABS, this, TabbedButtonBar::Orientation::TabsAtBottom), // main tabs at bottom
@@ -69,6 +70,7 @@ SeqAudioProcessorEditor::SeqAudioProcessorEditor(SeqAudioProcessor &p)
       mLayerToggle(&mGlob, SEQCTL_LAYER_TOGGLE, this), // for selecting which layer we are on
       mEditDialog(&mGlob, this),                       // our edit dialog itself
       mInfoDialog(&mGlob, this),
+      mTransportDialog(&mGlob, this),
       mFileChooser(&mGlob, this),
       mMidiLightCountDown(0),                         // for keeping the midi light lit for a specified time
       mTimeDivider(0),                                // for updating help text at bottom
@@ -190,6 +192,11 @@ SeqAudioProcessorEditor::SeqAudioProcessorEditor(SeqAudioProcessor &p)
 
    mPlayBtn.setText("Play");
    addAndMakeVisible(mPlayBtn);
+   if (mProcessor.wrapperType == AudioProcessor::wrapperType_Standalone)
+   {
+      mTransportBtn.setImage(ImageCache::getFromMemory(SeqImageX::cog_png, SeqImageX::cog_pngSize));
+      addAndMakeVisible(mTransportBtn);
+   }
 
    //=============================Midi indicator light
    mMidiIndicator.mGlob = &mGlob;
@@ -305,6 +312,7 @@ SeqAudioProcessorEditor::SeqAudioProcessorEditor(SeqAudioProcessor &p)
 
    // ============================== Info dialog
    addChildComponent(mInfoDialog);
+   addChildComponent(mTransportDialog);
 
    // ================================= Scrollbar that moves rows up and down
    mStepScrollbar.setRangeLimits(Range<double>(0, 1), juce::dontSendNotification);
@@ -441,7 +449,15 @@ void SeqAudioProcessorEditor::resized()
    mUndoBtn.setBounds(tmp);
    tmp = upper.removeFromRight(64);
    mRecordBtn.setBounds(tmp);
-   tmp = upper.removeFromRight(64);
+   if (mProcessor.wrapperType == AudioProcessor::wrapperType_Standalone)
+   {
+      // cog sits to the right of the play button, which is narrower to make room
+      tmp = upper.removeFromRight(18);
+      mTransportBtn.setBounds(tmp);
+      tmp = upper.removeFromRight(46);
+   }
+   else
+      tmp = upper.removeFromRight(64);
    mPlayBtn.setBounds(tmp);
    if (mProcessor.wrapperType == AudioProcessor::wrapperType_Standalone)
    {
@@ -865,6 +881,11 @@ void SeqAudioProcessorEditor::cptValueChange(int cptId, int id)
       mInfoDialog.openDialog();
       break;
    }
+   case SEQCTL_TRANSPORT_BUTTON:
+      mTransportDialog.doSetup();
+      mTransportDialog.openDialog();
+      break;
+
    case SEQCTL_EDIT_BUTTON:
       // edit was clicked
       mEditDialog.doSetup();

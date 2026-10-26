@@ -119,11 +119,14 @@ class ButtonCpt : public Component {
    String mText;
    CptNotify *mNotify;
    juce::Colour mOverrideColor;
+   juce::Image mImage;
    void mouseDown(const MouseEvent &event) override;
 public:
    ButtonCpt(SeqGlob *glob, int id, CptNotify *notify, String name = "button");
    void paint(Graphics &g) override;
    void setText(String txt);
+   // draw an image instead of text (pass an empty Image to go back to text)
+   void setImage(const juce::Image &img);
    // call with no parameters to not override
    void overrideColor(juce::Colour c =Colour());
    inline int getId() { return mId; }

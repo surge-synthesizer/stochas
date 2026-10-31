@@ -39,7 +39,7 @@ class SettingsTab : public Component, public CptNotify {
    Label mLblUIScale;
    Label mLblUseMidiNum;
    Label mLblPatLayerLink;
-   Label mLblMonoRelativeProb;
+   Label mLblMonoProbDisplayMode;
 
    NumberCpt mNumMouseSense;
    ToggleCpt mTglRightMouseAction;
@@ -53,7 +53,7 @@ class SettingsTab : public Component, public CptNotify {
    NumberCpt mNumUIScale;
    ToggleCpt mTglPatLayerLink;
    ToggleCpt mTglMidiNoteNumber;
-   ToggleCpt mTglMonoRelativeProb;
+   ToggleCpt mTglMonoProbDisplayMode;
 
    void cptValueChange(int cptId, int value) override;
    void paint(Graphics &) override;

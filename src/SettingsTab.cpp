@@ -70,12 +70,12 @@ void SettingsTab::resized()
    mNumDefaultPolyProb.setBounds(top);
    b1.removeFromTop(vgap);
 
-   // mono relative prob
+   // mono probability display mode
    top = b1.removeFromTop(vspace);
    left = top.removeFromLeft(tab);
-   mLblMonoRelativeProb.setBounds(left);
+   mLblMonoProbDisplayMode.setBounds(left);
    top.removeFromLeft(space);
-   mTglMonoRelativeProb.setBounds(top);
+   mTglMonoProbDisplayMode.setBounds(top);
    b1.removeFromTop(vgap);
 
    // def velo
@@ -173,7 +173,7 @@ SettingsTab::SettingsTab(SeqGlob * glob, int id, CptNotify *notify) :
    mNumUIScale(glob, SEQCTL_SET_UISCALE, this, "setUIScale"),
    mTglPatLayerLink(glob, SEQCTL_SET_PATLAYERLINK, this, "patLayerLink"),
    mTglMidiNoteNumber(glob,SEQCTL_SET_MIDINOTENUM, this, "showMidiNum"),
-   mTglMonoRelativeProb(glob, SEQCTL_SET_MONORELPROB, this, "monoRelProb")
+   mTglMonoProbDisplayMode(glob, SEQCTL_SET_MONOPROBDISPLAYMODE, this, "monoProbDisplayMode")
 {
    setupLabel(mLblMouseSense,"Mouse Sensitivity");
    setupLabel(mLblRightMouseAction,"Right Click");
@@ -187,7 +187,7 @@ SettingsTab::SettingsTab(SeqGlob * glob, int id, CptNotify *notify) :
    setupLabel(mLblUIScale, "UI Scale");
    setupLabel(mLblUseMidiNum, "MIDI Note Numbers");
    setupLabel(mLblPatLayerLink, "Pat./Layer linked");
-   setupLabel(mLblMonoRelativeProb, "Mono Label");
+   setupLabel(mLblMonoProbDisplayMode, "Mono Labels");
    String vs = String("Version: ");
    vs += Stochas::Build::FullVersionStr;
    setupLabel(mLblVersionBuild, vs);
@@ -240,9 +240,10 @@ SettingsTab::SettingsTab(SeqGlob * glob, int id, CptNotify *notify) :
    mTglMidiNoteNumber.addItem(1, "On", false);
    addAndMakeVisible(mTglMidiNoteNumber);
    
-   mTglMonoRelativeProb.addItem(0, "Weight", true);
-   mTglMonoRelativeProb.addItem(1, "Rel. Prob.", false);
-   addAndMakeVisible(mTglMonoRelativeProb);
+   mTglMonoProbDisplayMode.addItem(EditorState::monoProbDisplayModeSimplified, "Simple", true);
+   mTglMonoProbDisplayMode.addItem(EditorState::monoProbDisplayModeRelative, "Rel. %", false);
+   mTglMonoProbDisplayMode.addItem(EditorState::monoProbDisplayModeWeight, "Weight", false);
+   addAndMakeVisible(mTglMonoProbDisplayMode);
    
 }
 
@@ -284,10 +285,7 @@ void SettingsTab::refreshAll()
    else
      mTglMidiNoteNumber.setCurrentItem(0,true,false);
 
-   if(em.isMonoRelativeProb())
-     mTglMonoRelativeProb.setCurrentItem(1, true, false);
-   else
-     mTglMonoRelativeProb.setCurrentItem(0,true,false);
+   mTglMonoProbDisplayMode.setCurrentItem(em.getMonoProbDisplayMode(), true, false);
 
 
 }
@@ -327,8 +325,8 @@ void SettingsTab::cptValueChange(int cptId, int value)
    case SEQCTL_SET_MIDINOTENUM:
       em.setShowMidiNumbers(value==1);
       break;
-   case SEQCTL_SET_MONORELPROB:
-      em.setMonoRelativeProb(value==1);
+   case SEQCTL_SET_MONOPROBDISPLAYMODE:
+      em.setMonoProbDisplayMode(static_cast<EditorState::MonoProbDisplayMode>(value));
       break;
    case SEQCTL_SET_POSOFFSET:
       em.setPPQOffset(value);

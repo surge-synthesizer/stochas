@@ -100,6 +100,6 @@ HelpPair gHelpText[] = {
    { "setUIScale",    "Sets the overall size of the UI, allowing you to enlarge the controls for better visibility on large screens."},
    { "patLayerLink",    "Determines whether patterns are linked together for a layer. If turned on, changing patterns on one layer will change to that same pattern on all layers"},
     { "showMidiNum", "Determines whether MIDI note numbers are used instead of names to display note values."},
-   { "monoRelProb", "Determines whether probabilities in mono mode are displayed as independent weights or relative percentage of the total weight in the column."},
+   { "monoProbDisplayMode", "Determines how probabilities in mono mode are displayed. Simple shows Low/Med/High labels and uses stepped dragging. Rel. % shows each cell's percentage of the total weight in the column. Weight shows the raw weight value."},
     {0,0} // end sentinel
 };

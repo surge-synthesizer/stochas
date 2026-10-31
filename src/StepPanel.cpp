@@ -178,10 +178,24 @@ StepCpt::getEffectiveColorAndText(juce::Colour &c, juce::String &txt, bool &dash
                   else if (relativePercentage <= SEQ_PROB_ON)
                      c = e->getColorFor(EditorState::stepHighProb);
 
-                  if (e->isMonoRelativeProb())
+                  switch (e->getMonoProbDisplayMode()) {
+                  case EditorState::monoProbDisplayModeSimplified:
+                     if (val == SEQ_PROB_NEVER)
+                        txt = SEQ_PROB_NEVER_TEXT;
+                     else if (relativePercentage <= SEQ_PROB_LOW_VAL)
+                        txt = SEQ_PROB_LOW_TEXT;
+                     else if (relativePercentage <= SEQ_PROB_MED_VAL)
+                        txt = SEQ_PROB_MED_TEXT;
+                     else
+                        txt = SEQ_PROB_HIGH_TEXT;
+                     break;
+                  case EditorState::monoProbDisplayModeRelative:
                      txt = String::formatted("%d%%", relativePercentage);
-                  else
+                     break;
+                  case EditorState::monoProbDisplayModeWeight:
                      txt = String::formatted("%0.2f", val / 100.0);
+                     break;
+                  }
                }
             }
 
@@ -372,6 +386,37 @@ void StepPanel::check()
    }
 }
 
+static inline int8_t
+getNewMonoVal(int8_t curVal, int delta)
+{
+   static int vals[] = {
+      SEQ_PROB_OFF,
+      SEQ_PROB_NEVER,
+      SEQ_PROB_LOW_VAL,
+      SEQ_PROB_MED_VAL,
+      SEQ_PROB_HIGH_VAL
+   };
+   static const int8_t num = sizeof(vals) / sizeof(int);
+   int now = 0, i;
+
+   delta = delta > (num - 1) ? (num - 1) : delta < -(num - 1) ? -(num - 1) : delta;
+
+   for (i = 0; i < num; i++) {
+      if (curVal <= vals[i]) {
+         now = i;
+         break;
+      }
+   }
+   if (i == num)
+      now = i - 1;
+
+   // apply delta
+   now += delta;
+   // clamp to possible vals
+   now = now<0 ? 0 : now>(num - 1) ? (num - 1) : now;
+   return (int8_t)vals[now];
+}
+
 bool StepPanel::keyPressed(const KeyPress & key, Component * /*originatingComponent*/)
 {
    if (mGlob->mEditorState->getKeyboardDisabled())
@@ -538,8 +583,16 @@ StepPanel::mouseDrag(const MouseEvent &event)
                  newval = mMouseStartVal + mouseDist;
                  newval = newval > SEQ_MAX_RETRIGGER ? SEQ_MAX_RETRIGGER : newval < 1 ? 1 : newval;
                }
+               else if (data->isMonoMode() &&
+                  e->getMonoProbDisplayMode() == EditorState::monoProbDisplayModeSimplified) {
+                  // since there are limited possible values in monoMode, make the mouse less sensitive
+                  mouseDist /= 5;
+                  // there are 4 possible values so the max we'll move from current val is 3 (or -3)
+                  newval = getNewMonoVal(mMouseStartVal, mouseDist);
+               }
                else {
-                  // both mono and poly mode: clamp to 0-100 (or -1 for OFF)
+                  // poly mode, or mono mode showing relative probabilities or weights:
+                  // clamp to 0-100 (or -1 for OFF)
                   newval = mMouseStartVal + mouseDist;
                   newval = newval > SEQ_PROB_ON ? SEQ_PROB_ON :
                      newval < SEQ_PROB_OFF ? SEQ_PROB_OFF : newval;

@@ -118,6 +118,10 @@ public:
    int8_t getDefaultProbability(bool mono);
    void setDefaultProbability(int8_t val, bool mono);
 
+   // show probabilities in mono mode as relative percentages
+   bool isMonoRelativeProb();
+   void setMonoRelativeProb(bool val);
+
    // color theme where 0=dark and 1=light
    int getColorTheme();
    void setColorTheme(int val);
@@ -201,6 +205,7 @@ private:
    int mScaleFactor;
    int mPatLayerLinked;
    int mShowMidiNumbers;
+   int mMonoRelativeProb;
 public:
 };
 

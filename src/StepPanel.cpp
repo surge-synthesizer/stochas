@@ -146,59 +146,60 @@ StepCpt::getEffectiveColorAndText(juce::Colour &c, juce::String &txt, bool &dash
             c = e->getColorFor(EditorState::stepOff);
 
          else {
-            // In the mono mode, the color always represents the relative probability.
-            // The label represents either the weight (0-1) or the relative probability.
             if (d->isMonoMode()) {
-               // Calculate relative percentage of this note's weight vs total weight in column
-               int totalWeight = 0;
-               int numRows = d->getMaxRows();
-               int startRow = SEQ_MAX_ROWS - numRows;
+               int calcVal = val;
+               if (e->getMonoProbDisplayMode() != EditorState::monoProbDisplayModeSimplified) {
+                  // Unless we are in simplified (legacy) mode, calculate relative percentage of this note's weight vs total weight in column
+                  int totalWeight = 0;
+                  int numRows = d->getMaxRows();
+                  int startRow = SEQ_MAX_ROWS - numRows;
 
-               for (int r = startRow; r < SEQ_MAX_ROWS; r++) {
-                  int8_t rowProb;
-                  // Use mTempValue for the cell being dragged
-                  if (r == mRow && mTempValue != MOUSE_STARTVAL_INVALID)
-                     rowProb = mTempValue;
+                  for (int r = startRow; r < SEQ_MAX_ROWS; r++) {
+                     int8_t rowProb;
+                     // Use mTempValue for the cell being dragged
+                     if (r == mRow && mTempValue != MOUSE_STARTVAL_INVALID)
+                        rowProb = mTempValue;
+                     else
+                        rowProb = d->getProb(r, mCol);
+
+                     if (rowProb > 0) // Only count active notes (not OFF or NEVER)
+                        totalWeight += rowProb;
+                  }
+
+                  if (totalWeight > 0)
+                     calcVal = (val * 100) / totalWeight;
                   else
-                     rowProb = d->getProb(r, mCol);
-
-                  if (rowProb > 0) // Only count active notes (not OFF or NEVER)
-                     totalWeight += rowProb;
+                     calcVal = 0;
                }
 
-               if (totalWeight > 0) {
-                  const auto relativePercentage = (val * 100) / totalWeight;
+               if(calcVal==SEQ_PROB_NEVER)
+                  c = e->getColorFor(EditorState::stepNeverProb);
+               else if (calcVal <= SEQ_PROB_LOW_VAL)
+                  c = e->getColorFor(EditorState::stepLowProb);
+               else if (calcVal <= SEQ_PROB_MED_VAL)
+                  c = e->getColorFor(EditorState::stepMediumProb);
+               else if (calcVal <= SEQ_PROB_ON)
+                  c = e->getColorFor(EditorState::stepHighProb);
 
-                  if(relativePercentage==SEQ_PROB_NEVER)
-                     c = e->getColorFor(EditorState::stepNeverProb);
-                  else if (relativePercentage <= SEQ_PROB_LOW_VAL)
-                     c = e->getColorFor(EditorState::stepLowProb);
-                  else if (relativePercentage <= SEQ_PROB_MED_VAL)
-                     c = e->getColorFor(EditorState::stepMediumProb);
-                  else if (relativePercentage <= SEQ_PROB_ON)
-                     c = e->getColorFor(EditorState::stepHighProb);
-
-                  switch (e->getMonoProbDisplayMode()) {
-                  case EditorState::monoProbDisplayModeSimplified:
-                     if (val == SEQ_PROB_NEVER)
-                        txt = SEQ_PROB_NEVER_TEXT;
-                     else if (relativePercentage <= SEQ_PROB_LOW_VAL)
-                        txt = SEQ_PROB_LOW_TEXT;
-                     else if (relativePercentage <= SEQ_PROB_MED_VAL)
-                        txt = SEQ_PROB_MED_TEXT;
-                     else
-                        txt = SEQ_PROB_HIGH_TEXT;
-                     break;
-                  case EditorState::monoProbDisplayModeRelative:
-                     txt = String::formatted("%d%%", relativePercentage);
-                     break;
-                  case EditorState::monoProbDisplayModeWeight:
-                     txt = String::formatted("%0.2f", val / 100.0);
-                     break;
-                  }
+               switch (e->getMonoProbDisplayMode()) {
+               case EditorState::monoProbDisplayModeSimplified:
+                  if (calcVal == SEQ_PROB_NEVER)
+                     txt = SEQ_PROB_NEVER_TEXT;
+                  else if (calcVal <= SEQ_PROB_LOW_VAL)
+                     txt = SEQ_PROB_LOW_TEXT;
+                  else if (calcVal <= SEQ_PROB_MED_VAL)
+                     txt = SEQ_PROB_MED_TEXT;
+                  else
+                     txt = SEQ_PROB_HIGH_TEXT;
+                  break;
+               case EditorState::monoProbDisplayModeRelative:
+                  txt = String::formatted("%d%%", calcVal);
+                  break;
+               case EditorState::monoProbDisplayModeWeight:
+                  txt = String::formatted("%0.2f", calcVal / 100.0);
+                  break;
                }
             }
-
             // In the poly mode, both the color and the label represent the absolute probability.
             else {
                if(val==SEQ_PROB_NEVER)

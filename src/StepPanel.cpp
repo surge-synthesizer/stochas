@@ -196,7 +196,7 @@ StepCpt::getEffectiveColorAndText(juce::Colour &c, juce::String &txt, bool &dash
                   txt = String::formatted("%d%%", calcVal);
                   break;
                case EditorState::monoProbDisplayModeWeight:
-                  txt = String::formatted("%0.2f", calcVal / 100.0);
+                  txt = String::formatted("%0.2f", val / 100.0);
                   break;
                }
             }

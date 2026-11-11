@@ -147,9 +147,9 @@ StepCpt::getEffectiveColorAndText(juce::Colour &c, juce::String &txt, bool &dash
 
          else {
             if (d->isMonoMode()) {
-               int calcVal = val;
-               if (e->getMonoProbDisplayMode() != EditorState::monoProbDisplayModeSimplified) {
-                  // Unless we are in simplified (legacy) mode, calculate relative percentage of this note's weight vs total weight in column
+               int calcVal;
+               if (e->getMonoProbDisplayMode() == EditorState::monoProbDisplayModeRelative) {
+                  // If we are in relative mode, calculate relative percentage of this note's weight vs total weight in column
                   int totalWeight = 0;
                   int numRows = d->getMaxRows();
                   int startRow = SEQ_MAX_ROWS - numRows;
@@ -170,6 +170,9 @@ StepCpt::getEffectiveColorAndText(juce::Colour &c, juce::String &txt, bool &dash
                      calcVal = (val * 100) / totalWeight;
                   else
                      calcVal = 0;
+               } else {
+                  // In non-relative mode, use the absolute value
+                  calcVal = val;
                }
 
                if(calcVal==SEQ_PROB_NEVER)
@@ -196,7 +199,7 @@ StepCpt::getEffectiveColorAndText(juce::Colour &c, juce::String &txt, bool &dash
                   txt = String::formatted("%d%%", calcVal);
                   break;
                case EditorState::monoProbDisplayModeWeight:
-                  txt = String::formatted("%0.2f", val / 100.0);
+                  txt = String::formatted("%0.2f", calcVal / 100.0);
                   break;
                }
             }

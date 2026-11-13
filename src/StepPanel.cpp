@@ -142,37 +142,84 @@ StepCpt::getEffectiveColorAndText(juce::Colour &c, juce::String &txt, bool &dash
       case EditorState::editingChain:
          // val is probability. if 0, it's off
 
-         // colors will be same for mono/poly right now
          if (val == SEQ_PROB_OFF)
             c = e->getColorFor(EditorState::stepOff);
-         else if(val==SEQ_PROB_NEVER)
-            c = e->getColorFor(EditorState::stepNeverProb);
-         else if (val <= SEQ_PROB_LOW_VAL)
-            c = e->getColorFor(EditorState::stepLowProb);
-         else if (val <= SEQ_PROB_MED_VAL)
-            c = e->getColorFor(EditorState::stepMediumProb);
-         else if (val <= SEQ_PROB_ON)
-            c = e->getColorFor(EditorState::stepHighProb);
 
-         if (d->isMonoMode()) {
-            if (val == SEQ_PROB_OFF)
-               txt = "";
-            else if (val == SEQ_PROB_NEVER)
-               txt = SEQ_PROB_NEVER_TEXT;
-            else if (val <= SEQ_PROB_LOW_VAL)
-               txt = SEQ_PROB_LOW_TEXT;
-            else if (val <= SEQ_PROB_MED_VAL)
-               txt = SEQ_PROB_MED_TEXT;
-            else if (val <= SEQ_PROB_HIGH_VAL)
-               txt = SEQ_PROB_HIGH_TEXT;
-         }
-         else // poly mode
-            if (val != SEQ_PROB_OFF) {
+         else {
+            if (d->isMonoMode()) {
+               int calcVal;
+               if (e->getMonoProbDisplayMode() == EditorState::monoProbDisplayModeRelative) {
+                  // If we are in relative mode, calculate relative percentage of this note's weight vs total weight in column
+                  int totalWeight = 0;
+                  int numRows = d->getMaxRows();
+                  int startRow = SEQ_MAX_ROWS - numRows;
+
+                  for (int r = startRow; r < SEQ_MAX_ROWS; r++) {
+                     int8_t rowProb;
+                     // Use mTempValue for the cell being dragged
+                     if (r == mRow && mTempValue != MOUSE_STARTVAL_INVALID)
+                        rowProb = mTempValue;
+                     else
+                        rowProb = d->getProb(r, mCol);
+
+                     if (rowProb > 0) // Only count active notes (not OFF or NEVER)
+                        totalWeight += rowProb;
+                  }
+
+                  if (totalWeight > 0)
+                     calcVal = (val * 100) / totalWeight;
+                  else
+                     calcVal = 0;
+               } else {
+                  // In non-relative mode, use the absolute value
+                  calcVal = val;
+               }
+
+               if(calcVal==SEQ_PROB_NEVER)
+                  c = e->getColorFor(EditorState::stepNeverProb);
+               else if (calcVal <= SEQ_PROB_LOW_VAL)
+                  c = e->getColorFor(EditorState::stepLowProb);
+               else if (calcVal <= SEQ_PROB_MED_VAL)
+                  c = e->getColorFor(EditorState::stepMediumProb);
+               else if (calcVal <= SEQ_PROB_ON)
+                  c = e->getColorFor(EditorState::stepHighProb);
+
+               switch (e->getMonoProbDisplayMode()) {
+               case EditorState::monoProbDisplayModeSimplified:
+                  if (calcVal == SEQ_PROB_NEVER)
+                     txt = SEQ_PROB_NEVER_TEXT;
+                  else if (calcVal <= SEQ_PROB_LOW_VAL)
+                     txt = SEQ_PROB_LOW_TEXT;
+                  else if (calcVal <= SEQ_PROB_MED_VAL)
+                     txt = SEQ_PROB_MED_TEXT;
+                  else
+                     txt = SEQ_PROB_HIGH_TEXT;
+                  break;
+               case EditorState::monoProbDisplayModeRelative:
+                  txt = String::formatted("%d%%", calcVal);
+                  break;
+               case EditorState::monoProbDisplayModeWeight:
+                  txt = String::formatted("%0.2f", calcVal / 100.0);
+                  break;
+               }
+            }
+            // In the poly mode, both the color and the label represent the absolute probability.
+            else {
+               if(val==SEQ_PROB_NEVER)
+                  c = e->getColorFor(EditorState::stepNeverProb);
+               else if (val <= SEQ_PROB_LOW_VAL)
+                  c = e->getColorFor(EditorState::stepLowProb);
+               else if (val <= SEQ_PROB_MED_VAL)
+                  c = e->getColorFor(EditorState::stepMediumProb);
+               else if (val <= SEQ_PROB_ON)
+                  c = e->getColorFor(EditorState::stepHighProb);
+
                if (val == SEQ_PROB_ON)
                   txt = SEQ_PROB_ON_TEXT;
                else
-                  txt = String().formatted("%d%%",val);
+                  txt = String::formatted("%d%%", val);
             }
+         }
 
          if(mode==EditorState::editingChain) {
             if(val != SEQ_PROB_OFF) {
@@ -540,16 +587,18 @@ StepPanel::mouseDrag(const MouseEvent &event)
                  newval = mMouseStartVal + mouseDist;
                  newval = newval > SEQ_MAX_RETRIGGER ? SEQ_MAX_RETRIGGER : newval < 1 ? 1 : newval;
                }
-               else if (data->isMonoMode()) {
+               else if (data->isMonoMode() &&
+                  e->getMonoProbDisplayMode() == EditorState::monoProbDisplayModeSimplified) {
                   // since there are limited possible values in monoMode, make the mouse less sensitive
                   mouseDist /= 5;
-                  // there are 4 possible values so the max we'll move from current val is 3 (or -3)      
+                  // there are 4 possible values so the max we'll move from current val is 3 (or -3)
                   newval = getNewMonoVal(mMouseStartVal, mouseDist);
                }
-               else { // poly mode   
-                      // clamp to 100      
+               else {
+                  // poly mode, or mono mode showing relative probabilities or weights:
+                  // clamp to 0-100 (or -1 for OFF)
                   newval = mMouseStartVal + mouseDist;
-                  newval = newval > SEQ_PROB_ON ? SEQ_PROB_ON : 
+                  newval = newval > SEQ_PROB_ON ? SEQ_PROB_ON :
                      newval < SEQ_PROB_OFF ? SEQ_PROB_OFF : newval;
                }
 

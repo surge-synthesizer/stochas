@@ -33,6 +33,13 @@ public:
       editingTriggers
    };
 
+   // how probabilities are displayed in mono mode
+   enum MonoProbDisplayMode {
+      monoProbDisplayModeSimplified = 0,
+      monoProbDisplayModeRelative = 1,
+      monoProbDisplayModeWeight = 2
+   };
+
    // note the order of these need to correspond with ordering (and elements) in Colors.h
    enum coloredElements {
       background=0,
@@ -118,6 +125,10 @@ public:
    int8_t getDefaultProbability(bool mono);
    void setDefaultProbability(int8_t val, bool mono);
 
+   // how probabilities are displayed in mono mode
+   MonoProbDisplayMode getMonoProbDisplayMode();
+   void setMonoProbDisplayMode(MonoProbDisplayMode val);
+
    // color theme where 0=dark and 1=light
    int getColorTheme();
    void setColorTheme(int val);
@@ -201,6 +212,7 @@ private:
    int mScaleFactor;
    int mPatLayerLinked;
    int mShowMidiNumbers;
+   MonoProbDisplayMode mMonoProbDisplayMode;
 public:
 };
 

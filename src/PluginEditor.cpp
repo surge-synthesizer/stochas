@@ -76,7 +76,8 @@ SeqAudioProcessorEditor::SeqAudioProcessorEditor(SeqAudioProcessor &p)
       mTimeDivider(0),                                // for updating help text at bottom
       mRecStateCache(SeqProcessorNotifier::standby),  // force it to be different than default
       mPlayStateCache(SeqProcessorNotifier::standby), // force it to be different than default
-      mMidiDlg(&mGlob, this)
+      mMidiDlg(&mGlob, this),
+      mChainDlg(&mGlob, &mStepPanel)
 {
 
    int tmp = 0;
@@ -93,6 +94,7 @@ SeqAudioProcessorEditor::SeqAudioProcessorEditor(SeqAudioProcessor &p)
    mBtnSaveGroove.setName("grvSaveMidi");
 
    addChildComponent(mMidiDlg);
+   addChildComponent(mChainDlg);
 
    addChildComponent(mFileChooser);
 
@@ -488,6 +490,7 @@ void SeqAudioProcessorEditor::resized()
 
    // bottom tabs
    mMainTabs.setBounds(lower);
+   mChainDlg.setBounds(lower);
 
    // help banner
    mHelpBanner.setBounds(banner);
@@ -1008,7 +1011,14 @@ void SeqAudioProcessorEditor::cptValueChange(int cptId, int id)
       showFileChooser(SEQ_FILE_LOAD_PATCH);
       break;
    case SEQCTL_STEP_PANEL:
-      // stepPanel could send some notification if it wanted
+      // A negative value represents a single click; non-negative means double-click.
+      if (id < 0)
+      {
+         int cell = -id - 1;
+         mChainDlg.followCell(cell / SEQ_MAX_STEPS, cell % SEQ_MAX_STEPS);
+      }
+      else
+         mChainDlg.openFor(id / SEQ_MAX_STEPS, id % SEQ_MAX_STEPS);
       break;
    case SEQCTL_CHORD_TOGGLE:
       chordSelect(id);
@@ -1523,6 +1533,8 @@ void SeqAudioProcessorEditor::mainTimer()
    // the grid to reflect which steps have played and also show new midi notes
    // that may have been recorded (will update when step position changes)
    mStepPanel.check();
+   // same for chain dialog
+   mChainDlg.check();
 
    // check to see whether record state has changed
    SeqProcessorNotifier::PlayRecordState rs = mGlob.mAudNotify->getRecordingState();

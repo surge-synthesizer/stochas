@@ -334,6 +334,12 @@ StepPanel::StepPanel(SeqGlob *glob, int id, Component *mainCpt, CptNotify *notif
    mChainEndItem(0),
    mChainNegTgt(false),
    mChainNegSrc(false),
+   mHiliteSrc(-1),
+   mHiliteTgt(-1),
+   mHiliteCell(-1),
+   mChainDialogCell(-1),
+   mChainDialogLayer(-1),
+   mChainDialogPattern(-1),
    mRowNotify(0),
    mDoingMultiSelect(false),
    mChordHandler(glob),
@@ -486,6 +492,7 @@ void StepPanel::paintOverChildren(Graphics & g)
    // draw chains if in chain mode
    if (mGlob->mEditorState->getEditMode() == EditorState::editingChain) {
       paintChains(g);      
+      paintHighlightedChain(g);
    }
       
    // draw the selected cell(s)
@@ -734,6 +741,48 @@ end:;
 
 }
 
+void StepPanel::mouseDoubleClick(const MouseEvent &event)
+{
+   EditorState *e = mGlob->mEditorState;
+   if (e->getEditMode() != EditorState::editingChain ||
+      event.eventComponent->getName().compare("singleStep") != 0 ||
+      event.mods.isRightButtonDown())
+      return;
+   auto *c = static_cast<StepCpt *>(event.eventComponent);
+   SequenceLayer *data = mGlob->mSeqBuf->getUISeqData()->getLayer(e->getCurrentLayer());
+   if (c->mCol >= data->getNumSteps() || data->getProb(c->mRow, c->mCol) == SEQ_PROB_OFF)
+      return;
+   mNotify->cptValueChange(mId, c->mRow * SEQ_MAX_STEPS + c->mCol);
+}
+
+void StepPanel::setChainHighlight(int srcRow, int srcCol, int tgtRow, int tgtCol, int otherRow, int otherCol)
+{
+   mHiliteSrc = srcRow * SEQ_MAX_STEPS + srcCol;
+   mHiliteTgt = tgtRow * SEQ_MAX_STEPS + tgtCol;
+   mHiliteCell = otherRow * SEQ_MAX_STEPS + otherCol;
+   repaint();
+}
+
+void StepPanel::setChainDialogCell(int row, int col)
+{
+   mChainDialogCell = row * SEQ_MAX_STEPS + col;
+   mChainDialogLayer = mGlob->mEditorState->getCurrentLayer();
+   mChainDialogPattern = mGlob->mSeqBuf->getUISeqData()->getLayer(mChainDialogLayer)->getCurrentPattern();
+}
+
+void StepPanel::clearChainDialogCell()
+{
+   mChainDialogCell = mChainDialogLayer = mChainDialogPattern = -1;
+}
+
+void StepPanel::clearChainHighlight()
+{
+   if (mHiliteSrc != -1) {
+      mHiliteSrc = mHiliteTgt = mHiliteCell = -1;
+      repaint();
+   }
+}
+
 void StepPanel::mouseUp(const MouseEvent & event)
 {
    bool rightMouse = event.mods.isRightButtonDown();
@@ -793,6 +842,9 @@ void StepPanel::mouseUp(const MouseEvent & event)
    }
    else if(cn == "singleStep") {
       StepCpt *c = static_cast<StepCpt *>(event.eventComponent);
+      bool chainClick = mChainStartItem == c && mChainStartItem != nullptr &&
+         (mChainEndItem == nullptr || mChainEndItem == c) &&
+         event.mods.isLeftButtonDown() && !event.mouseWasDraggedSinceMouseDown();
 
       if (mDoingMultiSelect) {
          // user has just executed a multi-select (shift drag)
@@ -831,6 +883,12 @@ void StepPanel::mouseUp(const MouseEvent & event)
                   mChainStartItem->mRow, mChainStartItem->mCol,mChainNegTgt, mChainNegSrc)) {
                   buf->swap();
                   c = mChainEndItem; // so that this items ends up being selected (below where we select item)                                    
+                  int target = c->mRow * SEQ_MAX_STEPS + c->mCol;
+                  if (target == mChainDialogCell && e->getCurrentLayer() == mChainDialogLayer &&
+                      data->getCurrentPattern() == mChainDialogPattern) {
+                     mSelGridItem = target;
+                     e->setSelectedCells(c->mCol, c->mCol, c->mRow, c->mRow);
+                  }
                } else {
                   // failed to add due to reaching limit
                   String txt=String::formatted("Maximum number of chains (%d) for this column has been reached", SEQ_MAX_CHAIN_SOURCES);
@@ -1007,6 +1065,9 @@ void StepPanel::mouseUp(const MouseEvent & event)
          
       c->mTempValue = MOUSE_STARTVAL_INVALID;
       mMouseStartVal = MOUSE_STARTVAL_INVALID;
+
+      if (chainClick)
+         mNotify->cptValueChange(mId, -(c->mRow * SEQ_MAX_STEPS + c->mCol + 1));
 
       repaint();
 
@@ -1235,6 +1296,21 @@ StepPanel::paintChains(Graphics &g)
       srcBlobColor = srcColor.withAlpha(0.5f);
       drawCurve(start.toFloat(), end.toFloat(), g, up, true, selColor, srcBlobColor);
    }
+}
+
+void StepPanel::paintHighlightedChain(Graphics &g)
+{
+   if (mHiliteSrc < 0)
+      return;
+   StepCpt *src = &mGrid[mHiliteSrc];
+   StepCpt *tgt = &mGrid[mHiliteTgt];
+   if (!src->isStepInRange() || !tgt->isStepInRange())
+      return;
+   Colour c = mGlob->mEditorState->getColorFor(EditorState::cellSelection);
+   bool up = src->mRow > SEQ_MAX_ROWS - 4 || tgt->mRow > SEQ_MAX_ROWS - 4;
+   drawCurve(src->getBounds().getCentre().toFloat(), tgt->getBounds().getCentre().toFloat(), g, up, true, c, c);
+   g.setColour(c);
+   g.drawRoundedRectangle(mGrid[mHiliteCell].getBoundsInParent().toFloat().reduced(1.0f), 2.0f, 3.0f);
 }
 
 void StepPanel::paintSingleChain(Graphics & g, int x, int y, bool current)

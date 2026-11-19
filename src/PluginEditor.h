@@ -25,6 +25,7 @@
 #include "InfoDialog.h"
 #include "SettingsTab.h"
 #include "MidiDialog.h"
+#include "ChainDialog.h"
 #include "FileDialog.h"
 
 /*
@@ -121,6 +122,7 @@ class SeqAudioProcessorEditor  : public AudioProcessorEditor,
    SeqProcessorNotifier::PlayRecordState mPlayStateCache;
 
    SeqMidiDialog mMidiDlg;
+   SeqChainDialog mChainDlg;
 
    // set active chord for painting, -1 is off
    void chordSelect(int id);

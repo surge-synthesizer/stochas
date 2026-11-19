@@ -139,6 +139,14 @@ class StepPanel : public Component, public KeyListener {
    
    bool mChainNegTgt; // ctrl negative chain target
    bool mChainNegSrc; // alt negative chain source
+   // chain being highlighted from the chain dialog, valid if mHiliteSrc >= 0
+   // values are row*SEQ_MAX_STEPS+col
+   int mHiliteSrc;
+   int mHiliteTgt;
+   int mHiliteCell; // cell at the other end of the highlighted chain (gets a box around it)
+   int mChainDialogCell;
+   int mChainDialogLayer;
+   int mChainDialogPattern;
    StepRowNotify *mRowNotify;
 
    int mCurPosition; // current play position
@@ -152,6 +160,8 @@ class StepPanel : public Component, public KeyListener {
    void mouseDrag(const MouseEvent &event) override;
    // mouse down grabs original value so we know what it's offset is
    void mouseDown(const MouseEvent &event) override;
+   // double click on a non-empty cell in chain mode opens the chain dialog
+   void mouseDoubleClick(const MouseEvent &event) override;
    // mouse up finalizes value
    void mouseUp(const MouseEvent &event) override;
    void mouseEnter(const MouseEvent &event) override;
@@ -163,11 +173,20 @@ class StepPanel : public Component, public KeyListener {
    void paintSingleChain(Graphics &g, int x, int y, bool current);
    void paintSelectedCells(Graphics &g);
    void paintLengthBars(Graphics &g);
+   void paintHighlightedChain(Graphics &g);
 
    // if xaxis is false, we are shifting on y axis, if positive is false we are shifting left/up (depending on axis)
    void shiftSelectedCells(bool xaxis, bool positive);
    void deleteSelectedCells();
 public:
+   // Keep the chain dialog open while a grid gesture is being resolved.
+   bool isChainGestureInProgress() const { return mChainStartItem != nullptr; }
+   void setChainDialogCell(int row, int col);
+   void clearChainDialogCell();
+   // highlight a single chain (and the cell at the other end of it) when interacting
+   // with the chain dialog. all cells are given as row,col
+   void setChainHighlight(int srcRow, int srcCol, int tgtRow, int tgtCol, int otherRow, int otherCol);
+   void clearChainHighlight();
    void setRowNotify(StepRowNotify *notify);
    SeqChordHandler mChordHandler;
 

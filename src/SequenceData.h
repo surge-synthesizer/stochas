@@ -246,6 +246,9 @@ public:
    bool getChainSourceRaw(int pat, int step, int idx, int *col, int *row, int *targRow, int *flags);
 #endif
 
+   // remove a single chain (matching source cell and target cell). returns false if it didn't exist
+   bool removeChainSource(int row, int step, int sourceRow, int sourceStep, int pat=-1);
+
    // clear all chain sources tied to a cell on a pattern
    // if pattern not specifies, uses current
    void clearChainSources(int row, int step, int pat=-1);

@@ -629,6 +629,27 @@ iterate_jump:
    return false;
 }
 
+bool SequenceLayer::removeChainSource(int row, int step, int sourceRow, int sourceStep, int pat)
+{
+   jassert(row >= 0 && row < SEQ_MAX_ROWS);
+   jassert(step >= 0 && step < SEQ_MAX_STEPS);
+   if (pat == -1)
+      pat = mCurrentPattern;
+   jassert(pat >= 0 && pat < SEQ_MAX_PATTERNS);
+
+   SourceCell *cells = mPats[pat].mChains[step].cells;
+   for (int i = 0; i < SEQ_MAX_CHAIN_SOURCES; i++) {
+      if ((cells[i].flags & SEQ_CHAIN_FLAG_USED) &&
+         cells[i].targetrow == row &&
+         cells[i].row == sourceRow &&
+         cells[i].col == sourceStep) {
+         cells[i] = SourceCell();
+         return true;
+      }
+   }
+   return false;
+}
+
 void SequenceLayer::clearChainSources(int row, int step, int pat)
 {
    int i;

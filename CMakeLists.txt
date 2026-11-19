@@ -117,6 +117,7 @@ include_directories( src )
 juce_generate_juce_header(stochas)  
 
 target_sources(stochas PRIVATE
+    src/ChainDialog.cpp
     src/CommonComponents.cpp
     src/EditDialog.cpp
     src/EditorState.cpp
